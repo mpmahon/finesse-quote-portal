@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { FileText, Search } from 'lucide-react'
+import { FileText, Search, User } from 'lucide-react'
 import { format } from 'date-fns'
 
 interface Quote {
@@ -16,17 +16,33 @@ interface Quote {
   total_ttd: number
   status: string
   properties: { name: string } | null
+  profiles?: {
+    id: string
+    first_name: string
+    last_name: string
+    email: string
+  } | null
 }
 
-export function QuotesListClient({ quotes }: { quotes: Quote[] }) {
+interface QuotesListClientProps {
+  quotes: Quote[]
+  showCustomer?: boolean
+}
+
+export function QuotesListClient({ quotes, showCustomer = false }: QuotesListClientProps) {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
 
   const filtered = quotes.filter(q => {
     const propName = q.properties?.name || ''
+    const customerName = q.profiles ? `${q.profiles.first_name} ${q.profiles.last_name}` : ''
+    const customerEmail = q.profiles?.email || ''
+
     const matchesSearch = search === '' ||
       propName.toLowerCase().includes(search.toLowerCase()) ||
-      q.id.toLowerCase().includes(search.toLowerCase())
+      q.id.toLowerCase().includes(search.toLowerCase()) ||
+      customerName.toLowerCase().includes(search.toLowerCase()) ||
+      customerEmail.toLowerCase().includes(search.toLowerCase())
 
     const isExpired = q.expires_at && new Date(q.expires_at) < new Date()
     const effectiveStatus = isExpired ? 'expired' : q.status
@@ -55,7 +71,7 @@ export function QuotesListClient({ quotes }: { quotes: Quote[] }) {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search by property name or quote ID..."
+              placeholder={showCustomer ? "Search by property, customer, or quote ID..." : "Search by property name or quote ID..."}
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="pl-9"
@@ -85,8 +101,18 @@ export function QuotesListClient({ quotes }: { quotes: Quote[] }) {
               <Link key={q.id} href={`/quotes/${q.id}`}>
                 <Card className="transition-colors hover:bg-accent/50">
                   <CardContent className="flex items-center justify-between py-4">
-                    <div>
+                    <div className="flex-1 space-y-1">
                       <p className="font-medium">{q.properties?.name || 'Unknown Property'}</p>
+                      {showCustomer && q.profiles && (
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <User className="h-3 w-3" />
+                          <span>
+                            {q.profiles.first_name} {q.profiles.last_name}
+                          </span>
+                          <span>·</span>
+                          <span>{q.profiles.email}</span>
+                        </div>
+                      )}
                       <p className="text-sm text-muted-foreground">
                         {format(new Date(q.created_at), 'MMM d, yyyy h:mm a')}
                       </p>

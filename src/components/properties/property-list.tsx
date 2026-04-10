@@ -10,16 +10,27 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Building2, Trash2, Pencil, Plus, Search } from 'lucide-react'
+import { Building2, Trash2, Pencil, Plus, Search, User } from 'lucide-react'
 import { toast } from 'sonner'
 import type { Property } from '@/types/database'
 
-interface PropertyListProps {
-  properties: (Property & { rooms: { count: number }[] })[]
-  userId: string
+interface PropertyWithDetails extends Property {
+  rooms: { count: number }[]
+  profiles?: {
+    id: string
+    first_name: string
+    last_name: string
+    email: string
+  } | null
 }
 
-export function PropertyList({ properties, userId }: PropertyListProps) {
+interface PropertyListProps {
+  properties: PropertyWithDetails[]
+  userId: string
+  showCustomer?: boolean
+}
+
+export function PropertyList({ properties, userId, showCustomer = false }: PropertyListProps) {
   const [open, setOpen] = useState(false)
   const [editId, setEditId] = useState<string | null>(null)
   const [name, setName] = useState('')
@@ -32,7 +43,12 @@ export function PropertyList({ properties, userId }: PropertyListProps) {
   const filtered = properties.filter(p => {
     if (search === '') return true
     const q = search.toLowerCase()
-    return p.name.toLowerCase().includes(q) || (p.address || '').toLowerCase().includes(q)
+    const customerName = p.profiles ? `${p.profiles.first_name} ${p.profiles.last_name}`.toLowerCase() : ''
+    const customerEmail = p.profiles?.email.toLowerCase() || ''
+    return p.name.toLowerCase().includes(q) ||
+      (p.address || '').toLowerCase().includes(q) ||
+      customerName.includes(q) ||
+      customerEmail.includes(q)
   })
 
   const isNew = searchParams.get('new') === 'true'
@@ -124,7 +140,7 @@ export function PropertyList({ properties, userId }: PropertyListProps) {
             <div className="relative mb-4">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Search properties by name or address..."
+                placeholder={showCustomer ? "Search by property, address, customer name, or email..." : "Search properties by name or address..."}
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className="pl-9"
@@ -136,7 +152,7 @@ export function PropertyList({ properties, userId }: PropertyListProps) {
           ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map(property => (
-            <Card key={property.id} className="group relative">
+            <Card key={property.id} className="group relative transition-shadow hover:shadow-md">
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between">
                   <Link href={`/properties/${property.id}`} className="flex-1">
@@ -152,8 +168,17 @@ export function PropertyList({ properties, userId }: PropertyListProps) {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
-                {property.address && <p className="mb-2 text-sm text-muted-foreground">{property.address}</p>}
+              <CardContent className="space-y-2">
+                {showCustomer && property.profiles && (
+                  <div className="flex items-center gap-1.5 rounded-md bg-primary/5 px-2 py-1.5 text-xs">
+                    <User className="h-3 w-3 text-primary" />
+                    <span className="font-medium">
+                      {property.profiles.first_name} {property.profiles.last_name}
+                    </span>
+                    <span className="text-muted-foreground">· {property.profiles.email}</span>
+                  </div>
+                )}
+                {property.address && <p className="text-sm text-muted-foreground">{property.address}</p>}
                 <p className="text-sm text-muted-foreground">
                   {property.rooms?.[0]?.count || 0} room{(property.rooms?.[0]?.count || 0) !== 1 ? 's' : ''}
                 </p>
