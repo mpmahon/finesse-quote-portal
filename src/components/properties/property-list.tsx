@@ -15,7 +15,10 @@ import { toast } from 'sonner'
 import type { Property } from '@/types/database'
 
 interface PropertyWithDetails extends Property {
-  rooms: { count: number }[]
+  room_count?: number
+  window_count?: number
+  configured_count?: number
+  preview_total_usd?: number
   profiles?: {
     id: string
     first_name: string
@@ -180,8 +183,24 @@ export function PropertyList({ properties, userId, showCustomer = false }: Prope
                 )}
                 {property.address && <p className="text-sm text-muted-foreground">{property.address}</p>}
                 <p className="text-sm text-muted-foreground">
-                  {property.rooms?.[0]?.count || 0} room{(property.rooms?.[0]?.count || 0) !== 1 ? 's' : ''}
+                  {property.room_count || 0} room{(property.room_count || 0) !== 1 ? 's' : ''}
+                  {(property.window_count ?? 0) > 0 && (
+                    <> · {property.window_count} window{property.window_count !== 1 ? 's' : ''}</>
+                  )}
+                  {(property.window_count ?? 0) > 0 && (property.configured_count ?? 0) < (property.window_count ?? 0) && (
+                    <span className="ml-1 text-amber-600">
+                      ({property.configured_count} configured)
+                    </span>
+                  )}
                 </p>
+                {(property.preview_total_usd ?? 0) > 0 && (
+                  <div className="flex items-center justify-between rounded-md bg-primary/5 px-3 py-2">
+                    <span className="text-xs font-medium text-muted-foreground">Property Total (USD)</span>
+                    <span className="text-sm font-semibold text-primary">
+                      ${(property.preview_total_usd || 0).toFixed(2)}
+                    </span>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}

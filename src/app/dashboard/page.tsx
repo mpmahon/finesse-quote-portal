@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import { PropertyList } from '@/components/properties/property-list'
+import { calculateLineItem } from '@/lib/quote-engine'
+import type { Component } from '@/types/database'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -22,7 +24,21 @@ export default async function DashboardPage() {
   // Admins see all properties, others see their own (enforced by RLS)
   let query = supabase
     .from('properties')
-    .select('*, rooms(count), profiles(id, first_name, last_name, email)')
+    .select(`
+      *,
+      profiles(id, first_name, last_name, email),
+      rooms(
+        id,
+        windows(
+          id,
+          width_inches,
+          height_inches,
+          mount_type,
+          product_id,
+          products(components(*))
+        )
+      )
+    `)
     .order('created_at', { ascending: false })
 
   if (!isAdmin) {
@@ -31,10 +47,50 @@ export default async function DashboardPage() {
 
   const { data: properties } = await query
 
-  const normalized = (properties || []).map(p => ({
-    ...p,
-    profiles: Array.isArray(p.profiles) ? p.profiles[0] ?? null : p.profiles,
-  }))
+  // Calculate totals for each property
+  const normalized = (properties || []).map(p => {
+    const rooms = (p.rooms || []) as Array<{
+      id: string
+      windows: Array<{
+        width_inches: number
+        height_inches: number
+        mount_type: 'inside' | 'outside'
+        product_id: string | null
+        products: { components: Component[] } | null
+      }>
+    }>
+
+    let totalUsd = 0
+    let totalWindows = 0
+    let configuredWindows = 0
+
+    for (const room of rooms) {
+      for (const w of room.windows || []) {
+        totalWindows++
+        if (w.product_id && w.products?.components?.length) {
+          configuredWindows++
+          const result = calculateLineItem(
+            {
+              width_inches: Number(w.width_inches),
+              height_inches: Number(w.height_inches),
+              mount_type: w.mount_type,
+            },
+            w.products.components
+          )
+          totalUsd += result.costs.line_total_usd
+        }
+      }
+    }
+
+    return {
+      ...p,
+      profiles: Array.isArray(p.profiles) ? p.profiles[0] ?? null : p.profiles,
+      room_count: rooms.length,
+      window_count: totalWindows,
+      configured_count: configuredWindows,
+      preview_total_usd: totalUsd,
+    }
+  })
 
   return (
     <div>

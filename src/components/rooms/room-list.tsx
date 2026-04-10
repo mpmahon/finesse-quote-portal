@@ -13,8 +13,14 @@ import { DoorOpen, Plus, Trash2, Pencil } from 'lucide-react'
 import { toast } from 'sonner'
 import type { Room } from '@/types/database'
 
+interface RoomWithStats extends Room {
+  window_count: number
+  configured_count: number
+  preview_total_usd: number
+}
+
 interface RoomListProps {
-  rooms: (Room & { windows: { count: number }[] })[]
+  rooms: RoomWithStats[]
   propertyId: string
 }
 
@@ -109,10 +115,23 @@ export function RoomList({ rooms, propertyId }: RoomListProps) {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-2">
                 <p className="text-sm text-muted-foreground">
-                  {room.windows?.[0]?.count || 0} window{(room.windows?.[0]?.count || 0) !== 1 ? 's' : ''}
+                  {room.window_count} window{room.window_count !== 1 ? 's' : ''}
+                  {room.window_count > 0 && room.configured_count < room.window_count && (
+                    <span className="ml-1 text-amber-600">
+                      ({room.configured_count} configured)
+                    </span>
+                  )}
                 </p>
+                {room.preview_total_usd > 0 && (
+                  <div className="flex items-center justify-between rounded-md bg-primary/5 px-3 py-2">
+                    <span className="text-xs font-medium text-muted-foreground">Room Total (USD)</span>
+                    <span className="text-sm font-semibold text-primary">
+                      ${room.preview_total_usd.toFixed(2)}
+                    </span>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}

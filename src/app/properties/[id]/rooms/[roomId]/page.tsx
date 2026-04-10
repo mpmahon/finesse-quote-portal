@@ -3,6 +3,8 @@ import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronLeft } from 'lucide-react'
 import { WindowList } from '@/components/windows/window-list'
+import { calculateLineItem } from '@/lib/quote-engine'
+import type { Component } from '@/types/database'
 
 export default async function RoomPage({
   params,
@@ -30,7 +32,7 @@ export default async function RoomPage({
 
   const { data: windows } = await supabase
     .from('windows')
-    .select('*, products(make, model)')
+    .select('*, products(id, make, model, components(*))')
     .eq('room_id', roomId)
     .order('created_at', { ascending: true })
 
@@ -39,6 +41,26 @@ export default async function RoomPage({
     .select('*')
     .eq('is_active', true)
     .order('make')
+
+  // Pre-calculate preview pricing for each configured window
+  const windowsWithPricing = (windows || []).map(w => {
+    let previewUsd: number | null = null
+    if (w.product_id && w.products && 'components' in w.products) {
+      const components = (w.products as unknown as { components: Component[] }).components
+      if (components && components.length > 0) {
+        const result = calculateLineItem(
+          {
+            width_inches: Number(w.width_inches),
+            height_inches: Number(w.height_inches),
+            mount_type: w.mount_type,
+          },
+          components
+        )
+        previewUsd = result.costs.line_total_usd
+      }
+    }
+    return { ...w, preview_usd: previewUsd }
+  })
 
   return (
     <div>
@@ -51,7 +73,7 @@ export default async function RoomPage({
       </div>
 
       <WindowList
-        windows={windows || []}
+        windows={windowsWithPricing}
         roomId={roomId}
         propertyId={id}
         products={products || []}

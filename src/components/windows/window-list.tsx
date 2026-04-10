@@ -18,7 +18,10 @@ import { MOUNT_TYPE_LABELS } from '@/lib/constants'
 import type { Window, Product } from '@/types/database'
 
 interface WindowListProps {
-  windows: (Window & { products: { make: string; model: string } | null })[]
+  windows: (Window & {
+    products: { make: string; model: string } | null
+    preview_usd?: number | null
+  })[]
   roomId: string
   propertyId: string
   products: Product[]
@@ -200,10 +203,18 @@ export function WindowList({ windows, roomId, propertyId, products }: WindowList
                 ) : (
                   <p className="text-sm text-amber-600">Not configured</p>
                 )}
+                {typeof w.preview_usd === 'number' && (
+                  <div className="flex items-center justify-between rounded-md bg-primary/5 px-3 py-2">
+                    <span className="text-xs font-medium text-muted-foreground">Components (USD)</span>
+                    <span className="text-sm font-semibold text-primary">
+                      ${w.preview_usd.toFixed(2)}
+                    </span>
+                  </div>
+                )}
                 <Link href={`/properties/${propertyId}/rooms/${roomId}/windows/${w.id}`}>
                   <Button variant="outline" size="sm" className="mt-2">
                     <Settings2 className="mr-2 h-3 w-3" />
-                    Configure Blind
+                    {w.products ? 'Reconfigure' : 'Configure Blind'}
                   </Button>
                 </Link>
               </CardContent>
