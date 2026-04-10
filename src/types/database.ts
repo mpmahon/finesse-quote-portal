@@ -129,6 +129,14 @@ export interface PricingConfig {
   updated_at: string
 }
 
+export interface CatalogItem {
+  id: string
+  name: string
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
 export interface AuditLog {
   id: string
   admin_user_id: string

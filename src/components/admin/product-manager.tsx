@@ -11,15 +11,20 @@ import { Label } from '@/components/ui/label'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { MultiSelect } from '@/components/ui/multi-select'
 import { Plus, Pencil, Trash2, ChevronDown, ChevronUp, Search } from 'lucide-react'
 import { toast } from 'sonner'
+import Link from 'next/link'
 import type { Product, Component } from '@/types/database'
 
 interface ProductManagerProps {
   products: (Product & { components: Component[] })[]
+  shadeTypeOptions: string[]
+  styleOptions: string[]
+  colourOptions: string[]
 }
 
-export function ProductManager({ products }: ProductManagerProps) {
+export function ProductManager({ products, shadeTypeOptions, styleOptions, colourOptions }: ProductManagerProps) {
   const [productDialog, setProductDialog] = useState(false)
   const [componentDialog, setComponentDialog] = useState(false)
   const [editProduct, setEditProduct] = useState<Product | null>(null)
@@ -36,14 +41,20 @@ export function ProductManager({ products }: ProductManagerProps) {
       p.shade_types.some(s => s.toLowerCase().includes(q)) ||
       p.colours.some(c => c.toLowerCase().includes(q))
   })
-  const [form, setForm] = useState({ make: '', model: '', shade_types: '', styles: '', colours: '' })
+  const [form, setForm] = useState<{
+    make: string
+    model: string
+    shade_types: string[]
+    styles: string[]
+    colours: string[]
+  }>({ make: '', model: '', shade_types: [], styles: [], colours: [] })
   const [compForm, setCompForm] = useState({ name: '', unit: 'per_inch' as string, usd_price: '' })
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
   function openNewProduct() {
     setEditProduct(null)
-    setForm({ make: '', model: '', shade_types: '', styles: '', colours: '' })
+    setForm({ make: '', model: '', shade_types: [], styles: [], colours: [] })
     setProductDialog(true)
   }
 
@@ -52,9 +63,9 @@ export function ProductManager({ products }: ProductManagerProps) {
     setForm({
       make: p.make,
       model: p.model,
-      shade_types: p.shade_types.join(', '),
-      styles: p.styles.join(', '),
-      colours: p.colours.join(', '),
+      shade_types: p.shade_types,
+      styles: p.styles,
+      colours: p.colours,
     })
     setProductDialog(true)
   }
@@ -75,14 +86,18 @@ export function ProductManager({ products }: ProductManagerProps) {
 
   async function saveProduct() {
     if (!form.make || !form.model) { toast.error('Make and model required'); return }
+    if (form.shade_types.length === 0 || form.styles.length === 0 || form.colours.length === 0) {
+      toast.error('Select at least one shade type, style, and colour')
+      return
+    }
     setLoading(true)
     const supabase = createClient()
     const data = {
       make: form.make.trim(),
       model: form.model.trim(),
-      shade_types: form.shade_types.split(',').map(s => s.trim()).filter(Boolean),
-      styles: form.styles.split(',').map(s => s.trim()).filter(Boolean),
-      colours: form.colours.split(',').map(s => s.trim()).filter(Boolean),
+      shade_types: form.shade_types,
+      styles: form.styles,
+      colours: form.colours,
     }
 
     if (editProduct) {
@@ -156,17 +171,41 @@ export function ProductManager({ products }: ProductManagerProps) {
               </div>
             </div>
             <div className="space-y-2">
-              <Label>Shade Types (comma-separated)</Label>
-              <Input value={form.shade_types} onChange={e => setForm(f => ({ ...f, shade_types: e.target.value }))} placeholder="light filtering, blackout, sunscreen" />
+              <Label>Shade Types</Label>
+              <MultiSelect
+                options={shadeTypeOptions}
+                selected={form.shade_types}
+                onChange={v => setForm(f => ({ ...f, shade_types: v }))}
+                placeholder="Select shade types..."
+                emptyText="No shade types in catalog"
+              />
             </div>
             <div className="space-y-2">
-              <Label>Styles (comma-separated)</Label>
-              <Input value={form.styles} onChange={e => setForm(f => ({ ...f, styles: e.target.value }))} placeholder="standard, premium" />
+              <Label>Styles</Label>
+              <MultiSelect
+                options={styleOptions}
+                selected={form.styles}
+                onChange={v => setForm(f => ({ ...f, styles: v }))}
+                placeholder="Select styles..."
+                emptyText="No styles in catalog"
+              />
             </div>
             <div className="space-y-2">
-              <Label>Colours (comma-separated)</Label>
-              <Input value={form.colours} onChange={e => setForm(f => ({ ...f, colours: e.target.value }))} placeholder="white, cream, grey" />
+              <Label>Colours</Label>
+              <MultiSelect
+                options={colourOptions}
+                selected={form.colours}
+                onChange={v => setForm(f => ({ ...f, colours: v }))}
+                placeholder="Select colours..."
+                emptyText="No colours in catalog"
+              />
             </div>
+            {(shadeTypeOptions.length === 0 || styleOptions.length === 0 || colourOptions.length === 0) && (
+              <p className="text-xs text-amber-600">
+                Missing options? Add them in{' '}
+                <Link href="/admin/catalog" className="underline">Admin &gt; Catalog</Link>.
+              </p>
+            )}
             <Button onClick={saveProduct} className="w-full" disabled={loading}>
               {loading ? 'Saving...' : 'Save'}
             </Button>
