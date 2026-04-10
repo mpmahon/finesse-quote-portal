@@ -1,13 +1,15 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeft, AlertTriangle } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { format } from 'date-fns'
 import { QuotePdfButton } from '@/components/quotes/quote-pdf-button'
+import { RegenerateQuoteButton } from '@/components/quotes/regenerate-quote-button'
+import { computeStaleness, buildProductLatestMap } from '@/lib/quote-staleness'
 import type { QuoteLineItem } from '@/types/database'
 
 export default async function QuoteDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -24,11 +26,15 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
 
   if (!quote) notFound()
 
-  const { data: lineItems } = await supabase
-    .from('quote_line_items')
-    .select('*')
-    .eq('quote_id', id)
-    .order('room_name')
+  const [
+    { data: lineItems },
+    { data: config },
+    { data: components },
+  ] = await Promise.all([
+    supabase.from('quote_line_items').select('*').eq('quote_id', id).order('room_name'),
+    supabase.from('pricing_config').select('updated_at').eq('id', 1).single(),
+    supabase.from('components').select('product_id, updated_at'),
+  ])
 
   // Group line items by room
   const byRoom: Record<string, QuoteLineItem[]> = {}
@@ -38,6 +44,16 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
   }
 
   const isExpired = quote.expires_at && new Date(quote.expires_at) < new Date()
+
+  // Compute staleness
+  const productIds = Array.from(new Set((lineItems || []).map(li => li.product_id)))
+  const productLatest = buildProductLatestMap(components || [])
+  const staleness = computeStaleness(
+    quote.created_at,
+    productIds,
+    config?.updated_at || null,
+    productLatest
+  )
 
   return (
     <div>
@@ -54,6 +70,27 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
           <QuotePdfButton quoteId={id} />
         </div>
       </div>
+
+      {staleness.is_stale && (
+        <div className="mb-6 flex flex-col gap-3 rounded-lg border border-amber-500/40 bg-amber-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600" />
+            <div>
+              <p className="font-medium text-amber-900 dark:text-amber-200">
+                This quote is affected by pricing changes
+              </p>
+              <p className="text-xs text-amber-800/80 dark:text-amber-300/80">
+                {staleness.reason === 'both'
+                  ? 'Global pricing settings and component prices have both been updated since this quote was generated.'
+                  : staleness.reason === 'config'
+                  ? 'Global pricing settings (exchange rate, markup, duty, or fees) have been updated since this quote was generated.'
+                  : 'Component prices for one or more products in this quote have been updated since it was generated.'}
+              </p>
+            </div>
+          </div>
+          <RegenerateQuoteButton propertyId={quote.property_id} />
+        </div>
+      )}
 
       {/* Quote Summary Card */}
       <Card className="mb-6">

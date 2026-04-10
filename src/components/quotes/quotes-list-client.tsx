@@ -6,8 +6,9 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { FileText, Search, User } from 'lucide-react'
+import { FileText, Search, User, AlertTriangle } from 'lucide-react'
 import { format } from 'date-fns'
+import type { StaleReason } from '@/lib/quote-staleness'
 
 interface Quote {
   id: string
@@ -22,6 +23,8 @@ interface Quote {
     last_name: string
     email: string
   } | null
+  is_stale?: boolean
+  stale_reason?: StaleReason
 }
 
 interface QuotesListClientProps {
@@ -32,6 +35,8 @@ interface QuotesListClientProps {
 export function QuotesListClient({ quotes, showCustomer = false }: QuotesListClientProps) {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
+
+  const staleCount = quotes.filter(q => q.is_stale).length
 
   const filtered = quotes.filter(q => {
     const propName = q.properties?.name || ''
@@ -46,7 +51,12 @@ export function QuotesListClient({ quotes, showCustomer = false }: QuotesListCli
 
     const isExpired = q.expires_at && new Date(q.expires_at) < new Date()
     const effectiveStatus = isExpired ? 'expired' : q.status
-    const matchesStatus = statusFilter === 'all' || effectiveStatus === statusFilter
+    let matchesStatus = true
+    if (statusFilter === 'stale') {
+      matchesStatus = !!q.is_stale
+    } else if (statusFilter !== 'all') {
+      matchesStatus = effectiveStatus === statusFilter
+    }
 
     return matchesSearch && matchesStatus
   })
@@ -66,6 +76,20 @@ export function QuotesListClient({ quotes, showCustomer = false }: QuotesListCli
 
   return (
     <>
+      {staleCount > 0 && (
+        <div className="mb-4 flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm">
+          <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-600" />
+          <div>
+            <p className="font-medium text-amber-900 dark:text-amber-200">
+              {staleCount} quote{staleCount !== 1 ? 's' : ''} affected by pricing changes
+            </p>
+            <p className="text-xs text-amber-800/80 dark:text-amber-300/80">
+              Pricing has been updated since these quotes were generated. Open a quote to regenerate it with current prices.
+            </p>
+          </div>
+        </div>
+      )}
+
       {quotes.length > 3 && (
         <div className="mb-4 flex flex-col gap-3 sm:flex-row">
           <div className="relative flex-1">
@@ -78,7 +102,7 @@ export function QuotesListClient({ quotes, showCustomer = false }: QuotesListCli
             />
           </div>
           <Select value={statusFilter} onValueChange={v => setStatusFilter(v ?? 'all')}>
-            <SelectTrigger className="sm:w-48">
+            <SelectTrigger className="sm:w-56">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -86,6 +110,9 @@ export function QuotesListClient({ quotes, showCustomer = false }: QuotesListCli
               <SelectItem value="draft">Draft</SelectItem>
               <SelectItem value="final">Final</SelectItem>
               <SelectItem value="expired">Expired</SelectItem>
+              {staleCount > 0 && (
+                <SelectItem value="stale">Affected by pricing change</SelectItem>
+              )}
             </SelectContent>
           </Select>
         </div>
@@ -99,10 +126,18 @@ export function QuotesListClient({ quotes, showCustomer = false }: QuotesListCli
             const isExpired = q.expires_at && new Date(q.expires_at) < new Date()
             return (
               <Link key={q.id} href={`/quotes/${q.id}`}>
-                <Card className="transition-colors hover:bg-accent/50">
+                <Card className={`transition-colors hover:bg-accent/50 ${q.is_stale ? 'border-amber-500/40' : ''}`}>
                   <CardContent className="flex items-center justify-between py-4">
                     <div className="flex-1 space-y-1">
-                      <p className="font-medium">{q.properties?.name || 'Unknown Property'}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium">{q.properties?.name || 'Unknown Property'}</p>
+                        {q.is_stale && (
+                          <Badge variant="outline" className="border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300">
+                            <AlertTriangle className="mr-1 h-3 w-3" />
+                            Pricing Changed
+                          </Badge>
+                        )}
+                      </div>
                       {showCustomer && q.profiles && (
                         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                           <User className="h-3 w-3" />
