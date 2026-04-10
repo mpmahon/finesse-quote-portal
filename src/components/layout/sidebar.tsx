@@ -1,9 +1,10 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { Home, Building2, FileText, Settings, Shield, Package, DollarSign, ScrollText, LogOut } from 'lucide-react'
+import { Home, FileText, Shield, Package, DollarSign, ScrollText, LogOut } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import type { UserRole } from '@/types/database'
@@ -19,7 +20,7 @@ const navItems = [
 ]
 
 const adminItems = [
-  { href: '/admin', label: 'Admin Overview', icon: Shield },
+  { href: '/admin', label: 'Overview', icon: Shield },
   { href: '/admin/products', label: 'Products', icon: Package },
   { href: '/admin/pricing', label: 'Pricing', icon: DollarSign },
   { href: '/admin/audit-logs', label: 'Audit Logs', icon: ScrollText },
@@ -37,11 +38,17 @@ export function Sidebar({ role, userName }: SidebarProps) {
   }
 
   return (
-    <aside className="flex w-64 flex-col border-r bg-card">
-      <div className="flex h-16 items-center border-b px-6">
-        <Link href="/dashboard" className="text-xl font-bold">Finesse</Link>
+    <aside className="flex w-64 flex-col bg-[oklch(0.18_0.02_250)] text-white">
+      {/* Logo */}
+      <div className="flex h-16 items-center gap-3 border-b border-white/10 px-5">
+        <Image src="/logo.jpg" alt="Finesse" width={36} height={36} className="rounded" />
+        <Link href="/dashboard" className="text-lg font-bold tracking-tight text-white">
+          Finesse
+        </Link>
       </div>
-      <nav className="flex-1 space-y-1 p-4">
+
+      {/* Navigation */}
+      <nav className="flex-1 space-y-1 px-3 py-4">
         {navItems
           .filter(item => item.roles.includes(role))
           .map(item => (
@@ -49,10 +56,10 @@ export function Sidebar({ role, userName }: SidebarProps) {
               key={item.href}
               href={item.href}
               className={cn(
-                'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all',
                 pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  ? 'bg-[oklch(0.55_0.18_250)] text-white shadow-md'
+                  : 'text-white/60 hover:bg-white/8 hover:text-white'
               )}
             >
               <item.icon className="h-4 w-4" />
@@ -62,18 +69,20 @@ export function Sidebar({ role, userName }: SidebarProps) {
 
         {role === 'administrator' && (
           <>
-            <div className="my-4 border-t pt-4">
-              <p className="mb-2 px-3 text-xs font-semibold uppercase text-muted-foreground">Admin</p>
+            <div className="my-4 border-t border-white/10 pt-4">
+              <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-wider text-white/40">
+                Admin
+              </p>
             </div>
             {adminItems.map(item => (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                  'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all',
                   pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href))
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                    ? 'bg-[oklch(0.55_0.18_250)] text-white shadow-md'
+                    : 'text-white/60 hover:bg-white/8 hover:text-white'
                 )}
               >
                 <item.icon className="h-4 w-4" />
@@ -83,12 +92,21 @@ export function Sidebar({ role, userName }: SidebarProps) {
           </>
         )}
       </nav>
-      <div className="border-t p-4">
-        <p className="mb-2 truncate text-sm font-medium">{userName}</p>
-        <p className="mb-3 text-xs capitalize text-muted-foreground">{role}</p>
+
+      {/* User */}
+      <div className="border-t border-white/10 p-4">
+        <div className="mb-3 flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[oklch(0.55_0.18_250)] text-sm font-semibold text-white">
+            {userName.charAt(0).toUpperCase()}
+          </div>
+          <div className="flex-1 overflow-hidden">
+            <p className="truncate text-sm font-medium text-white">{userName}</p>
+            <p className="text-xs capitalize text-white/50">{role}</p>
+          </div>
+        </div>
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-white/50 transition-colors hover:bg-white/8 hover:text-white"
         >
           <LogOut className="h-4 w-4" />
           Sign Out

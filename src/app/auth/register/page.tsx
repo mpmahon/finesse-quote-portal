@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -56,9 +57,10 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <Card className="w-full max-w-md">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[oklch(0.18_0.02_250)] to-[oklch(0.25_0.04_260)] px-4 py-8">
+      <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="text-center">
+          <Image src="/logo.jpg" alt="Finesse" width={56} height={56} className="mx-auto mb-3 rounded-lg" />
           <CardTitle className="text-2xl">Create Account</CardTitle>
           <CardDescription>Register for the Finesse Quote Portal</CardDescription>
         </CardHeader>
