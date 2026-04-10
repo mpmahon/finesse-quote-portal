@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { Switch } from '@/components/ui/switch'
 import { toast } from 'sonner'
 import {
   calculateBlindDimensions,
@@ -34,6 +35,10 @@ export function WindowConfigurator({
   propertyId,
   roomId,
 }: WindowConfiguratorProps) {
+  // Feature toggles (can be changed from this page)
+  const [hasBlind, setHasBlind] = useState(win.has_blind)
+  const [hasAwning, setHasAwning] = useState(win.has_awning)
+
   // Blind state
   const [productId, setProductId] = useState(win.product_id || '')
   const [shadeType, setShadeType] = useState(win.shade_type || '')
@@ -86,27 +91,13 @@ export function WindowConfigurator({
     (blindPreview?.costs.line_total_usd || 0) +
     (awningPreview?.costs.line_total_usd || 0)
 
-  // Early return: no blind AND no awning
-  if (!win.has_blind && !win.has_awning) {
-    return (
-      <Card>
-        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-          <p className="mb-2 text-lg font-medium">This window has no blind or awning</p>
-          <p className="max-w-md text-sm text-muted-foreground">
-            It will be included on the quote with zero cost. To add a blind or awning, edit the window from the room page and toggle one on.
-          </p>
-        </CardContent>
-      </Card>
-    )
-  }
-
   async function handleSave() {
     // Validate what's configured based on toggles
-    if (win.has_blind && (!productId || !shadeType || !style || !colour)) {
+    if (hasBlind && (!productId || !shadeType || !style || !colour)) {
       toast.error('Please complete blind configuration')
       return
     }
-    if (win.has_awning && (!awningProductId || !awningColour)) {
+    if (hasAwning && (!awningProductId || !awningColour)) {
       toast.error('Please complete awning configuration')
       return
     }
@@ -114,12 +105,14 @@ export function WindowConfigurator({
     setLoading(true)
     const supabase = createClient()
     const updates = {
-      product_id: win.has_blind ? productId : null,
-      shade_type: win.has_blind ? shadeType : null,
-      style: win.has_blind ? style : null,
-      colour: win.has_blind ? colour : null,
-      awning_product_id: win.has_awning ? awningProductId : null,
-      awning_colour: win.has_awning ? awningColour : null,
+      has_blind: hasBlind,
+      has_awning: hasAwning,
+      product_id: hasBlind ? productId : null,
+      shade_type: hasBlind ? shadeType : null,
+      style: hasBlind ? style : null,
+      colour: hasBlind ? colour : null,
+      awning_product_id: hasAwning ? awningProductId : null,
+      awning_colour: hasAwning ? awningColour : null,
     }
 
     const { error } = await supabase
@@ -128,7 +121,7 @@ export function WindowConfigurator({
       .eq('id', win.id)
 
     if (error) { toast.error(error.message); setLoading(false); return }
-    toast.success('Window configured successfully')
+    toast.success('Window saved')
     setLoading(false)
     router.push(`/properties/${propertyId}/rooms/${roomId}`)
     router.refresh()
@@ -163,7 +156,7 @@ export function WindowConfigurator({
                 </div>
               )}
             </div>
-            {win.has_blind && (
+            {hasBlind && (
               <>
                 <Separator />
                 <div className="grid grid-cols-2 gap-4 text-sm">
@@ -178,7 +171,7 @@ export function WindowConfigurator({
                 </div>
               </>
             )}
-            {win.has_awning && awningDims && (
+            {hasAwning && awningDims && (
               <>
                 <Separator />
                 <div className="grid grid-cols-2 gap-4 text-sm">
@@ -196,7 +189,34 @@ export function WindowConfigurator({
           </CardContent>
         </Card>
 
-        {win.has_blind && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Features</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="feat-blind">Blind</Label>
+                <p className="text-xs text-muted-foreground">Toggle off to remove blind from quote</p>
+              </div>
+              <Switch id="feat-blind" checked={hasBlind} onCheckedChange={setHasBlind} />
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="feat-awning">Awning</Label>
+                <p className="text-xs text-muted-foreground">Toggle off to remove awning from quote</p>
+              </div>
+              <Switch id="feat-awning" checked={hasAwning} onCheckedChange={setHasAwning} />
+            </div>
+            {!hasBlind && !hasAwning && (
+              <p className="rounded-md bg-muted/50 p-3 text-xs text-muted-foreground">
+                With neither feature enabled, this window will appear on the quote with zero cost — useful for tracking future sales opportunities.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
+        {hasBlind && (
           <Card>
             <CardHeader>
               <CardTitle>Blind Configuration</CardTitle>
@@ -264,7 +284,7 @@ export function WindowConfigurator({
           </Card>
         )}
 
-        {win.has_awning && (
+        {hasAwning && (
           <Card>
             <CardHeader>
               <CardTitle>Awning Configuration</CardTitle>
@@ -321,8 +341,8 @@ export function WindowConfigurator({
           className="w-full"
           disabled={
             loading ||
-            (win.has_blind && (!productId || !shadeType || !style || !colour)) ||
-            (win.has_awning && (!awningProductId || !awningColour))
+            (hasBlind && (!productId || !shadeType || !style || !colour)) ||
+            (hasAwning && (!awningProductId || !awningColour))
           }
         >
           {loading ? 'Saving...' : 'Save Configuration'}
@@ -331,7 +351,7 @@ export function WindowConfigurator({
 
       {/* Right: Live Cost Preview */}
       <div className="space-y-6">
-        {win.has_blind && (
+        {hasBlind && (
           <Card>
             <CardHeader>
               <CardTitle>Blind Cost (USD)</CardTitle>
@@ -389,7 +409,7 @@ export function WindowConfigurator({
           </Card>
         )}
 
-        {win.has_awning && (
+        {hasAwning && (
           <Card>
             <CardHeader>
               <CardTitle>Awning Cost (USD)</CardTitle>
@@ -431,7 +451,7 @@ export function WindowConfigurator({
           </Card>
         )}
 
-        {win.has_blind && win.has_awning && combinedTotal > 0 && (
+        {hasBlind && hasAwning && combinedTotal > 0 && (
           <Card className="border-primary/40">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between text-lg font-bold">
