@@ -40,12 +40,9 @@ export function Sidebar({ role, userName }: SidebarProps) {
   return (
     <aside className="flex w-64 flex-col bg-[oklch(0.18_0.02_250)] text-white">
       {/* Logo */}
-      <div className="flex h-16 items-center gap-3 border-b border-white/10 px-5">
-        <Image src="/logo.jpg" alt="Finesse" width={36} height={36} className="rounded" />
-        <Link href="/dashboard" className="text-lg font-bold tracking-tight text-white">
-          Finesse
-        </Link>
-      </div>
+      <Link href="/dashboard" className="block border-b border-white/10 p-4">
+        <Image src="/logo.jpg" alt="Finesse" width={232} height={232} className="w-full rounded-lg" />
+      </Link>
 
       {/* Navigation */}
       <nav className="flex-1 space-y-1 px-3 py-4">
