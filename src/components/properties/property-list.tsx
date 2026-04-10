@@ -17,7 +17,9 @@ import type { Property } from '@/types/database'
 interface PropertyWithDetails extends Property {
   room_count?: number
   window_count?: number
+  priceable_count?: number
   configured_count?: number
+  no_blind_count?: number
   preview_total_usd?: number
   profiles?: {
     id: string
@@ -187,9 +189,12 @@ export function PropertyList({ properties, userId, showCustomer = false }: Prope
                   {(property.window_count ?? 0) > 0 && (
                     <> · {property.window_count} window{property.window_count !== 1 ? 's' : ''}</>
                   )}
-                  {(property.window_count ?? 0) > 0 && (property.configured_count ?? 0) < (property.window_count ?? 0) && (
+                  {(property.no_blind_count ?? 0) > 0 && (
+                    <> · {property.no_blind_count} no blind</>
+                  )}
+                  {(property.priceable_count ?? 0) > 0 && (property.configured_count ?? 0) < (property.priceable_count ?? 0) && (
                     <span className="ml-1 text-amber-600">
-                      ({property.configured_count} configured)
+                      ({(property.priceable_count ?? 0) - (property.configured_count ?? 0)} need configuration)
                     </span>
                   )}
                 </p>

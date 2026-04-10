@@ -54,7 +54,7 @@ export function QuotePDF({ quote, lineItems, profile }: QuotePDFProps) {
     byRoom[item.room_name].push(item)
   }
 
-  const numWindows = lineItems.length
+  const priceableCount = lineItems.filter(li => li.product_id !== null).length
 
   return (
     <Document>
@@ -100,18 +100,24 @@ export function QuotePDF({ quote, lineItems, profile }: QuotePDFProps) {
               <Text style={styles.col7}>Fixed</Text>
               <Text style={styles.col8}>Total (USD)</Text>
             </View>
-            {items.map(item => (
-              <View key={item.id} style={styles.tableRow}>
-                <Text style={styles.col1}>{item.window_name}</Text>
-                <Text style={styles.col2}>${Number(item.cassette_cost).toFixed(2)}</Text>
-                <Text style={styles.col3}>${Number(item.tube_cost).toFixed(2)}</Text>
-                <Text style={styles.col4}>${Number(item.bottom_rail_cost).toFixed(2)}</Text>
-                <Text style={styles.col5}>${Number(item.chain_cost).toFixed(2)}</Text>
-                <Text style={styles.col6}>${Number(item.fabric_cost).toFixed(2)}</Text>
-                <Text style={styles.col7}>${Number(item.fixed_costs).toFixed(2)}</Text>
-                <Text style={styles.col8}>${Number(item.line_total_usd).toFixed(2)}</Text>
-              </View>
-            ))}
+            {items.map(item => {
+              const isZero = item.product_id === null
+              return (
+                <View key={item.id} style={styles.tableRow}>
+                  <Text style={styles.col1}>
+                    {item.window_name}
+                    {isZero && <Text style={{ color: '#999' }}> (no blind/awning)</Text>}
+                  </Text>
+                  <Text style={styles.col2}>{isZero ? '—' : `$${Number(item.cassette_cost).toFixed(2)}`}</Text>
+                  <Text style={styles.col3}>{isZero ? '—' : `$${Number(item.tube_cost).toFixed(2)}`}</Text>
+                  <Text style={styles.col4}>{isZero ? '—' : `$${Number(item.bottom_rail_cost).toFixed(2)}`}</Text>
+                  <Text style={styles.col5}>{isZero ? '—' : `$${Number(item.chain_cost).toFixed(2)}`}</Text>
+                  <Text style={styles.col6}>{isZero ? '—' : `$${Number(item.fabric_cost).toFixed(2)}`}</Text>
+                  <Text style={styles.col7}>{isZero ? '—' : `$${Number(item.fixed_costs).toFixed(2)}`}</Text>
+                  <Text style={styles.col8}>${Number(item.line_total_usd).toFixed(2)}</Text>
+                </View>
+              )
+            })}
             <View style={styles.totalRow}>
               <Text style={styles.col1}>Room Subtotal</Text>
               <Text style={[styles.col8, { width: '80%', textAlign: 'right' }]}>
@@ -140,12 +146,12 @@ export function QuotePDF({ quote, lineItems, profile }: QuotePDFProps) {
           <Text>1 USD = {Number(quote.exchange_rate)} TTD</Text>
         </View>
         <View style={styles.row}>
-          <Text style={styles.label}>Labor ({numWindows} windows)</Text>
-          <Text>${(numWindows * Number(quote.labor_cost_ttd)).toFixed(2)} TTD</Text>
+          <Text style={styles.label}>Labor ({priceableCount} windows)</Text>
+          <Text>${(priceableCount * Number(quote.labor_cost_ttd)).toFixed(2)} TTD</Text>
         </View>
         <View style={styles.row}>
-          <Text style={styles.label}>Installation ({numWindows} windows)</Text>
-          <Text>${(numWindows * Number(quote.installation_cost_ttd)).toFixed(2)} TTD</Text>
+          <Text style={styles.label}>Installation ({priceableCount} windows)</Text>
+          <Text>${(priceableCount * Number(quote.installation_cost_ttd)).toFixed(2)} TTD</Text>
         </View>
         <View style={styles.row}>
           <Text style={styles.label}>Shipping</Text>

@@ -93,7 +93,7 @@ export interface QuoteLineItem {
   id: string
   quote_id: string
   window_id: string
-  product_id: string
+  product_id: string | null
   room_name: string
   window_name: string
   blind_width: number

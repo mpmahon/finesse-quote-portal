@@ -70,6 +70,19 @@ export function WindowConfigurator({ window: win, products, propertyId, roomId }
     router.refresh()
   }
 
+  if (!win.has_blind && !win.has_awning) {
+    return (
+      <Card>
+        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+          <p className="mb-2 text-lg font-medium">This window has no blind or awning</p>
+          <p className="max-w-md text-sm text-muted-foreground">
+            It will be included on the quote with zero cost. To add a blind or awning, edit the window from the room page and toggle one on.
+          </p>
+        </CardContent>
+      </Card>
+    )
+  }
+
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       {/* Left: Window Info + Configuration */}

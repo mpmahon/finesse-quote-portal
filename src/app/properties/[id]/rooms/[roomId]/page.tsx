@@ -42,10 +42,11 @@ export default async function RoomPage({
     .eq('is_active', true)
     .order('make')
 
-  // Pre-calculate preview pricing for each configured window
+  // Pre-calculate preview pricing for each configured window.
+  // Windows with has_blind=false get no price (they're zero-cost placeholders).
   const windowsWithPricing = (windows || []).map(w => {
     let previewUsd: number | null = null
-    if (w.product_id && w.products && 'components' in w.products) {
+    if (w.has_blind && w.product_id && w.products && 'components' in w.products) {
       const components = (w.products as unknown as { components: Component[] }).components
       if (components && components.length > 0) {
         const result = calculateLineItem(

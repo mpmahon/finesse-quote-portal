@@ -55,6 +55,8 @@ export default async function DashboardPage() {
         width_inches: number
         height_inches: number
         mount_type: 'inside' | 'outside'
+        has_blind: boolean
+        has_awning: boolean
         product_id: string | null
         products: { components: Component[] } | null
       }>
@@ -62,12 +64,17 @@ export default async function DashboardPage() {
 
     let totalUsd = 0
     let totalWindows = 0
+    let priceableWindows = 0
     let configuredWindows = 0
+    let noBlindWindows = 0
 
     for (const room of rooms) {
       for (const w of room.windows || []) {
         totalWindows++
-        if (w.product_id && w.products?.components?.length) {
+        if (w.has_blind) priceableWindows++
+        if (!w.has_blind && !w.has_awning) noBlindWindows++
+
+        if (w.has_blind && w.product_id && w.products?.components?.length) {
           configuredWindows++
           const result = calculateLineItem(
             {
@@ -87,7 +94,9 @@ export default async function DashboardPage() {
       profiles: Array.isArray(p.profiles) ? p.profiles[0] ?? null : p.profiles,
       room_count: rooms.length,
       window_count: totalWindows,
+      priceable_count: priceableWindows,
       configured_count: configuredWindows,
+      no_blind_count: noBlindWindows,
       preview_total_usd: totalUsd,
     }
   })

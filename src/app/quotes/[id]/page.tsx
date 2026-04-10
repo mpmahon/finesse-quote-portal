@@ -43,6 +43,9 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
     byRoom[item.room_name].push(item)
   }
 
+  // Priceable windows (those with a product) drive labor/install counts
+  const priceableCount = (lineItems || []).filter(li => li.product_id !== null).length
+
   const isExpired = quote.expires_at && new Date(quote.expires_at) < new Date()
 
   // Compute staleness
@@ -157,25 +160,32 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {items.map(item => (
-                  <TableRow key={item.id}>
-                    <TableCell className="font-medium">{item.window_name}</TableCell>
-                    <TableCell>
-                      <div className="text-xs">
-                        {item.shade_type && <span className="capitalize">{item.shade_type}</span>}
-                        {item.colour && <span> / {item.colour}</span>}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-xs">{Number(item.blind_width)}&quot;x{Number(item.blind_height)}&quot;</TableCell>
-                    <TableCell className="text-right">${Number(item.cassette_cost).toFixed(2)}</TableCell>
-                    <TableCell className="text-right">${Number(item.tube_cost).toFixed(2)}</TableCell>
-                    <TableCell className="text-right">${Number(item.bottom_rail_cost).toFixed(2)}</TableCell>
-                    <TableCell className="text-right">${Number(item.chain_cost).toFixed(2)}</TableCell>
-                    <TableCell className="text-right">${Number(item.fabric_cost).toFixed(2)}</TableCell>
-                    <TableCell className="text-right">${Number(item.fixed_costs).toFixed(2)}</TableCell>
-                    <TableCell className="text-right font-semibold">${Number(item.line_total_usd).toFixed(2)}</TableCell>
-                  </TableRow>
-                ))}
+                {items.map(item => {
+                  const isZero = item.product_id === null
+                  return (
+                    <TableRow key={item.id} className={isZero ? 'text-muted-foreground' : ''}>
+                      <TableCell className="font-medium">{item.window_name}</TableCell>
+                      <TableCell>
+                        {isZero ? (
+                          <span className="text-xs italic">No blind/awning</span>
+                        ) : (
+                          <div className="text-xs">
+                            {item.shade_type && <span className="capitalize">{item.shade_type}</span>}
+                            {item.colour && <span> / {item.colour}</span>}
+                          </div>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-xs">{Number(item.blind_width)}&quot;x{Number(item.blind_height)}&quot;</TableCell>
+                      <TableCell className="text-right">{isZero ? '—' : `$${Number(item.cassette_cost).toFixed(2)}`}</TableCell>
+                      <TableCell className="text-right">{isZero ? '—' : `$${Number(item.tube_cost).toFixed(2)}`}</TableCell>
+                      <TableCell className="text-right">{isZero ? '—' : `$${Number(item.bottom_rail_cost).toFixed(2)}`}</TableCell>
+                      <TableCell className="text-right">{isZero ? '—' : `$${Number(item.chain_cost).toFixed(2)}`}</TableCell>
+                      <TableCell className="text-right">{isZero ? '—' : `$${Number(item.fabric_cost).toFixed(2)}`}</TableCell>
+                      <TableCell className="text-right">{isZero ? '—' : `$${Number(item.fixed_costs).toFixed(2)}`}</TableCell>
+                      <TableCell className="text-right font-semibold">${Number(item.line_total_usd).toFixed(2)}</TableCell>
+                    </TableRow>
+                  )
+                })}
                 <TableRow>
                   <TableCell colSpan={9} className="text-right font-semibold">Room Subtotal (USD)</TableCell>
                   <TableCell className="text-right font-semibold">
@@ -212,12 +222,12 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
             <span></span>
           </div>
           <div className="flex justify-between">
-            <span className="text-muted-foreground">+ Labor ({lineItems?.length || 0} windows x ${Number(quote.labor_cost_ttd)} TTD)</span>
-            <span>${((lineItems?.length || 0) * Number(quote.labor_cost_ttd)).toFixed(2)} TTD</span>
+            <span className="text-muted-foreground">+ Labor ({priceableCount} windows x ${Number(quote.labor_cost_ttd)} TTD)</span>
+            <span>${(priceableCount * Number(quote.labor_cost_ttd)).toFixed(2)} TTD</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-muted-foreground">+ Installation ({lineItems?.length || 0} windows x ${Number(quote.installation_cost_ttd)} TTD)</span>
-            <span>${((lineItems?.length || 0) * Number(quote.installation_cost_ttd)).toFixed(2)} TTD</span>
+            <span className="text-muted-foreground">+ Installation ({priceableCount} windows x ${Number(quote.installation_cost_ttd)} TTD)</span>
+            <span>${(priceableCount * Number(quote.installation_cost_ttd)).toFixed(2)} TTD</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">+ Shipping</span>

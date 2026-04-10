@@ -136,13 +136,18 @@ export function WindowList({ windows, roomId, propertyId, products }: WindowList
                 <Input type="number" step="0.25" value={form.depth_inches} onChange={e => setForm(f => ({ ...f, depth_inches: e.target.value }))} placeholder="Distance from wall face to window face" />
               </div>
             )}
-            <div className="flex items-center justify-between">
-              <Label>Has Blind</Label>
-              <Switch checked={form.has_blind} onCheckedChange={v => setForm(f => ({ ...f, has_blind: v }))} />
-            </div>
-            <div className="flex items-center justify-between">
-              <Label>Has Awning</Label>
-              <Switch checked={form.has_awning} onCheckedChange={v => setForm(f => ({ ...f, has_awning: v }))} />
+            <div className="rounded-md border p-3">
+              <p className="mb-3 text-xs text-muted-foreground">
+                Toggle off Blind and Awning to record a window with no cost — useful for tracking future sales opportunities.
+              </p>
+              <div className="flex items-center justify-between py-1">
+                <Label>Blind</Label>
+                <Switch checked={form.has_blind} onCheckedChange={v => setForm(f => ({ ...f, has_blind: v }))} />
+              </div>
+              <div className="flex items-center justify-between py-1">
+                <Label>Awning</Label>
+                <Switch checked={form.has_awning} onCheckedChange={v => setForm(f => ({ ...f, has_awning: v }))} />
+              </div>
             </div>
             <Button onClick={handleSave} className="w-full" disabled={loading}>
               {loading ? 'Saving...' : (editId ? 'Update' : 'Create')}
@@ -193,8 +198,15 @@ export function WindowList({ windows, roomId, propertyId, products }: WindowList
                   <Badge variant="outline">{MOUNT_TYPE_LABELS[w.mount_type]}</Badge>
                   {w.has_blind && <Badge>Blind</Badge>}
                   {w.has_awning && <Badge variant="secondary">Awning</Badge>}
+                  {!w.has_blind && !w.has_awning && (
+                    <Badge variant="outline" className="border-muted-foreground/30 text-muted-foreground">No blind/awning</Badge>
+                  )}
                 </div>
-                {w.products ? (
+                {!w.has_blind && !w.has_awning ? (
+                  <p className="text-sm text-muted-foreground">
+                    Tracked for future reference. Zero cost on quote.
+                  </p>
+                ) : w.products ? (
                   <p className="text-sm text-muted-foreground">
                     {w.products.make} {w.products.model}
                     {w.shade_type && ` - ${w.shade_type}`}
@@ -203,7 +215,7 @@ export function WindowList({ windows, roomId, propertyId, products }: WindowList
                 ) : (
                   <p className="text-sm text-amber-600">Not configured</p>
                 )}
-                {typeof w.preview_usd === 'number' && (
+                {typeof w.preview_usd === 'number' && w.has_blind && (
                   <div className="flex items-center justify-between rounded-md bg-primary/5 px-3 py-2">
                     <span className="text-xs font-medium text-muted-foreground">Components (USD)</span>
                     <span className="text-sm font-semibold text-primary">
@@ -211,12 +223,14 @@ export function WindowList({ windows, roomId, propertyId, products }: WindowList
                     </span>
                   </div>
                 )}
-                <Link href={`/properties/${propertyId}/rooms/${roomId}/windows/${w.id}`}>
-                  <Button variant="outline" size="sm" className="mt-2">
-                    <Settings2 className="mr-2 h-3 w-3" />
-                    {w.products ? 'Reconfigure' : 'Configure Blind'}
-                  </Button>
-                </Link>
+                {(w.has_blind || w.has_awning) && (
+                  <Link href={`/properties/${propertyId}/rooms/${roomId}/windows/${w.id}`}>
+                    <Button variant="outline" size="sm" className="mt-2">
+                      <Settings2 className="mr-2 h-3 w-3" />
+                      {w.products ? 'Reconfigure' : 'Configure Blind'}
+                    </Button>
+                  </Link>
+                )}
               </CardContent>
             </Card>
           ))}

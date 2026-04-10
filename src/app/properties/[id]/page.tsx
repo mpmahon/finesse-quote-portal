@@ -43,14 +43,23 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
       width_inches: number
       height_inches: number
       mount_type: 'inside' | 'outside'
+      has_blind: boolean
+      has_awning: boolean
       product_id: string | null
       products: { components: Component[] } | null
     }>
 
     let totalUsd = 0
     let configuredCount = 0
+    let priceableCount = 0
+    let noBlindCount = 0
+
     for (const w of windows) {
-      if (w.product_id && w.products?.components?.length) {
+      const needsBlind = w.has_blind
+      if (needsBlind) priceableCount++
+      if (!w.has_blind && !w.has_awning) noBlindCount++
+
+      if (needsBlind && w.product_id && w.products?.components?.length) {
         const result = calculateLineItem(
           {
             width_inches: Number(w.width_inches),
@@ -68,6 +77,8 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
       ...room,
       window_count: windows.length,
       configured_count: configuredCount,
+      priceable_count: priceableCount,
+      no_blind_count: noBlindCount,
       preview_total_usd: totalUsd,
     }
   })

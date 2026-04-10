@@ -16,6 +16,8 @@ import type { Room } from '@/types/database'
 interface RoomWithStats extends Room {
   window_count: number
   configured_count: number
+  priceable_count: number
+  no_blind_count: number
   preview_total_usd: number
 }
 
@@ -118,9 +120,12 @@ export function RoomList({ rooms, propertyId }: RoomListProps) {
               <CardContent className="space-y-2">
                 <p className="text-sm text-muted-foreground">
                   {room.window_count} window{room.window_count !== 1 ? 's' : ''}
-                  {room.window_count > 0 && room.configured_count < room.window_count && (
+                  {room.no_blind_count > 0 && (
+                    <span className="ml-1">· {room.no_blind_count} no blind</span>
+                  )}
+                  {room.priceable_count > 0 && room.configured_count < room.priceable_count && (
                     <span className="ml-1 text-amber-600">
-                      ({room.configured_count} configured)
+                      ({room.priceable_count - room.configured_count} need configuration)
                     </span>
                   )}
                 </p>
