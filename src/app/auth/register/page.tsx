@@ -17,6 +17,7 @@ export default function RegisterPage() {
     first_name: '',
     last_name: '',
     email: '',
+    contact_number: '',
     password: '',
     confirm_password: '',
     role: 'customer' as 'customer' | 'salesman',
@@ -43,6 +44,7 @@ export default function RegisterPage() {
         data: {
           first_name: form.first_name,
           last_name: form.last_name,
+          contact_number: form.contact_number,
           role: form.role,
         },
       },
@@ -94,6 +96,16 @@ export default function RegisterPage() {
                 value={form.email}
                 onChange={e => update('email', e.target.value)}
                 required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="contact_number">Contact Number</Label>
+              <Input
+                id="contact_number"
+                type="tel"
+                placeholder="+1 868 555 1234"
+                value={form.contact_number}
+                onChange={e => update('contact_number', e.target.value)}
               />
             </div>
             <div className="space-y-2">

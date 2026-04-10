@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -10,16 +11,19 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Mail, Phone, Users, Search } from 'lucide-react'
+import { Separator } from '@/components/ui/separator'
+import { Mail, Phone, Users, Search, Building2, FileText } from 'lucide-react'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
 import type { Profile, UserRole } from '@/types/database'
 
+interface UserWithDetails extends Profile {
+  properties: { id: string; name: string; address: string | null; created_at: string }[]
+  quotes: { id: string; total_ttd: number; created_at: string; status: string }[]
+}
+
 interface UserManagerProps {
-  users: (Profile & {
-    properties: { count: number }[]
-    quotes: { count: number }[]
-  })[]
+  users: UserWithDetails[]
 }
 
 const roleColors: Record<UserRole, string> = {
@@ -31,7 +35,7 @@ const roleColors: Record<UserRole, string> = {
 export function UserManager({ users }: UserManagerProps) {
   const [search, setSearch] = useState('')
   const [roleFilter, setRoleFilter] = useState<string>('all')
-  const [viewingUser, setViewingUser] = useState<Profile | null>(null)
+  const [viewingUser, setViewingUser] = useState<UserWithDetails | null>(null)
   const [editRole, setEditRole] = useState<UserRole>('customer')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -45,7 +49,7 @@ export function UserManager({ users }: UserManagerProps) {
     return matchesSearch && matchesRole
   })
 
-  function viewUser(user: Profile) {
+  function viewUser(user: UserWithDetails) {
     setViewingUser(user)
     setEditRole(user.role)
   }
@@ -61,7 +65,6 @@ export function UserManager({ users }: UserManagerProps) {
 
     if (error) { toast.error(error.message); setLoading(false); return }
 
-    // Audit log
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
       await supabase.from('audit_logs').insert({
@@ -198,8 +201,8 @@ export function UserManager({ users }: UserManagerProps) {
                         {u.role}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">{u.properties?.[0]?.count || 0}</TableCell>
-                    <TableCell className="text-right">{u.quotes?.[0]?.count || 0}</TableCell>
+                    <TableCell className="text-right">{u.properties?.length || 0}</TableCell>
+                    <TableCell className="text-right">{u.quotes?.length || 0}</TableCell>
                     <TableCell className="text-xs text-muted-foreground">
                       {format(new Date(u.created_at), 'MMM d, yyyy')}
                     </TableCell>
@@ -216,12 +219,13 @@ export function UserManager({ users }: UserManagerProps) {
 
       {/* User Detail Dialog */}
       <Dialog open={!!viewingUser} onOpenChange={o => !o && setViewingUser(null)}>
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle>User Details</DialogTitle>
           </DialogHeader>
           {viewingUser && (
             <div className="space-y-4">
+              {/* User Header */}
               <div className="flex items-center gap-4">
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-xl font-semibold text-primary">
                   {(viewingUser.first_name || viewingUser.email).charAt(0).toUpperCase()}
@@ -236,7 +240,9 @@ export function UserManager({ users }: UserManagerProps) {
                 </div>
               </div>
 
+              {/* Contact Info */}
               <div className="space-y-2 rounded-lg border p-4">
+                <p className="mb-1 text-xs font-semibold uppercase text-muted-foreground">Contact</p>
                 <div className="flex items-center gap-2 text-sm">
                   <Mail className="h-4 w-4 text-muted-foreground" />
                   <span>{viewingUser.email}</span>
@@ -250,6 +256,73 @@ export function UserManager({ users }: UserManagerProps) {
                 </p>
               </div>
 
+              {/* Properties */}
+              <div className="rounded-lg border p-4">
+                <div className="mb-2 flex items-center justify-between">
+                  <p className="text-xs font-semibold uppercase text-muted-foreground">
+                    Properties ({viewingUser.properties?.length || 0})
+                  </p>
+                </div>
+                {viewingUser.properties && viewingUser.properties.length > 0 ? (
+                  <div className="space-y-2">
+                    {viewingUser.properties.map(p => (
+                      <Link
+                        key={p.id}
+                        href={`/properties/${p.id}`}
+                        className="flex items-start gap-2 rounded-md p-2 transition-colors hover:bg-accent"
+                      >
+                        <Building2 className="mt-0.5 h-4 w-4 text-muted-foreground" />
+                        <div className="flex-1 text-sm">
+                          <p className="font-medium">{p.name}</p>
+                          {p.address && <p className="text-xs text-muted-foreground">{p.address}</p>}
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">No properties yet.</p>
+                )}
+              </div>
+
+              {/* Quotes */}
+              <div className="rounded-lg border p-4">
+                <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">
+                  Quotes ({viewingUser.quotes?.length || 0})
+                </p>
+                {viewingUser.quotes && viewingUser.quotes.length > 0 ? (
+                  <div className="space-y-2">
+                    {viewingUser.quotes.slice(0, 5).map(q => (
+                      <Link
+                        key={q.id}
+                        href={`/quotes/${q.id}`}
+                        className="flex items-center justify-between rounded-md p-2 transition-colors hover:bg-accent"
+                      >
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-muted-foreground" />
+                          <div className="text-sm">
+                            <p className="font-medium">#{q.id.slice(0, 8)}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {format(new Date(q.created_at), 'MMM d, yyyy')}
+                            </p>
+                          </div>
+                        </div>
+                        <p className="text-sm font-semibold">${Number(q.total_ttd).toFixed(2)} TTD</p>
+                      </Link>
+                    ))}
+                    {viewingUser.quotes.length > 5 && (
+                      <p className="pt-2 text-center text-xs text-muted-foreground">
+                        + {viewingUser.quotes.length - 5} more
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">No quotes yet.</p>
+                )}
+              </div>
+
+              <Separator />
+
+              {/* Role Editor */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">Change Role</label>
                 <Select value={editRole} onValueChange={v => setEditRole((v ?? 'customer') as UserRole)}>

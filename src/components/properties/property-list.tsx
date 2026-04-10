@@ -1,16 +1,16 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Building2, Trash2, Pencil, Plus } from 'lucide-react'
+import { Building2, Trash2, Pencil, Plus, Search } from 'lucide-react'
 import { toast } from 'sonner'
 import type { Property } from '@/types/database'
 
@@ -25,8 +25,15 @@ export function PropertyList({ properties, userId }: PropertyListProps) {
   const [name, setName] = useState('')
   const [address, setAddress] = useState('')
   const [loading, setLoading] = useState(false)
+  const [search, setSearch] = useState('')
   const router = useRouter()
   const searchParams = useSearchParams()
+
+  const filtered = properties.filter(p => {
+    if (search === '') return true
+    const q = search.toLowerCase()
+    return p.name.toLowerCase().includes(q) || (p.address || '').toLowerCase().includes(q)
+  })
 
   const isNew = searchParams.get('new') === 'true'
 
@@ -112,8 +119,23 @@ export function PropertyList({ properties, userId }: PropertyListProps) {
           </CardContent>
         </Card>
       ) : (
+        <>
+          {properties.length > 3 && (
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Search properties by name or address..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+          )}
+          {filtered.length === 0 ? (
+            <p className="py-8 text-center text-sm text-muted-foreground">No properties match your search.</p>
+          ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {properties.map(property => (
+          {filtered.map(property => (
             <Card key={property.id} className="group relative">
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between">
@@ -139,6 +161,8 @@ export function PropertyList({ properties, userId }: PropertyListProps) {
             </Card>
           ))}
         </div>
+          )}
+        </>
       )}
     </>
   )

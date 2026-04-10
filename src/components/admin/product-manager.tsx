@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Plus, Pencil, Trash2, ChevronDown, ChevronUp } from 'lucide-react'
+import { Plus, Pencil, Trash2, ChevronDown, ChevronUp, Search } from 'lucide-react'
 import { toast } from 'sonner'
 import type { Product, Component } from '@/types/database'
 
@@ -25,7 +25,17 @@ export function ProductManager({ products }: ProductManagerProps) {
   const [editProduct, setEditProduct] = useState<Product | null>(null)
   const [editComponent, setEditComponent] = useState<Component | null>(null)
   const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [search, setSearch] = useState('')
   const [targetProductId, setTargetProductId] = useState('')
+
+  const filteredProducts = products.filter(p => {
+    if (search === '') return true
+    const q = search.toLowerCase()
+    return p.make.toLowerCase().includes(q) ||
+      p.model.toLowerCase().includes(q) ||
+      p.shade_types.some(s => s.toLowerCase().includes(q)) ||
+      p.colours.some(c => c.toLowerCase().includes(q))
+  })
   const [form, setForm] = useState({ make: '', model: '', shade_types: '', styles: '', colours: '' })
   const [compForm, setCompForm] = useState({ name: '', unit: 'per_inch' as string, usd_price: '' })
   const [loading, setLoading] = useState(false)
@@ -197,16 +207,29 @@ export function ProductManager({ products }: ProductManagerProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Products List */}
-      <div className="mb-4 flex justify-end">
+      {/* Search & Add */}
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search products by make, model, shade type, or colour..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="pl-9"
+          />
+        </div>
         <Button onClick={openNewProduct}>
           <Plus className="mr-2 h-4 w-4" />
           Add Product
         </Button>
       </div>
 
+      {filteredProducts.length === 0 && (
+        <p className="py-8 text-center text-sm text-muted-foreground">No products match your search.</p>
+      )}
+
       <div className="space-y-4">
-        {products.map(product => (
+        {filteredProducts.map(product => (
           <Card key={product.id}>
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
