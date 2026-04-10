@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
@@ -36,7 +37,13 @@ export function UserManager({ users }: UserManagerProps) {
   const [search, setSearch] = useState('')
   const [roleFilter, setRoleFilter] = useState<string>('all')
   const [viewingUser, setViewingUser] = useState<UserWithDetails | null>(null)
-  const [editRole, setEditRole] = useState<UserRole>('customer')
+  const [editForm, setEditForm] = useState({
+    first_name: '',
+    last_name: '',
+    email: '',
+    contact_number: '',
+    role: 'customer' as UserRole,
+  })
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
@@ -51,36 +58,76 @@ export function UserManager({ users }: UserManagerProps) {
 
   function viewUser(user: UserWithDetails) {
     setViewingUser(user)
-    setEditRole(user.role)
+    setEditForm({
+      first_name: user.first_name || '',
+      last_name: user.last_name || '',
+      email: user.email,
+      contact_number: user.contact_number || '',
+      role: user.role,
+    })
   }
 
-  async function updateRole() {
+  function updateField(field: keyof typeof editForm, value: string) {
+    setEditForm(prev => ({ ...prev, [field]: value }))
+  }
+
+  async function saveUser() {
     if (!viewingUser) return
+    if (!editForm.first_name.trim() || !editForm.last_name.trim()) {
+      toast.error('First and last name are required')
+      return
+    }
+
     setLoading(true)
     const supabase = createClient()
+
+    const updates = {
+      first_name: editForm.first_name.trim(),
+      last_name: editForm.last_name.trim(),
+      contact_number: editForm.contact_number.trim() || null,
+      role: editForm.role,
+      updated_at: new Date().toISOString(),
+    }
+
     const { error } = await supabase
       .from('profiles')
-      .update({ role: editRole })
+      .update(updates)
       .eq('id', viewingUser.id)
 
     if (error) { toast.error(error.message); setLoading(false); return }
 
-    const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
-      await supabase.from('audit_logs').insert({
-        admin_user_id: user.id,
-        action_type: 'user_role_update',
-        target_table: 'profiles',
-        target_id: viewingUser.id,
-        change_summary: { from: viewingUser.role, to: editRole, email: viewingUser.email },
-      })
+    // Audit log for any changes
+    const changes: Record<string, { from: unknown; to: unknown }> = {}
+    if (viewingUser.first_name !== updates.first_name) changes.first_name = { from: viewingUser.first_name, to: updates.first_name }
+    if (viewingUser.last_name !== updates.last_name) changes.last_name = { from: viewingUser.last_name, to: updates.last_name }
+    if ((viewingUser.contact_number || null) !== updates.contact_number) changes.contact_number = { from: viewingUser.contact_number, to: updates.contact_number }
+    if (viewingUser.role !== updates.role) changes.role = { from: viewingUser.role, to: updates.role }
+
+    if (Object.keys(changes).length > 0) {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        await supabase.from('audit_logs').insert({
+          admin_user_id: user.id,
+          action_type: 'user_update',
+          target_table: 'profiles',
+          target_id: viewingUser.id,
+          change_summary: { email: viewingUser.email, changes },
+        })
+      }
     }
 
-    toast.success('User role updated')
+    toast.success('User updated')
     setLoading(false)
     setViewingUser(null)
     router.refresh()
   }
+
+  const isDirty = viewingUser && (
+    editForm.first_name !== (viewingUser.first_name || '') ||
+    editForm.last_name !== (viewingUser.last_name || '') ||
+    editForm.contact_number !== (viewingUser.contact_number || '') ||
+    editForm.role !== viewingUser.role
+  )
 
   const roleCounts = {
     total: users.length,
@@ -221,39 +268,77 @@ export function UserManager({ users }: UserManagerProps) {
       <Dialog open={!!viewingUser} onOpenChange={o => !o && setViewingUser(null)}>
         <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>User Details</DialogTitle>
+            <DialogTitle>Edit User</DialogTitle>
           </DialogHeader>
           {viewingUser && (
             <div className="space-y-4">
               {/* User Header */}
               <div className="flex items-center gap-4">
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-xl font-semibold text-primary">
-                  {(viewingUser.first_name || viewingUser.email).charAt(0).toUpperCase()}
+                  {(editForm.first_name || viewingUser.email).charAt(0).toUpperCase()}
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold">
-                    {viewingUser.first_name} {viewingUser.last_name}
+                    {editForm.first_name} {editForm.last_name}
                   </h3>
-                  <Badge variant="outline" className={roleColors[viewingUser.role]}>
-                    {viewingUser.role}
-                  </Badge>
+                  <p className="text-xs text-muted-foreground">
+                    Joined {format(new Date(viewingUser.created_at), 'MMMM d, yyyy')}
+                  </p>
                 </div>
               </div>
 
-              {/* Contact Info */}
-              <div className="space-y-2 rounded-lg border p-4">
-                <p className="mb-1 text-xs font-semibold uppercase text-muted-foreground">Contact</p>
-                <div className="flex items-center gap-2 text-sm">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span>{viewingUser.email}</span>
+              {/* Editable Fields */}
+              <div className="space-y-4 rounded-lg border p-4">
+                <p className="text-xs font-semibold uppercase text-muted-foreground">Profile</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-first">First Name</Label>
+                    <Input
+                      id="edit-first"
+                      value={editForm.first_name}
+                      onChange={e => updateField('first_name', e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-last">Last Name</Label>
+                    <Input
+                      id="edit-last"
+                      value={editForm.last_name}
+                      onChange={e => updateField('last_name', e.target.value)}
+                    />
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span>{viewingUser.contact_number || 'No phone number'}</span>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-email">Email</Label>
+                  <div className="flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    <Input id="edit-email" value={editForm.email} disabled className="bg-muted/50" />
+                  </div>
+                  <p className="text-xs text-muted-foreground">Email cannot be changed from here</p>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Joined {format(new Date(viewingUser.created_at), 'MMMM d, yyyy')}
-                </p>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-phone">Contact Number</Label>
+                  <Input
+                    id="edit-phone"
+                    type="tel"
+                    placeholder="+1 868 555 1234"
+                    value={editForm.contact_number}
+                    onChange={e => updateField('contact_number', e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Role</Label>
+                  <Select value={editForm.role} onValueChange={v => updateField('role', v ?? 'customer')}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="customer">Customer</SelectItem>
+                      <SelectItem value="salesman">Salesman</SelectItem>
+                      <SelectItem value="administrator">Administrator</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               {/* Properties */}
@@ -322,28 +407,23 @@ export function UserManager({ users }: UserManagerProps) {
 
               <Separator />
 
-              {/* Role Editor */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Change Role</label>
-                <Select value={editRole} onValueChange={v => setEditRole((v ?? 'customer') as UserRole)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="customer">Customer</SelectItem>
-                    <SelectItem value="salesman">Salesman</SelectItem>
-                    <SelectItem value="administrator">Administrator</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setViewingUser(null)}
+                  className="flex-1"
+                  disabled={loading}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={saveUser}
+                  disabled={loading || !isDirty}
+                  className="flex-1"
+                >
+                  {loading ? 'Saving...' : 'Save Changes'}
+                </Button>
               </div>
-
-              <Button
-                onClick={updateRole}
-                disabled={loading || editRole === viewingUser.role}
-                className="w-full"
-              >
-                {loading ? 'Updating...' : 'Save Changes'}
-              </Button>
             </div>
           )}
         </DialogContent>
