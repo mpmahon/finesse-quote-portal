@@ -121,7 +121,14 @@ export function WindowConfigurator({ window: win, products, propertyId, roomId }
             <div className="space-y-2">
               <Label>Make / Model</Label>
               <Select value={productId} onValueChange={v => { setProductId(v ?? ''); setShadeType(''); setStyle(''); setColour('') }}>
-                <SelectTrigger><SelectValue placeholder="Select a product" /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a product">
+                    {(value: string) => {
+                      const p = products.find(x => x.id === value)
+                      return p ? `${p.make} ${p.model}` : 'Select a product'
+                    }}
+                  </SelectValue>
+                </SelectTrigger>
                 <SelectContent>
                   {products.map(p => (
                     <SelectItem key={p.id} value={p.id}>{p.make} {p.model}</SelectItem>
