@@ -30,11 +30,15 @@ export default async function RoomPage({
     .single()
   if (!room) notFound()
 
-  const { data: windows } = await supabase
+  const { data: windows, error: windowsError } = await supabase
     .from('windows')
     .select('*, products(id, make, model, components(*)), awning_products(*)')
     .eq('room_id', roomId)
     .order('created_at', { ascending: true })
+
+  if (windowsError) {
+    throw new Error(`Failed to load windows: ${windowsError.message}`)
+  }
 
   const { data: products } = await supabase
     .from('products')

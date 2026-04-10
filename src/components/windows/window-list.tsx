@@ -20,6 +20,7 @@ import type { Window, Product } from '@/types/database'
 interface WindowListProps {
   windows: (Window & {
     products: { make: string; model: string } | null
+    awning_products: { make: string; model: string } | null
     preview_usd?: number | null
   })[]
   roomId: string
@@ -206,16 +207,32 @@ export function WindowList({ windows, roomId, propertyId, products }: WindowList
                   <p className="text-sm text-muted-foreground">
                     Tracked for future reference. Zero cost on quote.
                   </p>
-                ) : w.products ? (
-                  <p className="text-sm text-muted-foreground">
-                    {w.products.make} {w.products.model}
-                    {w.shade_type && ` - ${w.shade_type}`}
-                    {w.colour && ` (${w.colour})`}
-                  </p>
                 ) : (
-                  <p className="text-sm text-amber-600">Not configured</p>
+                  <div className="space-y-1 text-sm">
+                    {w.has_blind && (
+                      w.products ? (
+                        <p className="text-muted-foreground">
+                          <span className="font-medium">Blind:</span> {w.products.make} {w.products.model}
+                          {w.shade_type && ` - ${w.shade_type}`}
+                          {w.colour && ` (${w.colour})`}
+                        </p>
+                      ) : (
+                        <p className="text-amber-600">Blind not configured</p>
+                      )
+                    )}
+                    {w.has_awning && (
+                      w.awning_products ? (
+                        <p className="text-muted-foreground">
+                          <span className="font-medium">Awning:</span> {w.awning_products.make} {w.awning_products.model}
+                          {w.awning_colour && ` (${w.awning_colour})`}
+                        </p>
+                      ) : (
+                        <p className="text-amber-600">Awning not configured</p>
+                      )
+                    )}
+                  </div>
                 )}
-                {typeof w.preview_usd === 'number' && (w.has_blind || w.has_awning) && (
+                {typeof w.preview_usd === 'number' && (w.has_blind || w.has_awning) && w.preview_usd > 0 && (
                   <div className="flex items-center justify-between rounded-md bg-primary/5 px-3 py-2">
                     <span className="text-xs font-medium text-muted-foreground">Components (USD)</span>
                     <span className="text-sm font-semibold text-primary">
@@ -223,14 +240,19 @@ export function WindowList({ windows, roomId, propertyId, products }: WindowList
                     </span>
                   </div>
                 )}
-                {(w.has_blind || w.has_awning) && (
-                  <Link href={`/properties/${propertyId}/rooms/${roomId}/windows/${w.id}`}>
-                    <Button variant="outline" size="sm" className="mt-2">
-                      <Settings2 className="mr-2 h-3 w-3" />
-                      {w.products ? 'Reconfigure' : 'Configure Blind'}
-                    </Button>
-                  </Link>
-                )}
+                {(w.has_blind || w.has_awning) && (() => {
+                  const blindDone = !w.has_blind || !!w.products
+                  const awningDone = !w.has_awning || !!w.awning_products
+                  const allDone = blindDone && awningDone
+                  return (
+                    <Link href={`/properties/${propertyId}/rooms/${roomId}/windows/${w.id}`}>
+                      <Button variant="outline" size="sm" className="mt-2">
+                        <Settings2 className="mr-2 h-3 w-3" />
+                        {allDone ? 'Reconfigure' : 'Configure'}
+                      </Button>
+                    </Link>
+                  )
+                })()}
               </CardContent>
             </Card>
           ))}

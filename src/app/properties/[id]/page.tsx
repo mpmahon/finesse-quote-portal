@@ -21,7 +21,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
 
   if (!property) notFound()
 
-  const { data: rooms } = await supabase
+  const { data: rooms, error: roomsError } = await supabase
     .from('rooms')
     .select(`
       *,
@@ -40,6 +40,10 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
     `)
     .eq('property_id', id)
     .order('created_at', { ascending: true })
+
+  if (roomsError) {
+    throw new Error(`Failed to load rooms: ${roomsError.message}`)
+  }
 
   // Calculate per-room totals based on configured windows
   const roomsWithTotals = (rooms || []).map(room => {

@@ -49,7 +49,10 @@ export default async function DashboardPage() {
     query = query.eq('user_id', user.id)
   }
 
-  const { data: properties } = await query
+  const { data: properties, error: propertiesError } = await query
+  if (propertiesError) {
+    throw new Error(`Failed to load properties: ${propertiesError.message}`)
+  }
 
   // Calculate totals for each property
   const normalized = (properties || []).map(p => {
