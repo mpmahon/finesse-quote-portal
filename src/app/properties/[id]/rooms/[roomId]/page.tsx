@@ -3,8 +3,8 @@ import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronLeft } from 'lucide-react'
 import { WindowList } from '@/components/windows/window-list'
-import { calculateLineItem } from '@/lib/quote-engine'
-import type { Component } from '@/types/database'
+import { calculateLineItem, calculateAwningLineItem } from '@/lib/quote-engine'
+import type { AwningProduct, Component } from '@/types/database'
 
 export default async function RoomPage({
   params,
@@ -32,7 +32,7 @@ export default async function RoomPage({
 
   const { data: windows } = await supabase
     .from('windows')
-    .select('*, products(id, make, model, components(*))')
+    .select('*, products(id, make, model, components(*)), awning_products(*)')
     .eq('room_id', roomId)
     .order('created_at', { ascending: true })
 
@@ -43,9 +43,10 @@ export default async function RoomPage({
     .order('make')
 
   // Pre-calculate preview pricing for each configured window.
-  // Windows with has_blind=false get no price (they're zero-cost placeholders).
+  // Sums blind + awning costs where applicable.
   const windowsWithPricing = (windows || []).map(w => {
     let previewUsd: number | null = null
+
     if (w.has_blind && w.product_id && w.products && 'components' in w.products) {
       const components = (w.products as unknown as { components: Component[] }).components
       if (components && components.length > 0) {
@@ -57,9 +58,16 @@ export default async function RoomPage({
           },
           components
         )
-        previewUsd = result.costs.line_total_usd
+        previewUsd = (previewUsd || 0) + result.costs.line_total_usd
       }
     }
+
+    if (w.has_awning && w.awning_product_id && w.awning_products) {
+      const awningProduct = w.awning_products as unknown as AwningProduct
+      const result = calculateAwningLineItem(Number(w.width_inches), awningProduct)
+      previewUsd = (previewUsd || 0) + result.costs.line_total_usd
+    }
+
     return { ...w, preview_usd: previewUsd }
   })
 

@@ -23,11 +23,10 @@ export default async function WindowConfigPage({
   const { data: window } = await supabase.from('windows').select('*').eq('id', windowId).single()
   if (!window) notFound()
 
-  const { data: products } = await supabase
-    .from('products')
-    .select('*, components(*)')
-    .eq('is_active', true)
-    .order('make')
+  const [{ data: products }, { data: awningProducts }] = await Promise.all([
+    supabase.from('products').select('*, components(*)').eq('is_active', true).order('make'),
+    supabase.from('awning_products').select('*').eq('is_active', true).order('make'),
+  ])
 
   return (
     <div>
@@ -45,6 +44,7 @@ export default async function WindowConfigPage({
       <WindowConfigurator
         window={window}
         products={products || []}
+        awningProducts={awningProducts || []}
         propertyId={id}
         roomId={roomId}
       />

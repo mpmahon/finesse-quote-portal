@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { Home, FileText, Shield, Package, DollarSign, ScrollText, LogOut, Users, Palette } from 'lucide-react'
+import { Home, FileText, Shield, Package, DollarSign, ScrollText, LogOut, Users, Palette, Umbrella } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import type { UserRole } from '@/types/database'
@@ -22,7 +22,8 @@ const navItems = [
 const adminItems = [
   { href: '/admin', label: 'Overview', icon: Shield },
   { href: '/admin/users', label: 'Users', icon: Users },
-  { href: '/admin/products', label: 'Products', icon: Package },
+  { href: '/admin/products', label: 'Blind Products', icon: Package },
+  { href: '/admin/awning-products', label: 'Awning Products', icon: Umbrella },
   { href: '/admin/catalog', label: 'Catalog', icon: Palette },
   { href: '/admin/pricing', label: 'Pricing', icon: DollarSign },
   { href: '/admin/audit-logs', label: 'Audit Logs', icon: ScrollText },

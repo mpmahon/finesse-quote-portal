@@ -42,6 +42,20 @@ export interface Product {
   updated_at: string
 }
 
+export interface AwningProduct {
+  id: string
+  make: string
+  model: string
+  depth_inches: number
+  frame_unit_price_usd: number
+  material_unit_price_usd: number
+  fixed_cost_usd: number
+  colours: string[]
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
 export interface Component {
   id: string
   product_id: string
@@ -66,6 +80,8 @@ export interface Window {
   shade_type: string | null
   style: string | null
   colour: string | null
+  awning_product_id: string | null
+  awning_colour: string | null
   created_at: string
   updated_at: string
 }
@@ -94,6 +110,8 @@ export interface QuoteLineItem {
   quote_id: string
   window_id: string
   product_id: string | null
+  awning_product_id: string | null
+  line_type: 'blind' | 'awning' | 'zero'
   room_name: string
   window_name: string
   blind_width: number

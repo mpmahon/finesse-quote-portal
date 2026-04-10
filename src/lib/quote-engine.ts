@@ -1,4 +1,4 @@
-import type { Component, MountType, UserRole } from '@/types/database'
+import type { AwningProduct, Component, MountType, UserRole } from '@/types/database'
 
 export interface WindowDimensions {
   width_inches: number
@@ -189,4 +189,60 @@ export function calculateQuoteTotals(
 
 function round2(n: number): number {
   return Math.round(n * 100) / 100
+}
+
+// ============================================================
+// Awnings
+// ============================================================
+
+export interface AwningLineItemResult {
+  awning_width: number
+  awning_depth: number
+  material_area: number
+  costs: {
+    frame_cost: number
+    material_cost: number
+    fixed_cost: number
+    line_total_usd: number
+  }
+}
+
+/**
+ * Awning width adds 6 inches to the window width for overhang.
+ * Depth is fixed per product model.
+ * Material area = awning_width * depth (square inches).
+ */
+export function calculateAwningDimensions(
+  windowWidth: number,
+  product: AwningProduct
+): { awning_width: number; awning_depth: number } {
+  return {
+    awning_width: windowWidth + 6,
+    awning_depth: Number(product.depth_inches),
+  }
+}
+
+export function calculateAwningLineItem(
+  windowWidth: number,
+  product: AwningProduct
+): AwningLineItemResult {
+  const { awning_width, awning_depth } = calculateAwningDimensions(windowWidth, product)
+  const material_area = awning_width * awning_depth
+
+  const frame_cost = Number(product.frame_unit_price_usd) * awning_width
+  const material_cost = Number(product.material_unit_price_usd) * material_area
+  const fixed_cost = Number(product.fixed_cost_usd)
+  const line_total_usd = frame_cost + material_cost + fixed_cost
+
+  return {
+    awning_width: round2(awning_width),
+    awning_depth: round2(awning_depth),
+    material_area: round2(material_area),
+    costs: {
+      frame_cost: round2(frame_cost),
+      material_cost: round2(material_cost),
+      fixed_cost: round2(fixed_cost),
+      line_total_usd: round2(line_total_usd),
+    },
+  }
 }

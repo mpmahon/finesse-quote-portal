@@ -5,8 +5,8 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import { PropertyList } from '@/components/properties/property-list'
-import { calculateLineItem } from '@/lib/quote-engine'
-import type { Component } from '@/types/database'
+import { calculateLineItem, calculateAwningLineItem } from '@/lib/quote-engine'
+import type { AwningProduct, Component } from '@/types/database'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -34,8 +34,12 @@ export default async function DashboardPage() {
           width_inches,
           height_inches,
           mount_type,
+          has_blind,
+          has_awning,
           product_id,
-          products(components(*))
+          awning_product_id,
+          products(components(*)),
+          awning_products(*)
         )
       )
     `)
@@ -58,7 +62,9 @@ export default async function DashboardPage() {
         has_blind: boolean
         has_awning: boolean
         product_id: string | null
+        awning_product_id: string | null
         products: { components: Component[] } | null
+        awning_products: AwningProduct | null
       }>
     }>
 
@@ -71,11 +77,11 @@ export default async function DashboardPage() {
     for (const room of rooms) {
       for (const w of room.windows || []) {
         totalWindows++
-        if (w.has_blind) priceableWindows++
+        const needsConfig = w.has_blind || w.has_awning
+        if (needsConfig) priceableWindows++
         if (!w.has_blind && !w.has_awning) noBlindWindows++
 
         if (w.has_blind && w.product_id && w.products?.components?.length) {
-          configuredWindows++
           const result = calculateLineItem(
             {
               width_inches: Number(w.width_inches),
@@ -86,6 +92,15 @@ export default async function DashboardPage() {
           )
           totalUsd += result.costs.line_total_usd
         }
+
+        if (w.has_awning && w.awning_product_id && w.awning_products) {
+          const result = calculateAwningLineItem(Number(w.width_inches), w.awning_products)
+          totalUsd += result.costs.line_total_usd
+        }
+
+        const blindOk = !w.has_blind || !!w.product_id
+        const awningOk = !w.has_awning || !!w.awning_product_id
+        if (needsConfig && blindOk && awningOk) configuredWindows++
       }
     }
 

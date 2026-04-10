@@ -54,7 +54,7 @@ export function QuotePDF({ quote, lineItems, profile }: QuotePDFProps) {
     byRoom[item.room_name].push(item)
   }
 
-  const priceableCount = lineItems.filter(li => li.product_id !== null).length
+  const priceableCount = lineItems.filter(li => li.line_type !== 'zero').length
 
   return (
     <Document>
@@ -101,17 +101,19 @@ export function QuotePDF({ quote, lineItems, profile }: QuotePDFProps) {
               <Text style={styles.col8}>Total (USD)</Text>
             </View>
             {items.map(item => {
-              const isZero = item.product_id === null
+              const isZero = item.line_type === 'zero'
+              const isAwning = item.line_type === 'awning'
+              const typeLabel = isZero ? ' (no blind/awning)' : isAwning ? ' [awning]' : ''
               return (
                 <View key={item.id} style={styles.tableRow}>
                   <Text style={styles.col1}>
                     {item.window_name}
-                    {isZero && <Text style={{ color: '#999' }}> (no blind/awning)</Text>}
+                    {typeLabel && <Text style={{ color: '#999' }}>{typeLabel}</Text>}
                   </Text>
                   <Text style={styles.col2}>{isZero ? '—' : `$${Number(item.cassette_cost).toFixed(2)}`}</Text>
-                  <Text style={styles.col3}>{isZero ? '—' : `$${Number(item.tube_cost).toFixed(2)}`}</Text>
-                  <Text style={styles.col4}>{isZero ? '—' : `$${Number(item.bottom_rail_cost).toFixed(2)}`}</Text>
-                  <Text style={styles.col5}>{isZero ? '—' : `$${Number(item.chain_cost).toFixed(2)}`}</Text>
+                  <Text style={styles.col3}>{isZero ? '—' : isAwning ? '—' : `$${Number(item.tube_cost).toFixed(2)}`}</Text>
+                  <Text style={styles.col4}>{isZero ? '—' : isAwning ? '—' : `$${Number(item.bottom_rail_cost).toFixed(2)}`}</Text>
+                  <Text style={styles.col5}>{isZero ? '—' : isAwning ? '—' : `$${Number(item.chain_cost).toFixed(2)}`}</Text>
                   <Text style={styles.col6}>{isZero ? '—' : `$${Number(item.fabric_cost).toFixed(2)}`}</Text>
                   <Text style={styles.col7}>{isZero ? '—' : `$${Number(item.fixed_costs).toFixed(2)}`}</Text>
                   <Text style={styles.col8}>${Number(item.line_total_usd).toFixed(2)}</Text>

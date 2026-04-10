@@ -215,7 +215,7 @@ export function WindowList({ windows, roomId, propertyId, products }: WindowList
                 ) : (
                   <p className="text-sm text-amber-600">Not configured</p>
                 )}
-                {typeof w.preview_usd === 'number' && w.has_blind && (
+                {typeof w.preview_usd === 'number' && (w.has_blind || w.has_awning) && (
                   <div className="flex items-center justify-between rounded-md bg-primary/5 px-3 py-2">
                     <span className="text-xs font-medium text-muted-foreground">Components (USD)</span>
                     <span className="text-sm font-semibold text-primary">

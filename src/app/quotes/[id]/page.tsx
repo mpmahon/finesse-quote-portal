@@ -43,8 +43,8 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
     byRoom[item.room_name].push(item)
   }
 
-  // Priceable windows (those with a product) drive labor/install counts
-  const priceableCount = (lineItems || []).filter(li => li.product_id !== null).length
+  // Priceable line items (blind or awning) drive labor/install counts
+  const priceableCount = (lineItems || []).filter(li => li.line_type !== 'zero').length
 
   const isExpired = quote.expires_at && new Date(quote.expires_at) < new Date()
 
@@ -148,23 +148,26 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
               <TableHeader>
                 <TableRow>
                   <TableHead>Window</TableHead>
-                  <TableHead>Product</TableHead>
-                  <TableHead>Dims</TableHead>
-                  <TableHead className="text-right">Cassette</TableHead>
-                  <TableHead className="text-right">Tube</TableHead>
-                  <TableHead className="text-right">Rail</TableHead>
-                  <TableHead className="text-right">Chain</TableHead>
-                  <TableHead className="text-right">Fabric</TableHead>
-                  <TableHead className="text-right">Fixed</TableHead>
-                  <TableHead className="text-right">Total</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Details</TableHead>
+                  <TableHead>Dimensions</TableHead>
+                  <TableHead className="text-right">Breakdown</TableHead>
+                  <TableHead className="text-right">Total (USD)</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {items.map(item => {
-                  const isZero = item.product_id === null
+                  const isBlind = item.line_type === 'blind'
+                  const isAwning = item.line_type === 'awning'
+                  const isZero = item.line_type === 'zero'
                   return (
                     <TableRow key={item.id} className={isZero ? 'text-muted-foreground' : ''}>
                       <TableCell className="font-medium">{item.window_name}</TableCell>
+                      <TableCell>
+                        {isBlind && <Badge variant="default">Blind</Badge>}
+                        {isAwning && <Badge variant="secondary">Awning</Badge>}
+                        {isZero && <span className="text-xs italic">—</span>}
+                      </TableCell>
                       <TableCell>
                         {isZero ? (
                           <span className="text-xs italic">No blind/awning</span>
@@ -175,19 +178,28 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
                           </div>
                         )}
                       </TableCell>
-                      <TableCell className="text-xs">{Number(item.blind_width)}&quot;x{Number(item.blind_height)}&quot;</TableCell>
-                      <TableCell className="text-right">{isZero ? '—' : `$${Number(item.cassette_cost).toFixed(2)}`}</TableCell>
-                      <TableCell className="text-right">{isZero ? '—' : `$${Number(item.tube_cost).toFixed(2)}`}</TableCell>
-                      <TableCell className="text-right">{isZero ? '—' : `$${Number(item.bottom_rail_cost).toFixed(2)}`}</TableCell>
-                      <TableCell className="text-right">{isZero ? '—' : `$${Number(item.chain_cost).toFixed(2)}`}</TableCell>
-                      <TableCell className="text-right">{isZero ? '—' : `$${Number(item.fabric_cost).toFixed(2)}`}</TableCell>
-                      <TableCell className="text-right">{isZero ? '—' : `$${Number(item.fixed_costs).toFixed(2)}`}</TableCell>
+                      <TableCell className="text-xs">
+                        {Number(item.blind_width)}&quot;x{Number(item.blind_height)}&quot;
+                      </TableCell>
+                      <TableCell className="text-right text-xs">
+                        {isBlind && (
+                          <span className="text-muted-foreground">
+                            Cassette ${Number(item.cassette_cost).toFixed(2)} · Tube ${Number(item.tube_cost).toFixed(2)} · Rail ${Number(item.bottom_rail_cost).toFixed(2)} · Chain ${Number(item.chain_cost).toFixed(2)} · Fabric ${Number(item.fabric_cost).toFixed(2)} · Fixed ${Number(item.fixed_costs).toFixed(2)}
+                          </span>
+                        )}
+                        {isAwning && (
+                          <span className="text-muted-foreground">
+                            Frame ${Number(item.cassette_cost).toFixed(2)} · Material ${Number(item.fabric_cost).toFixed(2)} · Fixed ${Number(item.fixed_costs).toFixed(2)}
+                          </span>
+                        )}
+                        {isZero && <span>—</span>}
+                      </TableCell>
                       <TableCell className="text-right font-semibold">${Number(item.line_total_usd).toFixed(2)}</TableCell>
                     </TableRow>
                   )
                 })}
                 <TableRow>
-                  <TableCell colSpan={9} className="text-right font-semibold">Room Subtotal (USD)</TableCell>
+                  <TableCell colSpan={5} className="text-right font-semibold">Room Subtotal (USD)</TableCell>
                   <TableCell className="text-right font-semibold">
                     ${items.reduce((sum, i) => sum + Number(i.line_total_usd), 0).toFixed(2)}
                   </TableCell>
