@@ -30,7 +30,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Protected routes
-  const protectedPaths = ['/dashboard', '/properties', '/quotes', '/admin']
+  const protectedPaths = ['/properties', '/quotes', '/admin']
   const isProtected = protectedPaths.some(p => pathname.startsWith(p))
 
   if (isProtected && !user) {
@@ -50,7 +50,7 @@ export async function middleware(request: NextRequest) {
 
     if (profile?.role !== 'administrator') {
       const url = request.nextUrl.clone()
-      url.pathname = '/dashboard'
+      url.pathname = '/properties'
       return NextResponse.redirect(url)
     }
   }
@@ -58,7 +58,7 @@ export async function middleware(request: NextRequest) {
   // Redirect authenticated users away from auth pages
   if (user && (pathname.startsWith('/auth/login') || pathname.startsWith('/auth/register'))) {
     const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
+    url.pathname = '/properties'
     return NextResponse.redirect(url)
   }
 

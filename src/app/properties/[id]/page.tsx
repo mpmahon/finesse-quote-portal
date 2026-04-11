@@ -111,7 +111,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
   return (
     <div>
       <div className="mb-6">
-        <Link href="/dashboard" className="mb-2 inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
+        <Link href="/properties" className="mb-2 inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
           <ChevronLeft className="mr-1 h-4 w-4" />
           Back to Properties
         </Link>

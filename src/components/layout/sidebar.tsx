@@ -15,8 +15,8 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: Home, roles: ['customer', 'salesman', 'administrator'] },
-  { href: '/quotes', label: 'Quotes', icon: FileText, roles: ['customer', 'salesman', 'administrator'] },
+  { href: '/properties', label: 'Properties', icon: Home, roles: ['retail_customer', 'wholesale_customer', 'salesman', 'administrator'] },
+  { href: '/quotes', label: 'Quotes', icon: FileText, roles: ['retail_customer', 'wholesale_customer', 'salesman', 'administrator'] },
 ]
 
 const adminItems = [
@@ -43,7 +43,7 @@ export function Sidebar({ role, userName }: SidebarProps) {
   return (
     <aside className="flex w-64 flex-col bg-[oklch(0.18_0.02_250)] text-white">
       {/* Logo */}
-      <Link href="/dashboard" className="block border-b border-white/10 p-4">
+      <Link href="/properties" className="block border-b border-white/10 p-4">
         <Image src="/logo.jpg" alt="Finesse" width={232} height={232} className="w-full rounded-lg" />
       </Link>
 
@@ -57,7 +57,7 @@ export function Sidebar({ role, userName }: SidebarProps) {
               href={item.href}
               className={cn(
                 'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all',
-                pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))
+                pathname === item.href || pathname.startsWith(item.href + '/')
                   ? 'bg-[oklch(0.55_0.18_250)] text-white shadow-md'
                   : 'text-white/60 hover:bg-white/8 hover:text-white'
               )}

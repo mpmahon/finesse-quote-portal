@@ -17,7 +17,7 @@ export default async function AdminLayout({
     .eq('id', user.id)
     .single()
 
-  if (!profile || profile.role !== 'administrator') redirect('/dashboard')
+  if (!profile || profile.role !== 'administrator') redirect('/properties')
 
   const userName = [profile.first_name, profile.last_name].filter(Boolean).join(' ') || profile.email
 
