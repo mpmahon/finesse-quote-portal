@@ -5,13 +5,16 @@ export const loginSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters'),
 })
 
+/**
+ * Public self-registration schema. Always creates a retail customer —
+ * wholesale customers and salesmen are created by staff from inside the app.
+ */
 export const registerSchema = z.object({
   first_name: z.string().min(1, 'First name is required'),
   last_name: z.string().min(1, 'Last name is required'),
   email: z.string().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   confirm_password: z.string(),
-  role: z.enum(['customer', 'salesman']),
 }).refine(data => data.password === data.confirm_password, {
   message: 'Passwords do not match',
   path: ['confirm_password'],
@@ -61,6 +64,8 @@ export const pricingConfigSchema = z.object({
   exchange_rate: z.coerce.number().positive(),
   reseller_discount_pct: z.coerce.number().min(0).max(100),
   default_markup_pct: z.coerce.number().min(0).max(100),
+  retail_markup_pct: z.coerce.number().min(0).max(100),
+  wholesale_markup_pct: z.coerce.number().min(0).max(100),
   labor_cost_ttd: z.coerce.number().nonnegative(),
   installation_cost_ttd: z.coerce.number().nonnegative(),
   duty_percent: z.coerce.number().min(0).max(100),

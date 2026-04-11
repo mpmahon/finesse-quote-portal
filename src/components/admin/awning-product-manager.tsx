@@ -106,7 +106,7 @@ export function AwningProductManager({ products, colourOptions }: AwningProductM
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
       await supabase.from('audit_logs').insert({
-        admin_user_id: user.id,
+        actor_id: user.id,
         action_type: editProduct ? 'awning_product_update' : 'awning_product_create',
         target_table: 'awning_products',
         target_id: editProduct?.id || null,

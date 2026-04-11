@@ -17,7 +17,7 @@ export default async function AuditLogsPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold">Audit Logs</h1>
+      <h1 className="mb-6 text-2xl font-bold">Activity Log</h1>
       <AuditLogViewer logs={normalized} />
     </div>
   )

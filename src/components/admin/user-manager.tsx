@@ -30,7 +30,15 @@ interface UserManagerProps {
 const roleColors: Record<UserRole, string> = {
   administrator: 'bg-purple-500/10 text-purple-700 border-purple-200 dark:text-purple-300',
   salesman: 'bg-blue-500/10 text-blue-700 border-blue-200 dark:text-blue-300',
-  customer: 'bg-slate-500/10 text-slate-700 border-slate-200 dark:text-slate-300',
+  retail_customer: 'bg-slate-500/10 text-slate-700 border-slate-200 dark:text-slate-300',
+  wholesale_customer: 'bg-emerald-500/10 text-emerald-700 border-emerald-200 dark:text-emerald-300',
+}
+
+const roleLabels: Record<UserRole, string> = {
+  administrator: 'Administrator',
+  salesman: 'Salesman',
+  retail_customer: 'Retail Customer',
+  wholesale_customer: 'Wholesale Customer',
 }
 
 export function UserManager({ users }: UserManagerProps) {
@@ -42,7 +50,7 @@ export function UserManager({ users }: UserManagerProps) {
     last_name: '',
     email: '',
     contact_number: '',
-    role: 'customer' as UserRole,
+    role: 'retail_customer' as UserRole,
   })
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -107,7 +115,7 @@ export function UserManager({ users }: UserManagerProps) {
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
         await supabase.from('audit_logs').insert({
-          admin_user_id: user.id,
+          actor_id: user.id,
           action_type: 'user_update',
           target_table: 'profiles',
           target_id: viewingUser.id,
@@ -131,7 +139,7 @@ export function UserManager({ users }: UserManagerProps) {
 
   const roleCounts = {
     total: users.length,
-    customer: users.filter(u => u.role === 'customer').length,
+    customers: users.filter(u => u.role === 'retail_customer' || u.role === 'wholesale_customer').length,
     salesman: users.filter(u => u.role === 'salesman').length,
     administrator: users.filter(u => u.role === 'administrator').length,
   }
@@ -151,8 +159,8 @@ export function UserManager({ users }: UserManagerProps) {
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <p className="text-2xl font-bold">{roleCounts.customer}</p>
-            <p className="text-xs text-muted-foreground">Customers</p>
+            <p className="text-2xl font-bold">{roleCounts.customers}</p>
+            <p className="text-xs text-muted-foreground">Customers (Retail + Wholesale)</p>
           </CardContent>
         </Card>
         <Card>
@@ -187,7 +195,8 @@ export function UserManager({ users }: UserManagerProps) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Roles</SelectItem>
-              <SelectItem value="customer">Customers</SelectItem>
+              <SelectItem value="retail_customer">Retail Customers</SelectItem>
+              <SelectItem value="wholesale_customer">Wholesale Customers</SelectItem>
               <SelectItem value="salesman">Salesmen</SelectItem>
               <SelectItem value="administrator">Administrators</SelectItem>
             </SelectContent>
@@ -245,7 +254,7 @@ export function UserManager({ users }: UserManagerProps) {
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className={roleColors[u.role]}>
-                        {u.role}
+                        {roleLabels[u.role]}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">{u.properties?.length || 0}</TableCell>
@@ -328,12 +337,13 @@ export function UserManager({ users }: UserManagerProps) {
                 </div>
                 <div className="space-y-2">
                   <Label>Role</Label>
-                  <Select value={editForm.role} onValueChange={v => updateField('role', v ?? 'customer')}>
+                  <Select value={editForm.role} onValueChange={v => updateField('role', v ?? 'retail_customer')}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="customer">Customer</SelectItem>
+                      <SelectItem value="retail_customer">Retail Customer</SelectItem>
+                      <SelectItem value="wholesale_customer">Wholesale Customer</SelectItem>
                       <SelectItem value="salesman">Salesman</SelectItem>
                       <SelectItem value="administrator">Administrator</SelectItem>
                     </SelectContent>

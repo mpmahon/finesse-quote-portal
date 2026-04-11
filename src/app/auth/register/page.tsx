@@ -8,10 +8,16 @@ import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from 'sonner'
 
+/**
+ * Public self-registration page.
+ *
+ * Always creates a `retail_customer` profile. Wholesale customers and
+ * salesmen are provisioned by staff from inside the app; there is no
+ * public path to those roles.
+ */
 export default function RegisterPage() {
   const [form, setForm] = useState({
     first_name: '',
@@ -20,7 +26,6 @@ export default function RegisterPage() {
     contact_number: '',
     password: '',
     confirm_password: '',
-    role: 'customer' as 'customer' | 'salesman',
   })
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -45,7 +50,7 @@ export default function RegisterPage() {
           first_name: form.first_name,
           last_name: form.last_name,
           contact_number: form.contact_number,
-          role: form.role,
+          role: 'retail_customer',
         },
       },
     })
@@ -128,18 +133,6 @@ export default function RegisterPage() {
                 onChange={e => update('confirm_password', e.target.value)}
                 required
               />
-            </div>
-            <div className="space-y-2">
-              <Label>Account Type</Label>
-              <Select value={form.role} onValueChange={v => update('role', v ?? 'customer')}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="customer">Customer</SelectItem>
-                  <SelectItem value="salesman">Salesman</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Creating account...' : 'Create Account'}

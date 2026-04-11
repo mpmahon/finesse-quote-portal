@@ -15,6 +15,8 @@ export function PricingEditor({ config }: { config: PricingConfig }) {
     exchange_rate: String(config.exchange_rate),
     reseller_discount_pct: String(config.reseller_discount_pct),
     default_markup_pct: String(config.default_markup_pct),
+    retail_markup_pct: String(config.retail_markup_pct),
+    wholesale_markup_pct: String(config.wholesale_markup_pct),
     labor_cost_ttd: String(config.labor_cost_ttd),
     installation_cost_ttd: String(config.installation_cost_ttd),
     duty_percent: String(config.duty_percent),
@@ -38,6 +40,8 @@ export function PricingEditor({ config }: { config: PricingConfig }) {
       exchange_rate: parseFloat(form.exchange_rate),
       reseller_discount_pct: parseFloat(form.reseller_discount_pct),
       default_markup_pct: parseFloat(form.default_markup_pct),
+      retail_markup_pct: parseFloat(form.retail_markup_pct),
+      wholesale_markup_pct: parseFloat(form.wholesale_markup_pct),
       labor_cost_ttd: parseFloat(form.labor_cost_ttd),
       installation_cost_ttd: parseFloat(form.installation_cost_ttd),
       duty_percent: parseFloat(form.duty_percent),
@@ -56,7 +60,7 @@ export function PricingEditor({ config }: { config: PricingConfig }) {
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
       await supabase.from('audit_logs').insert({
-        admin_user_id: user.id,
+        actor_id: user.id,
         action_type: 'pricing_update',
         target_table: 'pricing_config',
         change_summary: data,
@@ -69,17 +73,21 @@ export function PricingEditor({ config }: { config: PricingConfig }) {
   }
 
   const fields = [
+    { key: 'retail_markup_pct', label: 'Retail Markup (%)', step: '0.1' },
+    { key: 'wholesale_markup_pct', label: 'Wholesale Markup (%)', step: '0.1' },
     { key: 'exchange_rate', label: 'Exchange Rate (USD to TTD)', step: '0.01' },
-    { key: 'reseller_discount_pct', label: 'Reseller Discount (%)', step: '0.1' },
-    { key: 'default_markup_pct', label: 'Default Markup (%)', step: '0.1' },
     { key: 'labor_cost_ttd', label: 'Labor Cost per Window (TTD)', step: '0.01' },
     { key: 'installation_cost_ttd', label: 'Installation Cost per Window (TTD)', step: '0.01' },
-    { key: 'duty_percent', label: 'Duty (%)', step: '0.1' },
-    { key: 'shipping_fee_ttd', label: 'Shipping Fee (TTD)', step: '0.01' },
+    { key: 'duty_percent', label: 'Duty (%) — Purchasing only', step: '0.1' },
+    { key: 'shipping_fee_ttd', label: 'Shipping Fee (TTD) — Purchasing only', step: '0.01' },
     { key: 'max_window_width_in', label: 'Max Window Width (inches)', step: '1' },
     { key: 'max_window_height_in', label: 'Max Window Height (inches)', step: '1' },
     { key: 'min_window_size_in', label: 'Min Window Size (inches)', step: '0.5' },
     { key: 'quote_validity_days', label: 'Quote Validity (days)', step: '1' },
+    // Legacy fields kept for back-compat with earlier engine versions; the
+    // Batch 4 quote-engine rewrite will remove them entirely.
+    { key: 'default_markup_pct', label: 'Default Markup — legacy (%)', step: '0.1' },
+    { key: 'reseller_discount_pct', label: 'Reseller Discount — legacy (%)', step: '0.1' },
   ]
 
   return (

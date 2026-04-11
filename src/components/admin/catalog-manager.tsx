@@ -83,7 +83,7 @@ export function CatalogManager({ shadeTypes, styles, colours }: CatalogManagerPr
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
       await supabase.from('audit_logs').insert({
-        admin_user_id: user.id,
+        actor_id: user.id,
         action_type: editItem ? 'catalog_update' : 'catalog_create',
         target_table: targetTable,
         target_id: editItem?.id || null,
@@ -105,7 +105,7 @@ export function CatalogManager({ shadeTypes, styles, colours }: CatalogManagerPr
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
       await supabase.from('audit_logs').insert({
-        admin_user_id: user.id,
+        actor_id: user.id,
         action_type: 'catalog_delete',
         target_table: table,
         target_id: item.id,

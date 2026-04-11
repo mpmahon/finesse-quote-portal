@@ -1,4 +1,4 @@
-import type { AwningProduct, Component, MountType, UserRole } from '@/types/database'
+import type { AwningProduct, Component, MountType } from '@/types/database'
 
 export interface WindowDimensions {
   width_inches: number
@@ -149,10 +149,17 @@ export function calculateLineItem(
   }
 }
 
+/**
+ * Legacy quote total calculator. The Batch 4 rewrite replaces this with a
+ * customer-type-aware version that applies retail_markup_pct or
+ * wholesale_markup_pct based on the target customer, rolls labour into each
+ * line item, and applies installation only for retail customers. This
+ * version is kept so existing callers still compile while the rewrite is
+ * in flight.
+ */
 export function calculateQuoteTotals(
   lineItems: LineItemResult[],
-  pricing: PricingParams,
-  userRole: UserRole
+  pricing: PricingParams
 ): QuoteTotals {
   const numWindows = lineItems.length
   const subtotal_usd = lineItems.reduce((sum, li) => sum + li.costs.line_total_usd, 0)
@@ -165,13 +172,7 @@ export function calculateQuoteTotals(
   const installation_ttd = pricing.installation_ttd * numWindows
   const shipping_ttd = pricing.shipping_ttd
 
-  let grand_total_ttd = total_ttd + labor_ttd + installation_ttd + shipping_ttd
-  let discount_ttd = 0
-
-  if (userRole === 'salesman') {
-    discount_ttd = grand_total_ttd * (pricing.reseller_discount_pct / 100)
-    grand_total_ttd -= discount_ttd
-  }
+  const grand_total_ttd = total_ttd + labor_ttd + installation_ttd + shipping_ttd
 
   return {
     subtotal_usd: round2(subtotal_usd),
@@ -182,7 +183,7 @@ export function calculateQuoteTotals(
     labor_ttd: round2(labor_ttd),
     installation_ttd: round2(installation_ttd),
     shipping_ttd: round2(shipping_ttd),
-    discount_ttd: round2(discount_ttd),
+    discount_ttd: 0,
     grand_total_ttd: round2(grand_total_ttd),
   }
 }

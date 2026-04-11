@@ -1,7 +1,21 @@
-export type UserRole = 'customer' | 'salesman' | 'administrator'
+export type UserRole =
+  | 'retail_customer'
+  | 'wholesale_customer'
+  | 'salesman'
+  | 'administrator'
 export type MountType = 'inside' | 'outside'
 export type UnitType = 'per_inch' | 'per_sq_inch' | 'fixed'
 export type QuoteStatus = 'draft' | 'final' | 'expired'
+
+/** True when the role is a staff member (not a customer). */
+export function isStaffRole(role: UserRole): boolean {
+  return role === 'salesman' || role === 'administrator'
+}
+
+/** True when the role is any kind of customer. */
+export function isCustomerRole(role: UserRole): boolean {
+  return role === 'retail_customer' || role === 'wholesale_customer'
+}
 
 export interface Profile {
   id: string
@@ -17,6 +31,8 @@ export interface Profile {
 export interface Property {
   id: string
   user_id: string
+  /** The profile id of whoever created the property (customer themselves, or a salesman/admin acting on their behalf). Used for the staff activity report. */
+  created_by: string
   name: string
   address: string | null
   created_at: string
@@ -82,13 +98,24 @@ export interface Window {
   colour: string | null
   awning_product_id: string | null
   awning_colour: string | null
+  /** Hardware component names (from `components.name`) that have been unchecked for this window's blind. Empty array = all hardware included. */
+  excluded_components: string[]
   created_at: string
   updated_at: string
+}
+
+/** A single note attached to a quote. Multiple notes per quote; each can be individually flagged to render (or hide) on the PDF. */
+export interface QuoteNote {
+  id: string
+  text: string
+  show_on_pdf: boolean
 }
 
 export interface Quote {
   id: string
   user_id: string
+  /** The profile id of whoever generated the quote. Customers create quotes for themselves; staff create quotes on behalf of a customer. Used for activity reports. */
+  created_by: string
   property_id: string
   status: QuoteStatus
   currency: string
@@ -101,6 +128,8 @@ export interface Quote {
   installation_cost_ttd: number
   subtotal_usd: number
   total_ttd: number
+  /** Free-text notes attached to the quote. See {@link QuoteNote}. */
+  notes: QuoteNote[]
   created_at: string
   expires_at: string | null
 }
@@ -136,6 +165,10 @@ export interface PricingConfig {
   exchange_rate: number
   reseller_discount_pct: number
   default_markup_pct: number
+  /** Markup applied to retail customer quotes. Not shown to the customer. */
+  retail_markup_pct: number
+  /** Markup applied to wholesale customer quotes. Not shown to the customer. */
+  wholesale_markup_pct: number
   labor_cost_ttd: number
   installation_cost_ttd: number
   duty_percent: number
@@ -157,7 +190,8 @@ export interface CatalogItem {
 
 export interface AuditLog {
   id: string
-  admin_user_id: string
+  /** Profile id of whoever performed the action (salesman or administrator). Renamed from admin_user_id in Batch 2. */
+  actor_id: string
   action_type: string
   target_table: string | null
   target_id: string | null

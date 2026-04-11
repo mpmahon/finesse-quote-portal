@@ -26,9 +26,9 @@ export function AuditLogViewer({ logs }: { logs: AuditLog[] }) {
   const actionTypes = Array.from(new Set(logs.map(l => l.action_type)))
 
   const filtered = logs.filter(log => {
-    const adminName = `${log.profiles?.first_name || ''} ${log.profiles?.last_name || ''}`.trim().toLowerCase()
+    const actorName = `${log.profiles?.first_name || ''} ${log.profiles?.last_name || ''}`.trim().toLowerCase()
     const matchesSearch = search === '' ||
-      adminName.includes(search.toLowerCase()) ||
+      actorName.includes(search.toLowerCase()) ||
       log.action_type.toLowerCase().includes(search.toLowerCase()) ||
       (log.target_table || '').toLowerCase().includes(search.toLowerCase()) ||
       JSON.stringify(log.change_summary || {}).toLowerCase().includes(search.toLowerCase())
@@ -46,7 +46,7 @@ export function AuditLogViewer({ logs }: { logs: AuditLog[] }) {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search logs by admin, action, or details..."
+              placeholder="Search activity by actor, action, or details..."
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="pl-9"
@@ -68,7 +68,7 @@ export function AuditLogViewer({ logs }: { logs: AuditLog[] }) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Recent Admin Actions ({filtered.length})</CardTitle>
+          <CardTitle>Recent Activity ({filtered.length})</CardTitle>
         </CardHeader>
         <CardContent>
           {filtered.length === 0 ? (
@@ -78,7 +78,7 @@ export function AuditLogViewer({ logs }: { logs: AuditLog[] }) {
               <TableHeader>
                 <TableRow>
                   <TableHead>Timestamp</TableHead>
-                  <TableHead>Admin</TableHead>
+                  <TableHead>Actor</TableHead>
                   <TableHead>Action</TableHead>
                   <TableHead>Target</TableHead>
                   <TableHead>Details</TableHead>

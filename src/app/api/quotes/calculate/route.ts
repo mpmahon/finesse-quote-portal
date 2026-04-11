@@ -10,7 +10,7 @@ import type {
   LineItemResult,
   PricingParams,
 } from '@/lib/quote-engine'
-import type { AwningProduct, Component, UserRole } from '@/types/database'
+import type { AwningProduct, Component } from '@/types/database'
 
 interface BlindRow {
   type: 'blind'
@@ -222,11 +222,13 @@ export async function POST(request: Request) {
 
   const totals = calculateQuoteTotals(
     priceableTotals,
-    pricingParams,
-    profile.role as UserRole
+    pricingParams
   )
 
-  const discountPercent = profile.role === 'salesman' ? Number(config.reseller_discount_pct) : 0
+  // Batch 2: salesmen no longer receive a reseller discount — they are
+  // internal Finesse staff, not a discounted customer tier. The Batch 4
+  // rewrite will replace this whole flow with customer-type markup.
+  const discountPercent = 0
 
   const { data: quote, error: quoteError } = await supabase
     .from('quotes')
