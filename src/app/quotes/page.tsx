@@ -22,6 +22,9 @@ export default async function QuotesPage() {
     { data: components },
   ] = await Promise.all([
     (() => {
+      // `profiles!user_id(...)` disambiguates the join — quotes now has two
+      // FKs to profiles (user_id = customer, created_by = staff). PostgREST
+      // rejects the ambiguous embed shape otherwise.
       let query = supabase
         .from('quotes')
         .select(`
@@ -31,7 +34,7 @@ export default async function QuotesPage() {
           total_ttd,
           status,
           properties(name),
-          profiles(id, first_name, last_name, email),
+          profiles!user_id(id, first_name, last_name, email),
           quote_line_items(product_id)
         `)
         .order('created_at', { ascending: false })

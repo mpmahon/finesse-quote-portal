@@ -14,7 +14,7 @@ export default async function AdminDashboard() {
     supabase.from('profiles').select('*', { count: 'exact', head: true }),
     supabase.from('quotes').select('*', { count: 'exact', head: true }),
     supabase.from('products').select('*', { count: 'exact', head: true }),
-    supabase.from('audit_logs').select('*, profiles(first_name, last_name)').order('created_at', { ascending: false }).limit(10),
+    supabase.from('audit_logs').select('*, profiles!actor_id(first_name, last_name)').order('created_at', { ascending: false }).limit(10),
   ])
 
   return (

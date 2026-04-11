@@ -68,11 +68,14 @@ export default async function PropertiesPage() {
 
   // Staff (salesman + admin) and customers all see all of their visible properties
   // (RLS-scoped). Admins and salesmen see everything; customers see their own.
+  // `profiles!user_id(...)` disambiguates the join — properties now has two
+  // FKs to profiles (user_id = owner, created_by = staff who created on
+  // their behalf). PostgREST rejects the ambiguous embed shape otherwise.
   let query = supabase
     .from('properties')
     .select(`
       *,
-      profiles(id, first_name, last_name, email),
+      profiles!user_id(id, first_name, last_name, email),
       rooms(
         id,
         windows(
