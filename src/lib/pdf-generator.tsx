@@ -130,34 +130,15 @@ export function QuotePDF({ quote, lineItems, profile }: QuotePDFProps) {
         ))}
 
         {/* Totals */}
+        {/*
+          Batch 1: exchange rate, duty, shipping, and labour rows are hidden
+          from customer-facing PDFs. Batch 4 will roll labour into line items
+          and make installation conditional on retail customer type.
+        */}
         <Text style={styles.sectionTitle}>Quote Totals</Text>
         <View style={styles.row}>
-          <Text style={styles.label}>Components Subtotal (USD)</Text>
-          <Text>${Number(quote.subtotal_usd).toFixed(2)}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Markup ({Number(quote.markup_percent)}%)</Text>
-          <Text>${(Number(quote.subtotal_usd) * Number(quote.markup_percent) / 100).toFixed(2)}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Duty ({Number(quote.duty_percent)}%)</Text>
-          <Text>calculated</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Exchange Rate</Text>
-          <Text>1 USD = {Number(quote.exchange_rate)} TTD</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Labor ({priceableCount} windows)</Text>
-          <Text>${(priceableCount * Number(quote.labor_cost_ttd)).toFixed(2)} TTD</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Installation ({priceableCount} windows)</Text>
-          <Text>${(priceableCount * Number(quote.installation_cost_ttd)).toFixed(2)} TTD</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Shipping</Text>
-          <Text>${Number(quote.shipping_fee_ttd).toFixed(2)} TTD</Text>
+          <Text style={styles.label}>Installation ({priceableCount} window{priceableCount === 1 ? '' : 's'})</Text>
+          <Text>TTD ${(priceableCount * Number(quote.installation_cost_ttd)).toFixed(2)}</Text>
         </View>
         {Number(quote.discount_percent) > 0 && (
           <View style={styles.row}>
@@ -165,7 +146,7 @@ export function QuotePDF({ quote, lineItems, profile }: QuotePDFProps) {
             <Text style={{ color: 'green' }}>applied</Text>
           </View>
         )}
-        <Text style={styles.grandTotal}>Grand Total: ${Number(quote.total_ttd).toFixed(2)} TTD</Text>
+        <Text style={styles.grandTotal}>Grand Total: TTD ${Number(quote.total_ttd).toFixed(2)}</Text>
 
         {/* Footer */}
         <Text style={styles.footer}>

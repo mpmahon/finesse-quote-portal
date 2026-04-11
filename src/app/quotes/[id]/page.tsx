@@ -86,7 +86,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
                 {staleness.reason === 'both'
                   ? 'Global pricing settings and component prices have both been updated since this quote was generated.'
                   : staleness.reason === 'config'
-                  ? 'Global pricing settings (exchange rate, markup, duty, or fees) have been updated since this quote was generated.'
+                  ? 'Global pricing settings have been updated since this quote was generated.'
                   : 'Component prices for one or more products in this quote have been updated since it was generated.'}
               </p>
             </div>
@@ -116,18 +116,6 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
               <span>{format(new Date(quote.expires_at), 'MMM d, yyyy')}</span>
             </div>
           )}
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Exchange Rate</span>
-            <span>1 USD = {Number(quote.exchange_rate).toFixed(2)} TTD</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Markup</span>
-            <span>{Number(quote.markup_percent)}%</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Duty</span>
-            <span>{Number(quote.duty_percent)}%</span>
-          </div>
           {Number(quote.discount_percent) > 0 && (
             <div className="flex justify-between text-green-600">
               <span>Reseller Discount</span>
@@ -211,39 +199,21 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
       ))}
 
       {/* Grand Totals */}
+      {/*
+        Batch 1 note: exchange_rate, duty, shipping, and labour rows are hidden
+        from the customer-facing view. The stored quote.total_ttd still reflects
+        whatever pricing config was in effect at quote generation; Batch 4 will
+        rewrite the engine so labour is rolled into line items and installation
+        is applied only for retail customers.
+      */}
       <Card>
         <CardHeader>
           <CardTitle>Grand Total</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Components Subtotal (USD)</span>
-            <span>${Number(quote.subtotal_usd).toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">+ Markup ({Number(quote.markup_percent)}%)</span>
-            <span>${(Number(quote.subtotal_usd) * Number(quote.markup_percent) / 100).toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">+ Duty ({Number(quote.duty_percent)}%)</span>
-            <span>calculated</span>
-          </div>
-          <Separator />
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Converted to TTD (x{Number(quote.exchange_rate)})</span>
-            <span></span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">+ Labor ({priceableCount} windows x ${Number(quote.labor_cost_ttd)} TTD)</span>
-            <span>${(priceableCount * Number(quote.labor_cost_ttd)).toFixed(2)} TTD</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">+ Installation ({priceableCount} windows x ${Number(quote.installation_cost_ttd)} TTD)</span>
-            <span>${(priceableCount * Number(quote.installation_cost_ttd)).toFixed(2)} TTD</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">+ Shipping</span>
-            <span>${Number(quote.shipping_fee_ttd).toFixed(2)} TTD</span>
+            <span className="text-muted-foreground">+ Installation ({priceableCount} window{priceableCount === 1 ? '' : 's'})</span>
+            <span>TTD ${(priceableCount * Number(quote.installation_cost_ttd)).toFixed(2)}</span>
           </div>
           {Number(quote.discount_percent) > 0 && (
             <div className="flex justify-between text-green-600">
@@ -253,8 +223,8 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
           )}
           <Separator />
           <div className="flex justify-between text-lg font-bold">
-            <span>Grand Total (TTD)</span>
-            <span>${Number(quote.total_ttd).toFixed(2)}</span>
+            <span>Grand Total</span>
+            <span>TTD ${Number(quote.total_ttd).toFixed(2)}</span>
           </div>
         </CardContent>
       </Card>
