@@ -10,7 +10,8 @@ import type {
   LineItemResult,
   PricingParams,
 } from '@/lib/quote-engine'
-import type { AwningProduct, Component } from '@/types/database'
+import type { AwningProduct, Component, UserRole } from '@/types/database'
+import { isCustomerRole } from '@/types/database'
 
 interface BlindRow {
   type: 'blind'
@@ -43,6 +44,17 @@ interface ZeroRow {
   height_inches: number
 }
 
+/**
+ * Generate a quote for a property.
+ *
+ * Batch 4 changes:
+ * - Reads the property owner's role to decide retail vs wholesale markup.
+ * - Reads each window's `excluded_components` to skip unchecked hardware.
+ * - Uses the new customer-type-aware `calculateQuoteTotals`.
+ * - Sets `created_by` on the quote insert.
+ * - Duty, shipping, and reseller discount are NOT applied (kept in DB for
+ *   the future Purchasing Module, but zeroed out on the quote snapshot).
+ */
 export async function POST(request: Request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -55,13 +67,38 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'property_id is required' }, { status: 400 })
   }
 
-  const { data: profile } = await supabase
+  // Fetch caller's profile
+  const { data: callerProfile } = await supabase
     .from('profiles')
     .select('role')
     .eq('id', user.id)
     .single()
-  if (!profile) return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
+  if (!callerProfile) return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
 
+  // Fetch the property to get the owning customer's id
+  const { data: property } = await supabase
+    .from('properties')
+    .select('user_id')
+    .eq('id', property_id)
+    .single()
+  if (!property) return NextResponse.json({ error: 'Property not found' }, { status: 404 })
+
+  // Determine customer role for markup. Staff creating on behalf → use the
+  // owner's role. Customer creating their own → use their own role.
+  let customerRole: UserRole
+  if (isCustomerRole(callerProfile.role as UserRole)) {
+    customerRole = callerProfile.role as UserRole
+  } else {
+    // Staff: look up the property owner's role
+    const { data: ownerProfile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', property.user_id)
+      .single()
+    customerRole = (ownerProfile?.role ?? 'retail_customer') as UserRole
+  }
+
+  // Pricing config
   const { data: config } = await supabase
     .from('pricing_config')
     .select('*')
@@ -77,6 +114,7 @@ export async function POST(request: Request) {
       has_blind, has_awning,
       product_id, shade_type, style, colour,
       awning_product_id, awning_colour,
+      excluded_components,
       rooms!inner(name, property_id),
       products(id, make, model, components(*)),
       awning_products(*)
@@ -120,6 +158,7 @@ export async function POST(request: Request) {
     colour: string | null
     awning_product_id: string | null
     awning_colour: string | null
+    excluded_components: string[]
     rooms: { name: string } | { name: string }[]
     products: { components: Component[] } | null
     awning_products: AwningProduct | null
@@ -142,7 +181,8 @@ export async function POST(request: Request) {
           height_inches: Number(w.height_inches),
           mount_type: w.mount_type,
         },
-        w.products.components
+        w.products.components,
+        w.excluded_components || []
       )
       rows.push({
         type: 'blind',
@@ -184,63 +224,36 @@ export async function POST(request: Request) {
     }
   }
 
-  // Totals: blinds + awnings both contribute to subtotal. Labor/install
-  // is counted per priceable line item (each install is an install).
-  const priceableTotals: LineItemResult[] = []
+  // Collect priceable items for the totals calculation.
+  const priceableItems: { costs: { line_total_usd: number } }[] = []
   for (const row of rows) {
-    if (row.type === 'blind') {
-      priceableTotals.push(row.result)
-    } else if (row.type === 'awning') {
-      // Adapt awning result into LineItemResult shape for calculateQuoteTotals
-      priceableTotals.push({
-        blind_width: row.result.awning_width,
-        blind_height: row.result.awning_depth,
-        fabric_area: row.result.material_area,
-        chain_length: 0,
-        costs: {
-          cassette_cost: row.result.costs.frame_cost,
-          tube_cost: 0,
-          bottom_rail_cost: 0,
-          chain_cost: 0,
-          fabric_cost: row.result.costs.material_cost,
-          fixed_costs: row.result.costs.fixed_cost,
-          line_total_usd: row.result.costs.line_total_usd,
-        },
-      })
+    if (row.type === 'blind' || row.type === 'awning') {
+      priceableItems.push({ costs: { line_total_usd: row.type === 'blind' ? row.result.costs.line_total_usd : row.result.costs.line_total_usd } })
     }
   }
 
   const pricingParams: PricingParams = {
     exchange_rate: Number(config.exchange_rate),
-    markup_pct: Number(config.default_markup_pct),
-    duty_pct: Number(config.duty_percent),
-    shipping_ttd: Number(config.shipping_fee_ttd),
+    retail_markup_pct: Number(config.retail_markup_pct),
+    wholesale_markup_pct: Number(config.wholesale_markup_pct),
     labor_ttd: Number(config.labor_cost_ttd),
     installation_ttd: Number(config.installation_cost_ttd),
-    reseller_discount_pct: Number(config.reseller_discount_pct),
   }
 
-  const totals = calculateQuoteTotals(
-    priceableTotals,
-    pricingParams
-  )
-
-  // Batch 2: salesmen no longer receive a reseller discount — they are
-  // internal Finesse staff, not a discounted customer tier. The Batch 4
-  // rewrite will replace this whole flow with customer-type markup.
-  const discountPercent = 0
+  const totals = calculateQuoteTotals(priceableItems, pricingParams, customerRole)
 
   const { data: quote, error: quoteError } = await supabase
     .from('quotes')
     .insert({
-      user_id: user.id,
+      user_id: property.user_id,
+      created_by: user.id,
       property_id,
       status: 'final',
       exchange_rate: pricingParams.exchange_rate,
-      markup_percent: pricingParams.markup_pct,
-      discount_percent: discountPercent,
-      duty_percent: pricingParams.duty_pct,
-      shipping_fee_ttd: pricingParams.shipping_ttd,
+      markup_percent: totals.markup_pct,
+      discount_percent: 0,
+      duty_percent: 0,
+      shipping_fee_ttd: 0,
       labor_cost_ttd: pricingParams.labor_ttd,
       installation_cost_ttd: pricingParams.installation_ttd,
       subtotal_usd: totals.subtotal_usd,

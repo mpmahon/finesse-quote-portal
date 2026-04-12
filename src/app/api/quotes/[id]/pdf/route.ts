@@ -28,7 +28,7 @@ export async function GET(
 
   const { data: lineItems } = await supabase
     .from('quote_line_items')
-    .select('*')
+    .select('*, windows(excluded_components)')
     .eq('quote_id', id)
     .order('room_name')
 

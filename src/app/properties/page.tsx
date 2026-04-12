@@ -87,6 +87,7 @@ export default async function PropertiesPage() {
           has_awning,
           product_id,
           awning_product_id,
+          excluded_components,
           products(components(*)),
           awning_products(*)
         )
@@ -115,6 +116,7 @@ export default async function PropertiesPage() {
         has_awning: boolean
         product_id: string | null
         awning_product_id: string | null
+        excluded_components: string[]
         products: { components: Component[] } | null
         awning_products: AwningProduct | null
       }>
@@ -140,7 +142,8 @@ export default async function PropertiesPage() {
               height_inches: Number(w.height_inches),
               mount_type: w.mount_type,
             },
-            w.products.components
+            w.products.components,
+            w.excluded_components || []
           )
           totalUsd += result.costs.line_total_usd
         }

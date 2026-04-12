@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
+import { Checkbox } from '@/components/ui/checkbox'
 import { toast } from 'sonner'
 import {
   calculateBlindDimensions,
@@ -28,6 +29,31 @@ interface WindowConfiguratorProps {
   roomId: string
 }
 
+/**
+ * Identifies unique hardware component names from a product's component list.
+ * Hardware = everything except `fabric`. These drive the checkboxes.
+ */
+function getHardwareNames(components: Component[]): string[] {
+  const seen = new Set<string>()
+  const names: string[] = []
+  for (const c of components) {
+    if (c.name === 'fabric') continue
+    const key = c.name.toLowerCase()
+    if (!seen.has(key)) {
+      seen.add(key)
+      names.push(c.name)
+    }
+  }
+  return names
+}
+
+/** Pretty-print a component name for the UI: underscore → space, title-case. */
+function formatComponentName(name: string): string {
+  return name
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, c => c.toUpperCase())
+}
+
 export function WindowConfigurator({
   window: win,
   products,
@@ -35,7 +61,7 @@ export function WindowConfigurator({
   propertyId,
   roomId,
 }: WindowConfiguratorProps) {
-  // Feature toggles (can be changed from this page)
+  // Feature toggles
   const [hasBlind, setHasBlind] = useState(win.has_blind)
   const [hasAwning, setHasAwning] = useState(win.has_awning)
 
@@ -44,6 +70,12 @@ export function WindowConfigurator({
   const [shadeType, setShadeType] = useState(win.shade_type || '')
   const [style, setStyle] = useState(win.style || '')
   const [colour, setColour] = useState(win.colour || '')
+
+  // Hardware exclusion state — initialised from the window's stored value.
+  // Each entry is a lowercase component name that has been UNCHECKED.
+  const [excludedComponents, setExcludedComponents] = useState<string[]>(
+    win.excluded_components || []
+  )
 
   // Awning state
   const [awningProductId, setAwningProductId] = useState(win.awning_product_id || '')
@@ -55,7 +87,20 @@ export function WindowConfigurator({
   const selectedProduct = products.find(p => p.id === productId)
   const selectedAwning = awningProducts.find(p => p.id === awningProductId)
 
-  // Blind dimensions + preview
+  // Hardware component names for the selected product
+  const hardwareNames = useMemo(
+    () => (selectedProduct ? getHardwareNames(selectedProduct.components) : []),
+    [selectedProduct]
+  )
+
+  function toggleComponent(name: string) {
+    const key = name.toLowerCase()
+    setExcludedComponents(prev =>
+      prev.includes(key) ? prev.filter(n => n !== key) : [...prev, key]
+    )
+  }
+
+  // Blind dimensions + preview (respects excluded components)
   const blindDims = useMemo(() =>
     calculateBlindDimensions({
       width_inches: Number(win.width_inches),
@@ -72,9 +117,10 @@ export function WindowConfigurator({
         height_inches: Number(win.height_inches),
         mount_type: win.mount_type,
       },
-      selectedProduct.components
+      selectedProduct.components,
+      excludedComponents
     )
-  }, [selectedProduct, win.width_inches, win.height_inches, win.mount_type])
+  }, [selectedProduct, win.width_inches, win.height_inches, win.mount_type, excludedComponents])
 
   // Awning dimensions + preview
   const awningDims = useMemo(() => {
@@ -92,7 +138,6 @@ export function WindowConfigurator({
     (awningPreview?.costs.line_total_usd || 0)
 
   async function handleSave() {
-    // Validate what's configured based on toggles
     if (hasBlind && (!productId || !shadeType || !style || !colour)) {
       toast.error('Please complete blind configuration')
       return
@@ -113,6 +158,7 @@ export function WindowConfigurator({
       colour: hasBlind ? colour : null,
       awning_product_id: hasAwning ? awningProductId : null,
       awning_colour: hasAwning ? awningColour : null,
+      excluded_components: hasBlind ? excludedComponents : [],
     }
 
     const { error } = await supabase
@@ -224,7 +270,7 @@ export function WindowConfigurator({
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label>Make / Model</Label>
-                <Select value={productId} onValueChange={v => { setProductId(v ?? ''); setShadeType(''); setStyle(''); setColour('') }}>
+                <Select value={productId} onValueChange={v => { setProductId(v ?? ''); setShadeType(''); setStyle(''); setColour(''); setExcludedComponents([]) }}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a product">
                       {(value: string) => {
@@ -278,6 +324,39 @@ export function WindowConfigurator({
                       </SelectContent>
                     </Select>
                   </div>
+
+                  {/* Hardware component checkboxes */}
+                  {hardwareNames.length > 0 && (
+                    <div className="space-y-2">
+                      <Label className="text-xs uppercase tracking-wider text-muted-foreground">
+                        Hardware
+                      </Label>
+                      <div className="space-y-1.5">
+                        {hardwareNames.map(name => {
+                          const isExcluded = excludedComponents.includes(name.toLowerCase())
+                          return (
+                            <label
+                              key={name}
+                              className="flex items-center gap-2 rounded px-1 py-0.5 text-sm hover:bg-accent/50 cursor-pointer"
+                            >
+                              <Checkbox
+                                checked={!isExcluded}
+                                onCheckedChange={() => toggleComponent(name)}
+                              />
+                              <span className={isExcluded ? 'text-muted-foreground line-through' : ''}>
+                                {formatComponentName(name)}
+                              </span>
+                            </label>
+                          )
+                        })}
+                      </div>
+                      {excludedComponents.length > 0 && (
+                        <p className="text-xs italic text-muted-foreground">
+                          {excludedComponents.map(n => formatComponentName(n)).join(', ')} not included
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </>
               )}
             </CardContent>
@@ -349,12 +428,12 @@ export function WindowConfigurator({
         </Button>
       </div>
 
-      {/* Right: Live Cost Preview */}
+      {/* Right: Live Cost Preview — internal/staff view only in future; for now still shows USD breakdown */}
       <div className="space-y-6">
         {hasBlind && (
           <Card>
             <CardHeader>
-              <CardTitle>Blind Cost (USD)</CardTitle>
+              <CardTitle>Blind Cost Preview</CardTitle>
             </CardHeader>
             <CardContent>
               {blindPreview ? (
@@ -372,11 +451,11 @@ export function WindowConfigurator({
                   <Separator />
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span>Cassette</span>
+                      <span className={blindPreview.costs.cassette_cost === 0 && excludedComponents.includes('cassette') ? 'text-muted-foreground line-through' : ''}>Cassette</span>
                       <span>${blindPreview.costs.cassette_cost.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Tube</span>
+                      <span className={blindPreview.costs.tube_cost === 0 && excludedComponents.includes('tube') ? 'text-muted-foreground line-through' : ''}>Tube</span>
                       <span>${blindPreview.costs.tube_cost.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
@@ -384,7 +463,7 @@ export function WindowConfigurator({
                       <span>${blindPreview.costs.bottom_rail_cost.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Chain</span>
+                      <span className={blindPreview.costs.chain_cost === 0 && excludedComponents.includes('chain') ? 'text-muted-foreground line-through' : ''}>Chain</span>
                       <span>${blindPreview.costs.chain_cost.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
@@ -401,6 +480,11 @@ export function WindowConfigurator({
                     <span>Blind Total</span>
                     <span>${blindPreview.costs.line_total_usd.toFixed(2)}</span>
                   </div>
+                  {blindPreview.excluded_names.length > 0 && (
+                    <p className="text-xs italic text-muted-foreground">
+                      {blindPreview.excluded_names.map(n => formatComponentName(n)).join(', ')} not included
+                    </p>
+                  )}
                 </div>
               ) : (
                 <p className="text-sm text-muted-foreground">Select a blind to see cost preview.</p>
@@ -412,7 +496,7 @@ export function WindowConfigurator({
         {hasAwning && (
           <Card>
             <CardHeader>
-              <CardTitle>Awning Cost (USD)</CardTitle>
+              <CardTitle>Awning Cost Preview</CardTitle>
             </CardHeader>
             <CardContent>
               {awningPreview ? (
@@ -459,7 +543,7 @@ export function WindowConfigurator({
                 <span className="text-primary">${combinedTotal.toFixed(2)}</span>
               </div>
               <p className="mt-2 text-xs text-muted-foreground">
-                Final quote adds markup, duty, currency conversion, labor, installation, and shipping.
+                Final quote applies markup, currency conversion, labour, and installation.
               </p>
             </CardContent>
           </Card>

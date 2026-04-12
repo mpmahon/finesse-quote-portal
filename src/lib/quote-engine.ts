@@ -1,4 +1,8 @@
-import type { AwningProduct, Component, MountType } from '@/types/database'
+import type { AwningProduct, Component, MountType, UserRole } from '@/types/database'
+
+// ============================================================
+// Shared types
+// ============================================================
 
 export interface WindowDimensions {
   width_inches: number
@@ -11,6 +15,11 @@ export interface BlindDimensions {
   blind_height: number
 }
 
+/**
+ * Per-category cost breakdown for a single blind line item, stored in USD
+ * (the supplier's cost currency). Categories whose hardware component was
+ * excluded via the window's `excluded_components` array will be zero.
+ */
 export interface LineItemCosts {
   cassette_cost: number
   tube_cost: number
@@ -18,6 +27,7 @@ export interface LineItemCosts {
   chain_cost: number
   fabric_cost: number
   fixed_costs: number
+  /** Sum of all included component costs, in USD. */
   line_total_usd: number
 }
 
@@ -27,31 +37,46 @@ export interface LineItemResult {
   fabric_area: number
   chain_length: number
   costs: LineItemCosts
+  /**
+   * Hardware component names that were excluded from cost calculation.
+   * Empty when all hardware is included. Used to render a small footnote
+   * on the window view and the quote: "Cassette, tube not included".
+   */
+  excluded_names: string[]
 }
 
-export interface QuoteTotals {
-  subtotal_usd: number
-  markup_usd: number
-  duty_usd: number
-  total_usd: number
-  total_ttd: number
-  labor_ttd: number
-  installation_ttd: number
-  shipping_ttd: number
-  discount_ttd: number
-  grand_total_ttd: number
-}
+// ============================================================
+// Pricing parameters and totals — customer-type-aware (Batch 4)
+// ============================================================
 
 export interface PricingParams {
   exchange_rate: number
-  markup_pct: number
-  duty_pct: number
-  shipping_ttd: number
+  retail_markup_pct: number
+  wholesale_markup_pct: number
+  /** Labour cost per window in TTD. Rolled silently into each line item's customer-visible total — never shown as a separate line. */
   labor_ttd: number
+  /** Installation cost per window in TTD. Applied only for retail customers; shown as a separate line. */
   installation_ttd: number
-  reseller_discount_pct: number
 }
 
+export interface QuoteTotals {
+  /** Sum of all line item USD costs (before markup). Internal only — not shown to customer. */
+  subtotal_usd: number
+  /** The markup percentage that was applied (retail or wholesale). Stored on the quote for reference. */
+  markup_pct: number
+  /** Grand total in TTD: sum of per-window (cost × markup × exchange_rate + labour) + installation (retail only). */
+  grand_total_ttd: number
+  /** Installation total in TTD. Zero for wholesale customers. */
+  installation_ttd: number
+  /** Number of priceable windows (blind or awning lines, not zero-lines). Drives per-window charges. */
+  priceable_count: number
+}
+
+// ============================================================
+// Blind calculations
+// ============================================================
+
+/** Calculate the physical blind dimensions from the window opening. Inside mount = exact width; outside mount = +6" overlap. Both add 14" to height for the roller mechanism. */
 export function calculateBlindDimensions(config: WindowDimensions): BlindDimensions {
   if (config.mount_type === 'inside') {
     return {
@@ -59,7 +84,6 @@ export function calculateBlindDimensions(config: WindowDimensions): BlindDimensi
       blind_height: config.height_inches + 14,
     }
   }
-  // outside mount
   return {
     blind_width: config.width_inches + 6,
     blind_height: config.height_inches + 14,
@@ -74,13 +98,26 @@ export function calculateChainLength(window_height: number): number {
   return (window_height * 1.6) / 2
 }
 
+/**
+ * Calculate the USD cost breakdown for a single blind line item.
+ *
+ * @param config          Window dimensions + mount type.
+ * @param components      All hardware + material components for the selected product.
+ * @param excludedComponents  Names of hardware components the user has unchecked
+ *                            (e.g. `['cassette', 'tube']`). Excluded components
+ *                            contribute zero cost. Fabric is never excludable.
+ */
 export function calculateLineItem(
   config: WindowDimensions,
-  components: Component[]
+  components: Component[],
+  excludedComponents: string[] = []
 ): LineItemResult {
   const dims = calculateBlindDimensions(config)
   const fabric_area = calculateFabricArea(dims.blind_width, dims.blind_height)
   const chain_length = calculateChainLength(config.height_inches)
+
+  const excludedSet = new Set(excludedComponents.map(n => n.toLowerCase()))
+  const excluded_names: string[] = []
 
   let cassette_cost = 0
   let tube_cost = 0
@@ -90,6 +127,17 @@ export function calculateLineItem(
   let fixed_costs = 0
 
   for (const comp of components) {
+    // Fabric is never excludable — it's material, not hardware.
+    const isHardware = comp.name !== 'fabric'
+    if (isHardware && excludedSet.has(comp.name.toLowerCase())) {
+      // Track the excluded name for the footnote. Use the raw name once
+      // (dedup via the Set check above).
+      if (!excluded_names.includes(comp.name)) {
+        excluded_names.push(comp.name)
+      }
+      continue
+    }
+
     const price = Number(comp.usd_price)
     let cost = 0
 
@@ -135,57 +183,88 @@ export function calculateLineItem(
   return {
     blind_width: dims.blind_width,
     blind_height: dims.blind_height,
-    fabric_area: Math.round(fabric_area * 100) / 100,
-    chain_length: Math.round(chain_length * 100) / 100,
+    fabric_area: round2(fabric_area),
+    chain_length: round2(chain_length),
     costs: {
-      cassette_cost: Math.round(cassette_cost * 100) / 100,
-      tube_cost: Math.round(tube_cost * 100) / 100,
-      bottom_rail_cost: Math.round(bottom_rail_cost * 100) / 100,
-      chain_cost: Math.round(chain_cost * 100) / 100,
-      fabric_cost: Math.round(fabric_cost * 100) / 100,
-      fixed_costs: Math.round(fixed_costs * 100) / 100,
+      cassette_cost: round2(cassette_cost),
+      tube_cost: round2(tube_cost),
+      bottom_rail_cost: round2(bottom_rail_cost),
+      chain_cost: round2(chain_cost),
+      fabric_cost: round2(fabric_cost),
+      fixed_costs: round2(fixed_costs),
       line_total_usd,
     },
+    excluded_names,
+  }
+}
+
+// ============================================================
+// Quote totals — customer-type-aware
+// ============================================================
+
+/**
+ * Calculate the grand total for a property quote.
+ *
+ * Pricing logic (Batch 4):
+ * - Each line item's USD cost is marked up by the customer-type-specific
+ *   percentage (retail_markup_pct or wholesale_markup_pct).
+ * - The marked-up USD is converted to TTD using the exchange rate.
+ * - Labour (per window, in TTD) is rolled in silently — the customer never
+ *   sees a "labour" line, it's baked into the per-window total.
+ * - Installation (per window, in TTD) is applied **only for retail customers**
+ *   and shown as a separate line.
+ * - Duty and shipping are NOT applied — they belong to the Purchasing Module.
+ * - Reseller discount is gone — salesmen are staff, not a discounted tier.
+ */
+export function calculateQuoteTotals(
+  lineItems: { costs: { line_total_usd: number } }[],
+  pricing: PricingParams,
+  customerRole: UserRole
+): QuoteTotals {
+  const isRetail = customerRole === 'retail_customer'
+  const markup_pct = isRetail ? pricing.retail_markup_pct : pricing.wholesale_markup_pct
+  const priceable_count = lineItems.length
+
+  const subtotal_usd = lineItems.reduce((sum, li) => sum + li.costs.line_total_usd, 0)
+
+  // Per-window: (USD × markup) → TTD + labour
+  const marked_up_usd = subtotal_usd * (1 + markup_pct / 100)
+  const converted_ttd = marked_up_usd * pricing.exchange_rate
+  const labor_total_ttd = pricing.labor_ttd * priceable_count
+  const base_total_ttd = converted_ttd + labor_total_ttd
+
+  // Installation: retail only, per priceable window
+  const installation_ttd = isRetail
+    ? pricing.installation_ttd * priceable_count
+    : 0
+
+  const grand_total_ttd = base_total_ttd + installation_ttd
+
+  return {
+    subtotal_usd: round2(subtotal_usd),
+    markup_pct,
+    grand_total_ttd: round2(grand_total_ttd),
+    installation_ttd: round2(installation_ttd),
+    priceable_count,
   }
 }
 
 /**
- * Legacy quote total calculator. The Batch 4 rewrite replaces this with a
- * customer-type-aware version that applies retail_markup_pct or
- * wholesale_markup_pct based on the target customer, rolls labour into each
- * line item, and applies installation only for retail customers. This
- * version is kept so existing callers still compile while the rewrite is
- * in flight.
+ * Compute the customer-visible TTD price for a single line item.
+ *
+ * This is a display helper for the quote detail page and PDF — it
+ * derives the per-window price from the stored quote-header values
+ * so it doesn't need to re-run the full engine.
+ *
+ * Formula: (line_total_usd × (1 + markup_percent/100) × exchange_rate) + labor_cost_ttd
  */
-export function calculateQuoteTotals(
-  lineItems: LineItemResult[],
-  pricing: PricingParams
-): QuoteTotals {
-  const numWindows = lineItems.length
-  const subtotal_usd = lineItems.reduce((sum, li) => sum + li.costs.line_total_usd, 0)
-  const markup_usd = subtotal_usd * (pricing.markup_pct / 100)
-  const subtotal_marked_up = subtotal_usd + markup_usd
-  const duty_usd = subtotal_marked_up * (pricing.duty_pct / 100)
-  const total_usd = subtotal_marked_up + duty_usd
-  const total_ttd = total_usd * pricing.exchange_rate
-  const labor_ttd = pricing.labor_ttd * numWindows
-  const installation_ttd = pricing.installation_ttd * numWindows
-  const shipping_ttd = pricing.shipping_ttd
-
-  const grand_total_ttd = total_ttd + labor_ttd + installation_ttd + shipping_ttd
-
-  return {
-    subtotal_usd: round2(subtotal_usd),
-    markup_usd: round2(markup_usd),
-    duty_usd: round2(duty_usd),
-    total_usd: round2(total_usd),
-    total_ttd: round2(total_ttd),
-    labor_ttd: round2(labor_ttd),
-    installation_ttd: round2(installation_ttd),
-    shipping_ttd: round2(shipping_ttd),
-    discount_ttd: 0,
-    grand_total_ttd: round2(grand_total_ttd),
-  }
+export function lineItemTtd(
+  lineUsd: number,
+  markupPct: number,
+  exchangeRate: number,
+  laborTtd: number
+): number {
+  return round2(lineUsd * (1 + markupPct / 100) * exchangeRate + laborTtd)
 }
 
 function round2(n: number): number {
@@ -208,11 +287,7 @@ export interface AwningLineItemResult {
   }
 }
 
-/**
- * Awning width adds 6 inches to the window width for overhang.
- * Depth is fixed per product model.
- * Material area = awning_width * depth (square inches).
- */
+/** Awning width adds 6 inches to the window width for overhang. Depth is fixed per product model. Material area = awning_width × depth (square inches). */
 export function calculateAwningDimensions(
   windowWidth: number,
   product: AwningProduct

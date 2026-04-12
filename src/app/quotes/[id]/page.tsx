@@ -10,8 +10,24 @@ import { format } from 'date-fns'
 import { QuotePdfButton } from '@/components/quotes/quote-pdf-button'
 import { RegenerateQuoteButton } from '@/components/quotes/regenerate-quote-button'
 import { computeStaleness, buildProductLatestMap } from '@/lib/quote-staleness'
-import type { QuoteLineItem } from '@/types/database'
+import { lineItemTtd } from '@/lib/quote-engine'
+import { isStaffRole } from '@/types/database'
+import { QuoteNotesEditor } from '@/components/quotes/quote-notes-editor'
+import type { QuoteNote } from '@/types/database'
 
+/**
+ * Quote detail page — customer-facing.
+ *
+ * Batch 4: the per-component USD breakdown is replaced with a single TTD
+ * price per window, computed from the stored snapshot values:
+ *
+ *   per_window_ttd = line_total_usd × (1 + markup_percent/100) × exchange_rate + labor_cost_ttd
+ *
+ * The customer never sees individual component costs, markup percentage,
+ * exchange rate, or labour amount — only the final per-window total and
+ * the grand total. Installation is shown as a separate line for retail
+ * customers (zero for wholesale).
+ */
 export default async function QuoteDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const supabase = await createClient()
@@ -26,30 +42,51 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
 
   if (!quote) notFound()
 
+  // Viewer role — staff can edit notes; customers see read-only
+  const { data: viewerProfile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+  const isStaff = isStaffRole((viewerProfile?.role ?? 'retail_customer') as import('@/types/database').UserRole)
+
   const [
     { data: lineItems },
     { data: config },
     { data: components },
   ] = await Promise.all([
-    supabase.from('quote_line_items').select('*').eq('quote_id', id).order('room_name'),
+    supabase
+      .from('quote_line_items')
+      .select('*, windows(excluded_components)')
+      .eq('quote_id', id)
+      .order('room_name'),
     supabase.from('pricing_config').select('updated_at').eq('id', 1).single(),
     supabase.from('components').select('product_id, updated_at'),
   ])
 
-  // Group line items by room
-  const byRoom: Record<string, QuoteLineItem[]> = {}
-  for (const item of (lineItems || [])) {
+  // Snapshot values for TTD conversion
+  const markupPct = Number(quote.markup_percent)
+  const exchangeRate = Number(quote.exchange_rate)
+  const laborTtd = Number(quote.labor_cost_ttd)
+  const installPerWindow = Number(quote.installation_cost_ttd)
+
+  type LineItemWithWindow = NonNullable<typeof lineItems>[number] & {
+    windows: { excluded_components: string[] } | null
+  }
+  const items = (lineItems ?? []) as LineItemWithWindow[]
+
+  // Group by room
+  const byRoom: Record<string, LineItemWithWindow[]> = {}
+  for (const item of items) {
     if (!byRoom[item.room_name]) byRoom[item.room_name] = []
     byRoom[item.room_name].push(item)
   }
 
-  // Priceable line items (blind or awning) drive labor/install counts
-  const priceableCount = (lineItems || []).filter(li => li.line_type !== 'zero').length
-
+  const priceableCount = items.filter(li => li.line_type !== 'zero').length
   const isExpired = quote.expires_at && new Date(quote.expires_at) < new Date()
 
-  // Compute staleness
-  const productIds = Array.from(new Set((lineItems || []).map(li => li.product_id)))
+  // Staleness check
+  const productIds = Array.from(new Set(items.map(li => li.product_id)))
   const productLatest = buildProductLatestMap(components || [])
   const staleness = computeStaleness(
     quote.created_at,
@@ -57,6 +94,11 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
     config?.updated_at || null,
     productLatest
   )
+
+  /** Pretty-print a component name for the footnote. */
+  function formatName(n: string): string {
+    return n.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+  }
 
   return (
     <div>
@@ -95,7 +137,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
         </div>
       )}
 
-      {/* Quote Summary Card */}
+      {/* Quote Summary */}
       <Card className="mb-6">
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -116,109 +158,110 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
               <span>{format(new Date(quote.expires_at), 'MMM d, yyyy')}</span>
             </div>
           )}
-          {Number(quote.discount_percent) > 0 && (
-            <div className="flex justify-between text-green-600">
-              <span>Reseller Discount</span>
-              <span>-{Number(quote.discount_percent)}%</span>
-            </div>
-          )}
         </CardContent>
       </Card>
 
-      {/* Per-Room Breakdown */}
-      {Object.entries(byRoom).map(([roomName, items]) => (
-        <Card key={roomName} className="mb-6">
-          <CardHeader>
-            <CardTitle className="text-lg">{roomName}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Window</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Details</TableHead>
-                  <TableHead>Dimensions</TableHead>
-                  <TableHead className="text-right">Breakdown</TableHead>
-                  <TableHead className="text-right">Total (USD)</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {items.map(item => {
-                  const isBlind = item.line_type === 'blind'
-                  const isAwning = item.line_type === 'awning'
-                  const isZero = item.line_type === 'zero'
-                  return (
-                    <TableRow key={item.id} className={isZero ? 'text-muted-foreground' : ''}>
-                      <TableCell className="font-medium">{item.window_name}</TableCell>
-                      <TableCell>
-                        {isBlind && <Badge variant="default">Blind</Badge>}
-                        {isAwning && <Badge variant="secondary">Awning</Badge>}
-                        {isZero && <span className="text-xs italic">—</span>}
-                      </TableCell>
-                      <TableCell>
-                        {isZero ? (
-                          <span className="text-xs italic">No blind/awning</span>
-                        ) : (
-                          <div className="text-xs">
-                            {item.shade_type && <span className="capitalize">{item.shade_type}</span>}
-                            {item.colour && <span> / {item.colour}</span>}
-                          </div>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-xs">
-                        {Number(item.blind_width)}&quot;x{Number(item.blind_height)}&quot;
-                      </TableCell>
-                      <TableCell className="text-right text-xs">
-                        {isBlind && (
-                          <span className="text-muted-foreground">
-                            Cassette ${Number(item.cassette_cost).toFixed(2)} · Tube ${Number(item.tube_cost).toFixed(2)} · Rail ${Number(item.bottom_rail_cost).toFixed(2)} · Chain ${Number(item.chain_cost).toFixed(2)} · Fabric ${Number(item.fabric_cost).toFixed(2)} · Fixed ${Number(item.fixed_costs).toFixed(2)}
-                          </span>
-                        )}
-                        {isAwning && (
-                          <span className="text-muted-foreground">
-                            Frame ${Number(item.cassette_cost).toFixed(2)} · Material ${Number(item.fabric_cost).toFixed(2)} · Fixed ${Number(item.fixed_costs).toFixed(2)}
-                          </span>
-                        )}
-                        {isZero && <span>—</span>}
-                      </TableCell>
-                      <TableCell className="text-right font-semibold">${Number(item.line_total_usd).toFixed(2)}</TableCell>
-                    </TableRow>
-                  )
-                })}
-                <TableRow>
-                  <TableCell colSpan={5} className="text-right font-semibold">Room Subtotal (USD)</TableCell>
-                  <TableCell className="text-right font-semibold">
-                    ${items.reduce((sum, i) => sum + Number(i.line_total_usd), 0).toFixed(2)}
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      ))}
+      {/* Per-Room Breakdown — one TTD price per window, no per-component USD */}
+      {Object.entries(byRoom).map(([roomName, roomItems]) => {
+        const roomTotalTtd = roomItems.reduce((sum, item) => {
+          if (item.line_type === 'zero') return sum
+          return sum + lineItemTtd(Number(item.line_total_usd), markupPct, exchangeRate, laborTtd)
+        }, 0)
 
-      {/* Grand Totals */}
-      {/*
-        Batch 1 note: exchange_rate, duty, shipping, and labour rows are hidden
-        from the customer-facing view. The stored quote.total_ttd still reflects
-        whatever pricing config was in effect at quote generation; Batch 4 will
-        rewrite the engine so labour is rolled into line items and installation
-        is applied only for retail customers.
-      */}
+        return (
+          <Card key={roomName} className="mb-6">
+            <CardHeader>
+              <CardTitle className="text-lg">{roomName}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Window</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Details</TableHead>
+                    <TableHead>Dimensions</TableHead>
+                    <TableHead className="text-right">Price (TTD)</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {roomItems.map(item => {
+                    const isBlind = item.line_type === 'blind'
+                    const isAwning = item.line_type === 'awning'
+                    const isZero = item.line_type === 'zero'
+                    const windowTtd = isZero
+                      ? 0
+                      : lineItemTtd(Number(item.line_total_usd), markupPct, exchangeRate, laborTtd)
+                    const excluded = item.windows?.excluded_components ?? []
+
+                    return (
+                      <TableRow key={item.id} className={isZero ? 'text-muted-foreground' : ''}>
+                        <TableCell>
+                          <div>
+                            <span className="font-medium">{item.window_name}</span>
+                            {excluded.length > 0 && (
+                              <p className="text-[11px] italic text-muted-foreground">
+                                {excluded.map(formatName).join(', ')} not included
+                              </p>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {isBlind && <Badge variant="default">Blind</Badge>}
+                          {isAwning && <Badge variant="secondary">Awning</Badge>}
+                          {isZero && <span className="text-xs italic">—</span>}
+                        </TableCell>
+                        <TableCell>
+                          {isZero ? (
+                            <span className="text-xs italic">No blind/awning</span>
+                          ) : (
+                            <div className="text-xs">
+                              {item.shade_type && <span className="capitalize">{item.shade_type}</span>}
+                              {item.colour && <span> / {item.colour}</span>}
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-xs">
+                          {Number(item.blind_width)}&quot;x{Number(item.blind_height)}&quot;
+                        </TableCell>
+                        <TableCell className="text-right font-semibold">
+                          {isZero ? '—' : `TTD $${windowTtd.toFixed(2)}`}
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-right font-semibold">Room Subtotal</TableCell>
+                    <TableCell className="text-right font-semibold">
+                      TTD ${roomTotalTtd.toFixed(2)}
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )
+      })}
+
+      {/* Notes */}
+      <QuoteNotesEditor
+        quoteId={id}
+        initialNotes={(quote.notes ?? []) as QuoteNote[]}
+        isStaff={isStaff}
+      />
+
+      {/* Grand Total */}
       <Card>
         <CardHeader>
           <CardTitle>Grand Total</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">+ Installation ({priceableCount} window{priceableCount === 1 ? '' : 's'})</span>
-            <span>TTD ${(priceableCount * Number(quote.installation_cost_ttd)).toFixed(2)}</span>
-          </div>
-          {Number(quote.discount_percent) > 0 && (
-            <div className="flex justify-between text-green-600">
-              <span>- Reseller Discount ({Number(quote.discount_percent)}%)</span>
-              <span>applied</span>
+          {installPerWindow > 0 && priceableCount > 0 && (
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">
+                Installation ({priceableCount} window{priceableCount === 1 ? '' : 's'})
+              </span>
+              <span>TTD ${(installPerWindow * priceableCount).toFixed(2)}</span>
             </div>
           )}
           <Separator />
