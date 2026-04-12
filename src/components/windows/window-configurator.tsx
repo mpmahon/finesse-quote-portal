@@ -29,22 +29,55 @@ interface WindowConfiguratorProps {
   roomId: string
 }
 
+/** Hardware component category for grouped display. */
+interface HardwareGroup {
+  label: string
+  items: string[]
+}
+
+/** Component-name → category mapping. */
+const HARDWARE_CATEGORIES: Record<string, string> = {
+  cassette: 'Casing',
+  cassette_insert: 'Casing',
+  tube: 'Mechanism',
+  chain: 'Mechanism',
+  bottom_rail: 'Rail',
+  bottom_rail_insert: 'Rail',
+  adhesive_bottom_rail: 'Rail',
+  adhesive: 'Rail',
+  adapters: 'Mounting',
+  brackets: 'Mounting',
+  end_caps: 'Mounting',
+}
+
+/** Category display order. */
+const CATEGORY_ORDER = ['Casing', 'Rail', 'Mechanism', 'Mounting']
+
 /**
- * Identifies unique hardware component names from a product's component list.
- * Hardware = everything except `fabric`. These drive the checkboxes.
+ * Groups unique hardware component names by functional category.
+ * Hardware = everything except `fabric`. The groups drive the checkbox layout.
  */
-function getHardwareNames(components: Component[]): string[] {
+function getHardwareGroups(components: Component[]): HardwareGroup[] {
   const seen = new Set<string>()
-  const names: string[] = []
+  const byCategory: Record<string, string[]> = {}
+
   for (const c of components) {
     if (c.name === 'fabric') continue
     const key = c.name.toLowerCase()
-    if (!seen.has(key)) {
-      seen.add(key)
-      names.push(c.name)
-    }
+    if (seen.has(key)) continue
+    seen.add(key)
+    const category = HARDWARE_CATEGORIES[key] || 'Other'
+    if (!byCategory[category]) byCategory[category] = []
+    byCategory[category].push(c.name)
   }
-  return names
+
+  // Return in the predefined order, then any "Other" at the end
+  const groups: HardwareGroup[] = []
+  for (const cat of CATEGORY_ORDER) {
+    if (byCategory[cat]) groups.push({ label: cat, items: byCategory[cat] })
+  }
+  if (byCategory['Other']) groups.push({ label: 'Other', items: byCategory['Other'] })
+  return groups
 }
 
 /** Pretty-print a component name for the UI: underscore → space, title-case. */
@@ -87,9 +120,9 @@ export function WindowConfigurator({
   const selectedProduct = products.find(p => p.id === productId)
   const selectedAwning = awningProducts.find(p => p.id === awningProductId)
 
-  // Hardware component names for the selected product
-  const hardwareNames = useMemo(
-    () => (selectedProduct ? getHardwareNames(selectedProduct.components) : []),
+  // Hardware component groups for the selected product
+  const hardwareGroups = useMemo(
+    () => (selectedProduct ? getHardwareGroups(selectedProduct.components) : []),
     [selectedProduct]
   )
 
@@ -268,6 +301,7 @@ export function WindowConfigurator({
               <CardTitle>Blind Configuration</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Product selector — full width since the label text is long */}
               <div className="space-y-2">
                 <Label>Make / Model</Label>
                 <Select value={productId} onValueChange={v => { setProductId(v ?? ''); setShadeType(''); setStyle(''); setColour(''); setExcludedComponents([]) }}>
@@ -289,73 +323,85 @@ export function WindowConfigurator({
 
               {selectedProduct && (
                 <>
-                  <div className="space-y-2">
-                    <Label>Shade Type</Label>
-                    <Select value={shadeType} onValueChange={v => setShadeType(v ?? '')}>
-                      <SelectTrigger><SelectValue placeholder="Select shade type" /></SelectTrigger>
-                      <SelectContent>
-                        {selectedProduct.shade_types.map(st => (
-                          <SelectItem key={st} value={st} className="capitalize">{st}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Style</Label>
-                    <Select value={style} onValueChange={v => setStyle(v ?? '')}>
-                      <SelectTrigger><SelectValue placeholder="Select style" /></SelectTrigger>
-                      <SelectContent>
-                        {selectedProduct.styles.map(s => (
-                          <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Colour</Label>
-                    <Select value={colour} onValueChange={v => setColour(v ?? '')}>
-                      <SelectTrigger><SelectValue placeholder="Select colour" /></SelectTrigger>
-                      <SelectContent>
-                        {selectedProduct.colours.map(c => (
-                          <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Hardware component checkboxes */}
-                  {hardwareNames.length > 0 && (
-                    <div className="space-y-2">
-                      <Label className="text-xs uppercase tracking-wider text-muted-foreground">
-                        Hardware
-                      </Label>
-                      <div className="space-y-1.5">
-                        {hardwareNames.map(name => {
-                          const isExcluded = excludedComponents.includes(name.toLowerCase())
-                          return (
-                            <label
-                              key={name}
-                              className="flex items-center gap-2 rounded px-1 py-0.5 text-sm hover:bg-accent/50 cursor-pointer"
-                            >
-                              <Checkbox
-                                checked={!isExcluded}
-                                onCheckedChange={() => toggleComponent(name)}
-                              />
-                              <span className={isExcluded ? 'text-muted-foreground line-through' : ''}>
-                                {formatComponentName(name)}
-                              </span>
-                            </label>
-                          )
-                        })}
-                      </div>
-                      {excludedComponents.length > 0 && (
-                        <p className="text-xs italic text-muted-foreground">
-                          {excludedComponents.map(n => formatComponentName(n)).join(', ')} not included
-                        </p>
-                      )}
+                  {/* Options in a compact 2×2 grid */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs">Shade Type</Label>
+                      <Select value={shadeType} onValueChange={v => setShadeType(v ?? '')}>
+                        <SelectTrigger className="h-9"><SelectValue placeholder="Select" /></SelectTrigger>
+                        <SelectContent>
+                          {selectedProduct.shade_types.map(st => (
+                            <SelectItem key={st} value={st} className="capitalize">{st}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs">Style</Label>
+                      <Select value={style} onValueChange={v => setStyle(v ?? '')}>
+                        <SelectTrigger className="h-9"><SelectValue placeholder="Select" /></SelectTrigger>
+                        <SelectContent>
+                          {selectedProduct.styles.map(s => (
+                            <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs">Colour</Label>
+                      <Select value={colour} onValueChange={v => setColour(v ?? '')}>
+                        <SelectTrigger className="h-9"><SelectValue placeholder="Select" /></SelectTrigger>
+                        <SelectContent>
+                          {selectedProduct.colours.map(c => (
+                            <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Hardware — grouped by category, multi-column layout */}
+                  {hardwareGroups.length > 0 && (
+                    <>
+                      <Separator />
+                      <div>
+                        <Label className="mb-2 block text-xs uppercase tracking-wider text-muted-foreground">
+                          Hardware Components
+                        </Label>
+                        <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                          {hardwareGroups.map(group => (
+                            <div key={group.label}>
+                              <p className="mb-1 text-[11px] font-medium text-muted-foreground/70">{group.label}</p>
+                              <div className="space-y-0.5">
+                                {group.items.map(name => {
+                                  const isExcluded = excludedComponents.includes(name.toLowerCase())
+                                  return (
+                                    <label
+                                      key={name}
+                                      className="flex items-center gap-1.5 rounded px-1 py-0.5 text-[13px] hover:bg-accent/50 cursor-pointer"
+                                    >
+                                      <Checkbox
+                                        checked={!isExcluded}
+                                        onCheckedChange={() => toggleComponent(name)}
+                                        className="h-3.5 w-3.5"
+                                      />
+                                      <span className={isExcluded ? 'text-muted-foreground line-through' : ''}>
+                                        {formatComponentName(name)}
+                                      </span>
+                                    </label>
+                                  )
+                                })}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        {excludedComponents.length > 0 && (
+                          <p className="mt-2 text-xs italic text-muted-foreground">
+                            {excludedComponents.map(n => formatComponentName(n)).join(', ')} not included
+                          </p>
+                        )}
+                      </div>
+                    </>
                   )}
                 </>
               )}
