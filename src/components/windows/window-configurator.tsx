@@ -12,14 +12,24 @@ import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { Checkbox } from '@/components/ui/checkbox'
 import { toast } from 'sonner'
+import { cn } from '@/lib/utils'
 import {
   calculateBlindDimensions,
   calculateLineItem,
   calculateAwningLineItem,
   calculateAwningDimensions,
+  lineItemTtd,
 } from '@/lib/quote-engine'
+import { markupPctForRole } from '@/lib/estimates'
+import type { EstimateConfig } from '@/lib/estimates'
 import { MOUNT_TYPE_LABELS } from '@/lib/constants'
-import type { Window as WindowType, Product, Component, AwningProduct } from '@/types/database'
+import { WindowDiagram } from '@/components/windows/window-diagram'
+import type { Window as WindowType, Product, Component, AwningProduct, UserRole } from '@/types/database'
+
+interface ColourSwatch {
+  name: string
+  hex_code: string | null
+}
 
 interface WindowConfiguratorProps {
   window: WindowType
@@ -27,6 +37,14 @@ interface WindowConfiguratorProps {
   awningProducts: AwningProduct[]
   propertyId: string
   roomId: string
+  /** Staff see the internal USD component breakdown; customers never do. */
+  isStaff: boolean
+  /** Pricing config for the live TTD estimate. Null only if the config row failed to load. */
+  pricing: EstimateConfig | null
+  /** The property owner's customer type — drives the markup for the live estimate. */
+  customerRole: UserRole
+  /** Catalog colours with optional hex codes for swatch chips. */
+  colourSwatches: ColourSwatch[]
 }
 
 /** Hardware component category for grouped display. */
@@ -93,6 +111,10 @@ export function WindowConfigurator({
   awningProducts,
   propertyId,
   roomId,
+  isStaff,
+  pricing,
+  customerRole,
+  colourSwatches,
 }: WindowConfiguratorProps) {
   // Feature toggles
   const [hasBlind, setHasBlind] = useState(win.has_blind)
@@ -119,6 +141,16 @@ export function WindowConfigurator({
 
   const selectedProduct = products.find(p => p.id === productId)
   const selectedAwning = awningProducts.find(p => p.id === awningProductId)
+
+  // Map catalog colour name → hex for swatch chips + the diagram.
+  const hexByColour = useMemo(() => {
+    const map: Record<string, string> = {}
+    for (const c of colourSwatches) {
+      if (c.hex_code) map[c.name.toLowerCase()] = c.hex_code
+    }
+    return map
+  }, [colourSwatches])
+  const selectedHex = colour ? hexByColour[colour.toLowerCase()] ?? null : null
 
   // Hardware component groups for the selected product
   const hardwareGroups = useMemo(
@@ -166,9 +198,20 @@ export function WindowConfigurator({
     return calculateAwningLineItem(Number(win.width_inches), selectedAwning)
   }, [selectedAwning, win.width_inches])
 
-  const combinedTotal =
-    (blindPreview?.costs.line_total_usd || 0) +
-    (awningPreview?.costs.line_total_usd || 0)
+  // Live customer-visible TTD estimate — same math as a generated quote line
+  // (markup by customer type + conversion + labour rolled in per line).
+  const markupPct = pricing ? markupPctForRole(customerRole, pricing) : null
+  const blindTtd = pricing && markupPct !== null && hasBlind && blindPreview
+    ? lineItemTtd(blindPreview.costs.line_total_usd, markupPct, Number(pricing.exchange_rate), Number(pricing.labor_cost_ttd))
+    : null
+  const awningTtd = pricing && markupPct !== null && hasAwning && awningPreview
+    ? lineItemTtd(awningPreview.costs.line_total_usd, markupPct, Number(pricing.exchange_rate), Number(pricing.labor_cost_ttd))
+    : null
+  const totalTtd = (blindTtd ?? 0) + (awningTtd ?? 0)
+
+  const combinedUsd =
+    ((hasBlind ? blindPreview?.costs.line_total_usd : 0) || 0) +
+    ((hasAwning ? awningPreview?.costs.line_total_usd : 0) || 0)
 
   async function handleSave() {
     if (hasBlind && (!productId || !shadeType || !style || !colour)) {
@@ -238,30 +281,19 @@ export function WindowConfigurator({
             {hasBlind && (
               <>
                 <Separator />
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-muted-foreground">Blind Width:</span>{' '}
-                    <span className="font-medium">{blindDims.blind_width}&quot;</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Blind Height:</span>{' '}
-                    <span className="font-medium">{blindDims.blind_height}&quot;</span>
-                  </div>
+                <div className="flex flex-wrap gap-2 text-sm">
+                  <Badge variant="secondary">Blind {blindDims.blind_width}&quot; × {blindDims.blind_height}&quot;</Badge>
+                  {blindPreview && (
+                    <Badge variant="secondary">Chain {blindPreview.chain_length.toFixed(1)}&quot;</Badge>
+                  )}
                 </div>
               </>
             )}
             {hasAwning && awningDims && (
               <>
                 <Separator />
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-muted-foreground">Awning Width:</span>{' '}
-                    <span className="font-medium">{awningDims.awning_width}&quot;</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Awning Depth:</span>{' '}
-                    <span className="font-medium">{awningDims.awning_depth}&quot;</span>
-                  </div>
+                <div className="flex flex-wrap gap-2 text-sm">
+                  <Badge variant="secondary">Awning {awningDims.awning_width}&quot; × {awningDims.awning_depth}&quot; projection</Badge>
                 </div>
               </>
             )}
@@ -323,7 +355,7 @@ export function WindowConfigurator({
 
               {selectedProduct && (
                 <>
-                  {/* Options in a compact 2×2 grid */}
+                  {/* Options: shade type + style selects, colour as swatch chips */}
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
                       <Label className="text-xs">Shade Type</Label>
@@ -347,16 +379,35 @@ export function WindowConfigurator({
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-xs">Colour</Label>
-                      <Select value={colour} onValueChange={v => setColour(v ?? '')}>
-                        <SelectTrigger className="h-9"><SelectValue placeholder="Select" /></SelectTrigger>
-                        <SelectContent>
-                          {selectedProduct.colours.map(c => (
-                            <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">Colour</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedProduct.colours.map(c => {
+                        const hex = hexByColour[c.toLowerCase()]
+                        const active = colour === c
+                        return (
+                          <button
+                            key={c}
+                            type="button"
+                            onClick={() => setColour(c)}
+                            className={cn(
+                              'flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs capitalize transition-colors',
+                              active
+                                ? 'border-primary bg-primary/10 font-medium text-primary'
+                                : 'hover:bg-accent'
+                            )}
+                            aria-pressed={active}
+                          >
+                            <span
+                              className="inline-block h-3.5 w-3.5 rounded-full border border-black/10"
+                              style={{ backgroundColor: hex || '#e2e8f0' }}
+                            />
+                            {c}
+                          </button>
+                        )
+                      })}
                     </div>
                   </div>
 
@@ -445,14 +496,32 @@ export function WindowConfigurator({
                   {selectedAwning && (
                     <div className="space-y-2">
                       <Label>Colour</Label>
-                      <Select value={awningColour} onValueChange={v => setAwningColour(v ?? '')}>
-                        <SelectTrigger><SelectValue placeholder="Select colour" /></SelectTrigger>
-                        <SelectContent>
-                          {selectedAwning.colours.map(c => (
-                            <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedAwning.colours.map(c => {
+                          const hex = hexByColour[c.toLowerCase()]
+                          const active = awningColour === c
+                          return (
+                            <button
+                              key={c}
+                              type="button"
+                              onClick={() => setAwningColour(c)}
+                              className={cn(
+                                'flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs capitalize transition-colors',
+                                active
+                                  ? 'border-primary bg-primary/10 font-medium text-primary'
+                                  : 'hover:bg-accent'
+                              )}
+                              aria-pressed={active}
+                            >
+                              <span
+                                className="inline-block h-3.5 w-3.5 rounded-full border border-black/10"
+                                style={{ backgroundColor: hex || '#e2e8f0' }}
+                              />
+                              {c}
+                            </button>
+                          )
+                        })}
+                      </div>
                     </div>
                   )}
                 </>
@@ -474,122 +543,172 @@ export function WindowConfigurator({
         </Button>
       </div>
 
-      {/* Right: Live Cost Preview — internal/staff view only in future; for now still shows USD breakdown */}
+      {/* Right: diagram + live price. USD breakdown is staff-only. */}
       <div className="space-y-6">
-        {hasBlind && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Blind Cost Preview</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {blindPreview ? (
-                <div className="space-y-3">
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Fabric Area</span>
-                      <span>{blindPreview.fabric_area.toFixed(1)} sq in</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Chain Length</span>
-                      <span>{blindPreview.chain_length.toFixed(1)}&quot;</span>
-                    </div>
-                  </div>
-                  <Separator />
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className={blindPreview.costs.cassette_cost === 0 && excludedComponents.includes('cassette') ? 'text-muted-foreground line-through' : ''}>Cassette</span>
-                      <span>${blindPreview.costs.cassette_cost.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className={blindPreview.costs.tube_cost === 0 && excludedComponents.includes('tube') ? 'text-muted-foreground line-through' : ''}>Tube</span>
-                      <span>${blindPreview.costs.tube_cost.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Bottom Rail</span>
-                      <span>${blindPreview.costs.bottom_rail_cost.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className={blindPreview.costs.chain_cost === 0 && excludedComponents.includes('chain') ? 'text-muted-foreground line-through' : ''}>Chain</span>
-                      <span>${blindPreview.costs.chain_cost.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Fabric</span>
-                      <span>${blindPreview.costs.fabric_cost.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Fixed (Adapters, Brackets, etc.)</span>
-                      <span>${blindPreview.costs.fixed_costs.toFixed(2)}</span>
-                    </div>
-                  </div>
-                  <Separator />
-                  <div className="flex justify-between text-base font-semibold">
-                    <span>Blind Total</span>
-                    <span>${blindPreview.costs.line_total_usd.toFixed(2)}</span>
-                  </div>
-                  {blindPreview.excluded_names.length > 0 && (
-                    <p className="text-xs italic text-muted-foreground">
-                      {blindPreview.excluded_names.map(n => formatComponentName(n)).join(', ')} not included
-                    </p>
-                  )}
-                </div>
-              ) : (
-                <p className="text-sm text-muted-foreground">Select a blind to see cost preview.</p>
-              )}
-            </CardContent>
-          </Card>
-        )}
+        <Card>
+          <CardHeader>
+            <CardTitle>Preview</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <WindowDiagram
+              widthInches={Number(win.width_inches)}
+              heightInches={Number(win.height_inches)}
+              mountType={win.mount_type}
+              blindColour={selectedHex}
+              showBlind={hasBlind}
+              className="mx-auto w-full max-w-sm"
+            />
+          </CardContent>
+        </Card>
 
-        {hasAwning && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Awning Cost Preview</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {awningPreview ? (
-                <div className="space-y-3">
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Material Area</span>
-                      <span>{awningPreview.material_area.toFixed(1)} sq in</span>
-                    </div>
-                  </div>
-                  <Separator />
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span>Frame</span>
-                      <span>${awningPreview.costs.frame_cost.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Material</span>
-                      <span>${awningPreview.costs.material_cost.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Fixed (Brackets, Arms, Motor)</span>
-                      <span>${awningPreview.costs.fixed_cost.toFixed(2)}</span>
-                    </div>
-                  </div>
-                  <Separator />
-                  <div className="flex justify-between text-base font-semibold">
-                    <span>Awning Total</span>
-                    <span>${awningPreview.costs.line_total_usd.toFixed(2)}</span>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-sm text-muted-foreground">Select an awning to see cost preview.</p>
-              )}
-            </CardContent>
-          </Card>
-        )}
-
-        {hasBlind && hasAwning && combinedTotal > 0 && (
+        {(hasBlind || hasAwning) && (
           <Card className="border-primary/40">
+            <CardHeader>
+              <CardTitle>Estimated Price</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm">
+              {hasBlind && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Blind</span>
+                  <span className="font-medium">
+                    {blindTtd !== null ? `TTD $${blindTtd.toFixed(2)}` : '—'}
+                  </span>
+                </div>
+              )}
+              {hasAwning && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Awning</span>
+                  <span className="font-medium">
+                    {awningTtd !== null ? `TTD $${awningTtd.toFixed(2)}` : '—'}
+                  </span>
+                </div>
+              )}
+              <Separator />
+              <div className="flex justify-between text-base font-semibold">
+                <span>Window Total</span>
+                <span className="text-primary">
+                  {totalTtd > 0 ? `TTD $${totalTtd.toFixed(2)}` : '—'}
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Estimate updates live as you configure. Installation is added on the final quote{customerRole === 'wholesale_customer' ? ' (not applicable for wholesale)' : ''}.
+              </p>
+              {blindPreview && blindPreview.excluded_names.length > 0 && (
+                <p className="text-xs italic text-muted-foreground">
+                  {blindPreview.excluded_names.map(n => formatComponentName(n)).join(', ')} not included
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {isStaff && hasBlind && blindPreview && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                Blind Cost Breakdown
+                <Badge variant="outline" className="text-[10px] uppercase">Internal — USD</Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Fabric Area</span>
+                    <span>{blindPreview.fabric_area.toFixed(1)} sq in</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Chain Length</span>
+                    <span>{blindPreview.chain_length.toFixed(1)}&quot;</span>
+                  </div>
+                </div>
+                <Separator />
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className={blindPreview.costs.cassette_cost === 0 && excludedComponents.includes('cassette') ? 'text-muted-foreground line-through' : ''}>Cassette</span>
+                    <span>${blindPreview.costs.cassette_cost.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className={blindPreview.costs.tube_cost === 0 && excludedComponents.includes('tube') ? 'text-muted-foreground line-through' : ''}>Tube</span>
+                    <span>${blindPreview.costs.tube_cost.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Bottom Rail</span>
+                    <span>${blindPreview.costs.bottom_rail_cost.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className={blindPreview.costs.chain_cost === 0 && excludedComponents.includes('chain') ? 'text-muted-foreground line-through' : ''}>Chain</span>
+                    <span>${blindPreview.costs.chain_cost.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Fabric</span>
+                    <span>${blindPreview.costs.fabric_cost.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Fixed (Adapters, Brackets, etc.)</span>
+                    <span>${blindPreview.costs.fixed_costs.toFixed(2)}</span>
+                  </div>
+                </div>
+                <Separator />
+                <div className="flex justify-between text-base font-semibold">
+                  <span>Blind Total</span>
+                  <span>${blindPreview.costs.line_total_usd.toFixed(2)}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {isStaff && hasAwning && awningPreview && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                Awning Cost Breakdown
+                <Badge variant="outline" className="text-[10px] uppercase">Internal — USD</Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Material Area</span>
+                    <span>{awningPreview.material_area.toFixed(1)} sq in</span>
+                  </div>
+                </div>
+                <Separator />
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>Frame</span>
+                    <span>${awningPreview.costs.frame_cost.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Material</span>
+                    <span>${awningPreview.costs.material_cost.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Fixed (Brackets, Arms, Motor)</span>
+                    <span>${awningPreview.costs.fixed_cost.toFixed(2)}</span>
+                  </div>
+                </div>
+                <Separator />
+                <div className="flex justify-between text-base font-semibold">
+                  <span>Awning Total</span>
+                  <span>${awningPreview.costs.line_total_usd.toFixed(2)}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {isStaff && hasBlind && hasAwning && combinedUsd > 0 && (
+          <Card>
             <CardContent className="pt-6">
               <div className="flex items-center justify-between text-lg font-bold">
-                <span>Combined Total (USD)</span>
-                <span className="text-primary">${combinedTotal.toFixed(2)}</span>
+                <span>Combined Cost (USD)</span>
+                <span>${combinedUsd.toFixed(2)}</span>
               </div>
               <p className="mt-2 text-xs text-muted-foreground">
-                Final quote applies markup, currency conversion, labour, and installation.
+                Internal supplier cost before markup, conversion, labour, and installation.
               </p>
             </CardContent>
           </Card>

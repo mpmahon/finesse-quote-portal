@@ -3,8 +3,10 @@ import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronLeft } from 'lucide-react'
 import { WindowList } from '@/components/windows/window-list'
-import { calculateLineItem, calculateAwningLineItem } from '@/lib/quote-engine'
-import type { AwningProduct, Component } from '@/types/database'
+import { estimateWindowTtd, ESTIMATE_CONFIG_COLUMNS } from '@/lib/estimates'
+import type { EstimateWindow } from '@/lib/estimates'
+import { isCustomerRole } from '@/types/database'
+import type { UserRole } from '@/types/database'
 
 export default async function RoomPage({
   params,
@@ -18,10 +20,18 @@ export default async function RoomPage({
 
   const { data: property } = await supabase
     .from('properties')
-    .select('name')
+    .select('name, profiles!user_id(role)')
     .eq('id', id)
     .single()
   if (!property) notFound()
+
+  const ownerProfile = Array.isArray(property.profiles)
+    ? property.profiles[0] ?? null
+    : property.profiles
+  const ownerRole: UserRole =
+    ownerProfile?.role && isCustomerRole(ownerProfile.role as UserRole)
+      ? (ownerProfile.role as UserRole)
+      : 'retail_customer'
 
   const { data: room } = await supabase
     .from('rooms')
@@ -40,40 +50,27 @@ export default async function RoomPage({
     throw new Error(`Failed to load windows: ${windowsError.message}`)
   }
 
-  const { data: products } = await supabase
-    .from('products')
-    .select('*')
-    .eq('is_active', true)
-    .order('make')
+  const { data: pricing } = await supabase
+    .from('pricing_config')
+    .select(`${ESTIMATE_CONFIG_COLUMNS}, min_window_size_in, max_window_width_in, max_window_height_in`)
+    .eq('id', 1)
+    .single()
 
-  // Pre-calculate preview pricing for each configured window.
-  // Sums blind + awning costs where applicable.
-  const windowsWithPricing = (windows || []).map(w => {
-    let previewUsd: number | null = null
+  // Per-window TTD estimate via the shared estimate layer — full formula
+  // including excluded components and the owner's markup tier. No USD is
+  // exposed on this page.
+  const windowsWithPricing = (windows || []).map(w => ({
+    ...w,
+    preview_ttd: pricing
+      ? estimateWindowTtd(w as unknown as EstimateWindow, pricing, ownerRole)
+      : null,
+  }))
 
-    if (w.has_blind && w.product_id && w.products && 'components' in w.products) {
-      const components = (w.products as unknown as { components: Component[] }).components
-      if (components && components.length > 0) {
-        const result = calculateLineItem(
-          {
-            width_inches: Number(w.width_inches),
-            height_inches: Number(w.height_inches),
-            mount_type: w.mount_type,
-          },
-          components
-        )
-        previewUsd = (previewUsd || 0) + result.costs.line_total_usd
-      }
-    }
-
-    if (w.has_awning && w.awning_product_id && w.awning_products) {
-      const awningProduct = w.awning_products as unknown as AwningProduct
-      const result = calculateAwningLineItem(Number(w.width_inches), awningProduct)
-      previewUsd = (previewUsd || 0) + result.costs.line_total_usd
-    }
-
-    return { ...w, preview_usd: previewUsd }
-  })
+  const limits = {
+    min_window_size_in: Number(pricing?.min_window_size_in ?? 6),
+    max_window_width_in: Number(pricing?.max_window_width_in ?? 180),
+    max_window_height_in: Number(pricing?.max_window_height_in ?? 120),
+  }
 
   return (
     <div>
@@ -89,7 +86,7 @@ export default async function RoomPage({
         windows={windowsWithPricing}
         roomId={roomId}
         propertyId={id}
-        products={products || []}
+        limits={limits}
       />
     </div>
   )

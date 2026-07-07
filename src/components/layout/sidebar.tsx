@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { Home, FileText, Shield, Package, DollarSign, ScrollText, LogOut, Users, Palette, Umbrella } from 'lucide-react'
+import { LayoutDashboard, Home, FileText, Shield, Package, DollarSign, ScrollText, LogOut, Users, Palette, Umbrella, Images, Wrench } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import type { UserRole } from '@/types/database'
@@ -12,11 +12,19 @@ import type { UserRole } from '@/types/database'
 interface SidebarProps {
   role: UserRole
   userName: string
+  /** Called after any nav link is clicked — the mobile sheet uses this to close itself. */
+  onNavigate?: () => void
 }
 
+const ALL_ROLES: UserRole[] = ['retail_customer', 'wholesale_customer', 'salesman', 'administrator']
+const STAFF_ROLES: UserRole[] = ['salesman', 'administrator']
+
 const navItems = [
-  { href: '/properties', label: 'Properties', icon: Home, roles: ['retail_customer', 'wholesale_customer', 'salesman', 'administrator'] },
-  { href: '/quotes', label: 'Quotes', icon: FileText, roles: ['retail_customer', 'wholesale_customer', 'salesman', 'administrator'] },
+  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ALL_ROLES },
+  { href: '/properties', label: 'Properties', icon: Home, roles: ALL_ROLES },
+  { href: '/quotes', label: 'Quotes', icon: FileText, roles: ALL_ROLES },
+  { href: '/gallery', label: 'Style Gallery', icon: Images, roles: ALL_ROLES },
+  { href: '/jobs', label: 'Jobs', icon: Wrench, roles: STAFF_ROLES },
 ]
 
 const adminItems = [
@@ -29,7 +37,7 @@ const adminItems = [
   { href: '/admin/audit-logs', label: 'Audit Logs', icon: ScrollText },
 ]
 
-export function Sidebar({ role, userName }: SidebarProps) {
+export function Sidebar({ role, userName, onNavigate }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
 
@@ -41,20 +49,21 @@ export function Sidebar({ role, userName }: SidebarProps) {
   }
 
   return (
-    <aside className="flex w-64 flex-col bg-[oklch(0.18_0.02_250)] text-white">
+    <aside className="flex h-full w-64 flex-col bg-[oklch(0.18_0.02_250)] text-white">
       {/* Logo */}
-      <Link href="/properties" className="block border-b border-white/10 p-4">
+      <Link href="/dashboard" onClick={onNavigate} className="block border-b border-white/10 p-4">
         <Image src="/logo.jpg" alt="Finesse" width={232} height={232} className="w-full rounded-lg" />
       </Link>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-1 px-3 py-4">
+      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
         {navItems
           .filter(item => item.roles.includes(role))
           .map(item => (
             <Link
               key={item.href}
               href={item.href}
+              onClick={onNavigate}
               className={cn(
                 'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all',
                 pathname === item.href || pathname.startsWith(item.href + '/')
@@ -78,6 +87,7 @@ export function Sidebar({ role, userName }: SidebarProps) {
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={onNavigate}
                 className={cn(
                   'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all',
                   pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href))
@@ -101,7 +111,7 @@ export function Sidebar({ role, userName }: SidebarProps) {
           </div>
           <div className="flex-1 overflow-hidden">
             <p className="truncate text-sm font-medium text-white">{userName}</p>
-            <p className="text-xs capitalize text-white/50">{role}</p>
+            <p className="text-xs capitalize text-white/50">{role.replace(/_/g, ' ')}</p>
           </div>
         </div>
         <button

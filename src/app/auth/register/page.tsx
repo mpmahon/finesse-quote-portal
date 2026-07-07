@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from 'sonner'
+import { registerSchema } from '@/lib/validators'
 
 /**
  * Public self-registration page.
@@ -36,8 +37,9 @@ export default function RegisterPage() {
 
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault()
-    if (form.password !== form.confirm_password) {
-      toast.error('Passwords do not match')
+    const parsed = registerSchema.safeParse(form)
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? 'Please check the form')
       return
     }
     setLoading(true)

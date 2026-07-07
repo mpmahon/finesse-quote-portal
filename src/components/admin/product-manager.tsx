@@ -12,9 +12,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { MultiSelect } from '@/components/ui/multi-select'
-import { Plus, Pencil, Trash2, ChevronDown, ChevronUp, Search } from 'lucide-react'
+import { Plus, Pencil, Trash2, ChevronDown, ChevronUp, Search, Package } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
+import Image from 'next/image'
+import { ProductImageField } from '@/components/admin/product-image-field'
+import { componentSchema, productSchema } from '@/lib/validators'
 import type { Product, Component } from '@/types/database'
 
 interface ProductManagerProps {
@@ -47,14 +50,15 @@ export function ProductManager({ products, shadeTypeOptions, styleOptions, colou
     shade_types: string[]
     styles: string[]
     colours: string[]
-  }>({ make: '', model: '', shade_types: [], styles: [], colours: [] })
+    image_url: string | null
+  }>({ make: '', model: '', shade_types: [], styles: [], colours: [], image_url: null })
   const [compForm, setCompForm] = useState({ name: '', unit: 'per_inch' as string, usd_price: '' })
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
   function openNewProduct() {
     setEditProduct(null)
-    setForm({ make: '', model: '', shade_types: [], styles: [], colours: [] })
+    setForm({ make: '', model: '', shade_types: [], styles: [], colours: [], image_url: null })
     setProductDialog(true)
   }
 
@@ -66,6 +70,7 @@ export function ProductManager({ products, shadeTypeOptions, styleOptions, colou
       shade_types: p.shade_types,
       styles: p.styles,
       colours: p.colours,
+      image_url: p.image_url ?? null,
     })
     setProductDialog(true)
   }
@@ -85,19 +90,20 @@ export function ProductManager({ products, shadeTypeOptions, styleOptions, colou
   }
 
   async function saveProduct() {
-    if (!form.make || !form.model) { toast.error('Make and model required'); return }
-    if (form.shade_types.length === 0 || form.styles.length === 0 || form.colours.length === 0) {
-      toast.error('Select at least one shade type, style, and colour')
+    const parsed = productSchema.safeParse(form)
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? 'Please check the product details')
       return
     }
     setLoading(true)
     const supabase = createClient()
     const data = {
-      make: form.make.trim(),
-      model: form.model.trim(),
-      shade_types: form.shade_types,
-      styles: form.styles,
-      colours: form.colours,
+      make: parsed.data.make.trim(),
+      model: parsed.data.model.trim(),
+      shade_types: parsed.data.shade_types,
+      styles: parsed.data.styles,
+      colours: parsed.data.colours,
+      image_url: form.image_url,
     }
 
     if (editProduct) {
@@ -113,14 +119,18 @@ export function ProductManager({ products, shadeTypeOptions, styleOptions, colou
   }
 
   async function saveComponent() {
-    if (!compForm.name || !compForm.usd_price) { toast.error('All fields required'); return }
+    const parsed = componentSchema.safeParse(compForm)
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? 'Please check the component details')
+      return
+    }
     setLoading(true)
     const supabase = createClient()
     const data = {
       product_id: targetProductId,
-      name: compForm.name.trim(),
-      unit: compForm.unit,
-      usd_price: parseFloat(compForm.usd_price),
+      name: parsed.data.name.trim(),
+      unit: parsed.data.unit,
+      usd_price: parsed.data.usd_price,
     }
 
     if (editComponent) {
@@ -200,6 +210,11 @@ export function ProductManager({ products, shadeTypeOptions, styleOptions, colou
                 emptyText="No colours in catalog"
               />
             </div>
+            <ProductImageField
+              value={form.image_url}
+              onChange={url => setForm(f => ({ ...f, image_url: url }))}
+              folder="products"
+            />
             {(shadeTypeOptions.length === 0 || styleOptions.length === 0 || colourOptions.length === 0) && (
               <p className="text-xs text-amber-600">
                 Missing options? Add them in{' '}
@@ -276,6 +291,20 @@ export function ProductManager({ products, shadeTypeOptions, styleOptions, colou
                   <button onClick={() => setExpandedId(expandedId === product.id ? null : product.id)}>
                     {expandedId === product.id ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                   </button>
+                  {product.image_url ? (
+                    <Image
+                      src={product.image_url}
+                      alt={`${product.make} ${product.model}`}
+                      width={56}
+                      height={42}
+                      className="h-10 w-14 rounded-md border object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="flex h-10 w-14 items-center justify-center rounded-md border bg-muted">
+                      <Package className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                  )}
                   <div>
                     <CardTitle className="text-base">{product.make} {product.model}</CardTitle>
                     <div className="mt-1 flex flex-wrap gap-1">

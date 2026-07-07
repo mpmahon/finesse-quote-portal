@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge'
 import { MultiSelect } from '@/components/ui/multi-select'
 import { Plus, Pencil, Trash2, Search } from 'lucide-react'
 import { toast } from 'sonner'
+import { ProductImageField } from '@/components/admin/product-image-field'
 import type { AwningProduct } from '@/types/database'
 
 interface AwningProductManagerProps {
@@ -33,6 +34,7 @@ export function AwningProductManager({ products, colourOptions }: AwningProductM
     fixed_cost_usd: '',
     colours: [] as string[],
     is_active: true,
+    image_url: null as string | null,
   })
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -50,7 +52,7 @@ export function AwningProductManager({ products, colourOptions }: AwningProductM
     setForm({
       make: '', model: '', depth_inches: '',
       frame_unit_price_usd: '', material_unit_price_usd: '', fixed_cost_usd: '',
-      colours: [], is_active: true,
+      colours: [], is_active: true, image_url: null,
     })
     setOpen(true)
   }
@@ -66,6 +68,7 @@ export function AwningProductManager({ products, colourOptions }: AwningProductM
       fixed_cost_usd: String(p.fixed_cost_usd),
       colours: p.colours,
       is_active: p.is_active,
+      image_url: p.image_url ?? null,
     })
     setOpen(true)
   }
@@ -90,6 +93,7 @@ export function AwningProductManager({ products, colourOptions }: AwningProductM
       fixed_cost_usd: parseFloat(form.fixed_cost_usd) || 0,
       colours: form.colours,
       is_active: form.is_active,
+      image_url: form.image_url,
       updated_at: new Date().toISOString(),
     }
 
@@ -204,6 +208,11 @@ export function AwningProductManager({ products, colourOptions }: AwningProductM
                   <Link href="/admin/catalog" className="underline">Admin &gt; Catalog</Link>.
                 </p>
               )}
+              <ProductImageField
+                value={form.image_url}
+                onChange={url => setForm(f => ({ ...f, image_url: url }))}
+                folder="awning-products"
+              />
             </div>
             <div className="flex items-center justify-between rounded-md border p-3">
               <div>

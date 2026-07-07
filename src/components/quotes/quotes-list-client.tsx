@@ -2,12 +2,15 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { FileText, Search, User, AlertTriangle } from 'lucide-react'
 import { format } from 'date-fns'
+import { QuoteStatusBadge } from '@/components/quotes/quote-status-badge'
+import { QUOTE_STATUSES, QUOTE_STATUS_LABELS } from '@/lib/constants'
 import type { StaleReason } from '@/lib/quote-staleness'
 
 interface Quote {
@@ -15,6 +18,7 @@ interface Quote {
   created_at: string
   expires_at: string | null
   total_ttd: number
+  /** Effective lifecycle status (already resolved by the server page). */
   status: string
   properties: { name: string } | null
   profiles?: {
@@ -33,8 +37,14 @@ interface QuotesListClientProps {
 }
 
 export function QuotesListClient({ quotes, showCustomer = false }: QuotesListClientProps) {
+  const searchParams = useSearchParams()
+  const initialStatus = searchParams.get('status')
   const [search, setSearch] = useState('')
-  const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [statusFilter, setStatusFilter] = useState<string>(
+    initialStatus && ([...QUOTE_STATUSES, 'stale'] as string[]).includes(initialStatus)
+      ? initialStatus
+      : 'all'
+  )
 
   const staleCount = quotes.filter(q => q.is_stale).length
 
@@ -49,13 +59,11 @@ export function QuotesListClient({ quotes, showCustomer = false }: QuotesListCli
       customerName.toLowerCase().includes(search.toLowerCase()) ||
       customerEmail.toLowerCase().includes(search.toLowerCase())
 
-    const isExpired = q.expires_at && new Date(q.expires_at) < new Date()
-    const effectiveStatus = isExpired ? 'expired' : q.status
     let matchesStatus = true
     if (statusFilter === 'stale') {
       matchesStatus = !!q.is_stale
     } else if (statusFilter !== 'all') {
-      matchesStatus = effectiveStatus === statusFilter
+      matchesStatus = q.status === statusFilter
     }
 
     return matchesSearch && matchesStatus
@@ -90,7 +98,7 @@ export function QuotesListClient({ quotes, showCustomer = false }: QuotesListCli
         </div>
       )}
 
-      {quotes.length > 3 && (
+      {(quotes.length > 3 || statusFilter !== 'all') && (
         <div className="mb-4 flex flex-col gap-3 sm:flex-row">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -107,9 +115,9 @@ export function QuotesListClient({ quotes, showCustomer = false }: QuotesListCli
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="draft">Draft</SelectItem>
-              <SelectItem value="final">Final</SelectItem>
-              <SelectItem value="expired">Expired</SelectItem>
+              {QUOTE_STATUSES.map(s => (
+                <SelectItem key={s} value={s}>{QUOTE_STATUS_LABELS[s]}</SelectItem>
+              ))}
               {staleCount > 0 && (
                 <SelectItem value="stale">Affected by pricing change</SelectItem>
               )}
@@ -123,11 +131,10 @@ export function QuotesListClient({ quotes, showCustomer = false }: QuotesListCli
       ) : (
         <div className="space-y-3">
           {filtered.map(q => {
-            const isExpired = q.expires_at && new Date(q.expires_at) < new Date()
             return (
               <Link key={q.id} href={`/quotes/${q.id}`}>
                 <Card className={`transition-colors hover:bg-accent/50 ${q.is_stale ? 'border-amber-500/40' : ''}`}>
-                  <CardContent className="flex items-center justify-between py-4">
+                  <CardContent className="flex flex-col gap-2 py-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center gap-2">
                         <p className="font-medium">{q.properties?.name || 'Unknown Property'}</p>
@@ -152,11 +159,9 @@ export function QuotesListClient({ quotes, showCustomer = false }: QuotesListCli
                         {format(new Date(q.created_at), 'MMM d, yyyy h:mm a')}
                       </p>
                     </div>
-                    <div className="text-right">
+                    <div className="flex items-center justify-between gap-2 sm:flex-col sm:items-end">
                       <p className="text-lg font-semibold">${Number(q.total_ttd).toFixed(2)} TTD</p>
-                      <Badge variant={isExpired ? 'destructive' : q.status === 'final' ? 'default' : 'secondary'}>
-                        {isExpired ? 'Expired' : q.status}
-                      </Badge>
+                      <QuoteStatusBadge status={q.status} />
                     </div>
                   </CardContent>
                 </Card>

@@ -5,9 +5,10 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import { PropertyList } from '@/components/properties/property-list'
-import { calculateLineItem, calculateAwningLineItem } from '@/lib/quote-engine'
-import { isStaffRole } from '@/types/database'
-import type { AwningProduct, Component, UserRole } from '@/types/database'
+import { estimateWindowsTotals, ESTIMATE_CONFIG_COLUMNS } from '@/lib/estimates'
+import type { EstimateWindow } from '@/lib/estimates'
+import { isStaffRole, isCustomerRole } from '@/types/database'
+import type { UserRole } from '@/types/database'
 
 /**
  * Properties page — the primary landing view for customers, salesmen, and admins.
@@ -32,15 +33,14 @@ export default async function PropertiesPage() {
   const isStaff = isStaffRole(role)
   const isAdmin = role === 'administrator'
 
-  // Pull exchange_rate once so the list cards can display an estimate in TTD
-  // without leaking USD into the customer-facing UI. Exchange rate is kept in
-  // the DB but is never shown as a number (per Batch 1 UI-hiding rules).
+  // Pull the pricing columns the shared estimate layer needs so card totals
+  // match a freshly generated quote to the cent (WS1 §5.6). No USD or raw
+  // rate is ever rendered — only the final TTD figure.
   const { data: pricing } = await supabase
     .from('pricing_config')
-    .select('exchange_rate')
+    .select(ESTIMATE_CONFIG_COLUMNS)
     .eq('id', 1)
     .single()
-  const exchangeRate = Number(pricing?.exchange_rate ?? 7)
 
   // Staff needs the full customer list for the Add-Property customer picker.
   // Customers don't see the picker, so skip the query for them.
@@ -75,7 +75,7 @@ export default async function PropertiesPage() {
     .from('properties')
     .select(`
       *,
-      profiles!user_id(id, first_name, last_name, email),
+      profiles!user_id(id, first_name, last_name, email, role),
       rooms(
         id,
         windows(
@@ -104,71 +104,53 @@ export default async function PropertiesPage() {
     throw new Error(`Failed to load properties: ${propertiesError.message}`)
   }
 
-  // Calculate totals for each property
+  // Calculate totals for each property via the shared estimate layer.
   const normalized = (properties || []).map(p => {
-    const rooms = (p.rooms || []) as Array<{
-      id: string
-      windows: Array<{
-        width_inches: number
-        height_inches: number
-        mount_type: 'inside' | 'outside'
-        has_blind: boolean
-        has_awning: boolean
-        product_id: string | null
-        awning_product_id: string | null
-        excluded_components: string[]
-        products: { components: Component[] } | null
-        awning_products: AwningProduct | null
-      }>
-    }>
+    const rooms = (p.rooms || []) as Array<{ id: string; windows: EstimateWindow[] }>
+    const owner = Array.isArray(p.profiles) ? p.profiles[0] ?? null : p.profiles
 
-    let totalUsd = 0
     let totalWindows = 0
     let priceableWindows = 0
     let configuredWindows = 0
     let noBlindWindows = 0
+    const allWindows: EstimateWindow[] = []
 
     for (const room of rooms) {
       for (const w of room.windows || []) {
         totalWindows++
+        allWindows.push(w)
         const needsConfig = w.has_blind || w.has_awning
         if (needsConfig) priceableWindows++
         if (!w.has_blind && !w.has_awning) noBlindWindows++
-
-        if (w.has_blind && w.product_id && w.products?.components?.length) {
-          const result = calculateLineItem(
-            {
-              width_inches: Number(w.width_inches),
-              height_inches: Number(w.height_inches),
-              mount_type: w.mount_type,
-            },
-            w.products.components,
-            w.excluded_components || []
-          )
-          totalUsd += result.costs.line_total_usd
-        }
-
-        if (w.has_awning && w.awning_product_id && w.awning_products) {
-          const result = calculateAwningLineItem(Number(w.width_inches), w.awning_products)
-          totalUsd += result.costs.line_total_usd
-        }
-
         const blindOk = !w.has_blind || !!w.product_id
         const awningOk = !w.has_awning || !!w.awning_product_id
         if (needsConfig && blindOk && awningOk) configuredWindows++
       }
     }
 
+    // Markup depends on the property OWNER's customer type — staff see the
+    // owner's pricing; customers viewing their own list see their own.
+    const ownerRole: UserRole =
+      owner?.role && isCustomerRole(owner.role as UserRole)
+        ? (owner.role as UserRole)
+        : isCustomerRole(role)
+          ? role
+          : 'retail_customer'
+
+    const totals = pricing
+      ? estimateWindowsTotals(allWindows, pricing, ownerRole)
+      : null
+
     return {
       ...p,
-      profiles: Array.isArray(p.profiles) ? p.profiles[0] ?? null : p.profiles,
+      profiles: owner,
       room_count: rooms.length,
       window_count: totalWindows,
       priceable_count: priceableWindows,
       configured_count: configuredWindows,
       no_blind_count: noBlindWindows,
-      // Rough TTD estimate for the card. Pre-markup. Batch 4 will refine.
-      preview_total_ttd: totalUsd * exchangeRate,
+      // Full-formula TTD estimate — matches a generated quote to the cent.
+      preview_total_ttd: totals?.grand_total_ttd ?? 0,
     }
   })
 

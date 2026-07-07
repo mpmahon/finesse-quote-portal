@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import {
   calculateLineItem,
   calculateAwningLineItem,
@@ -54,6 +55,13 @@ interface ZeroRow {
  * - Sets `created_by` on the quote insert.
  * - Duty, shipping, and reseller discount are NOT applied (kept in DB for
  *   the future Purchasing Module, but zeroed out on the quote snapshot).
+ *
+ * WS1 changes:
+ * - Customers have no direct INSERT on quotes/quote_line_items (migration
+ *   00009). Authorization happens here — the property must be visible to the
+ *   caller via RLS — and then the inserts run on the service-role client.
+ * - Window dimension limits from pricing_config are enforced server-side.
+ * - expires_at honours pricing_config.quote_validity_days.
  */
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -123,6 +131,23 @@ export async function POST(request: Request) {
 
   if (!windows || windows.length === 0) {
     return NextResponse.json({ error: 'No windows found for this property' }, { status: 400 })
+  }
+
+  // Enforce window dimension limits (WS1 §5.4) — mirror of the client-side
+  // zod check, so out-of-range windows can't reach a quote via direct calls.
+  const minSize = Number(config.min_window_size_in)
+  const maxWidth = Number(config.max_window_width_in)
+  const maxHeight = Number(config.max_window_height_in)
+  const outOfRange = windows.filter(w => {
+    const width = Number(w.width_inches)
+    const height = Number(w.height_inches)
+    return width < minSize || height < minSize || width > maxWidth || height > maxHeight
+  })
+  if (outOfRange.length > 0) {
+    const names = outOfRange.map(w => w.name).join(', ')
+    return NextResponse.json({
+      error: `Window dimensions out of range (min ${minSize}", max ${maxWidth}"W × ${maxHeight}"H): ${names}. Update the window measurements before quoting.`,
+    }, { status: 400 })
   }
 
   // Validate: any toggled-on product must be configured
@@ -228,7 +253,7 @@ export async function POST(request: Request) {
   const priceableItems: { costs: { line_total_usd: number } }[] = []
   for (const row of rows) {
     if (row.type === 'blind' || row.type === 'awning') {
-      priceableItems.push({ costs: { line_total_usd: row.type === 'blind' ? row.result.costs.line_total_usd : row.result.costs.line_total_usd } })
+      priceableItems.push({ costs: { line_total_usd: row.result.costs.line_total_usd } })
     }
   }
 
@@ -242,13 +267,28 @@ export async function POST(request: Request) {
 
   const totals = calculateQuoteTotals(priceableItems, pricingParams, customerRole)
 
-  const { data: quote, error: quoteError } = await supabase
+  // Quote + line item inserts run on the service-role client: the caller has
+  // already been authorized (property visible via RLS above), and customers
+  // intentionally have no direct INSERT on these tables.
+  const admin = createAdminClient()
+  const validityDays = Math.max(1, Math.round(Number(config.quote_validity_days) || 14))
+  const expiresAt = new Date(Date.now() + validityDays * 24 * 60 * 60 * 1000).toISOString()
+
+  // Staff-created quotes start as drafts (explicit "Send Quote" step);
+  // customer self-generated quotes are already in the customer's hands, so
+  // they go straight to 'sent' and can be accepted immediately.
+  const isSelfService = user.id === property.user_id
+  const initialStatus = isSelfService ? 'sent' : 'draft'
+
+  const { data: quote, error: quoteError } = await admin
     .from('quotes')
     .insert({
       user_id: property.user_id,
       created_by: user.id,
       property_id,
-      status: 'final',
+      status: initialStatus,
+      sent_at: isSelfService ? new Date().toISOString() : null,
+      expires_at: expiresAt,
       exchange_rate: pricingParams.exchange_rate,
       markup_percent: totals.markup_pct,
       discount_percent: 0,
@@ -337,10 +377,14 @@ export async function POST(request: Request) {
   })
 
   if (lineItemsToInsert.length > 0) {
-    const { error: lineItemError } = await supabase
+    const { error: lineItemError } = await admin
       .from('quote_line_items')
       .insert(lineItemsToInsert)
-    if (lineItemError) return NextResponse.json({ error: lineItemError.message }, { status: 500 })
+    if (lineItemError) {
+      // Don't leave a header-only quote behind if line items failed.
+      await admin.from('quotes').delete().eq('id', quote.id)
+      return NextResponse.json({ error: lineItemError.message }, { status: 500 })
+    }
   }
 
   return NextResponse.json({ quote_id: quote.id, totals })

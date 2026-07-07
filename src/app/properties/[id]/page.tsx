@@ -4,8 +4,10 @@ import Link from 'next/link'
 import { ChevronLeft } from 'lucide-react'
 import { RoomList } from '@/components/rooms/room-list'
 import { GenerateQuoteButton } from '@/components/quotes/generate-quote-button'
-import { calculateLineItem, calculateAwningLineItem } from '@/lib/quote-engine'
-import type { AwningProduct, Component } from '@/types/database'
+import { estimateWindowsTotals, ESTIMATE_CONFIG_COLUMNS } from '@/lib/estimates'
+import type { EstimateWindow } from '@/lib/estimates'
+import { isCustomerRole } from '@/types/database'
+import type { UserRole } from '@/types/database'
 
 export default async function PropertyPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -15,11 +17,26 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
 
   const { data: property } = await supabase
     .from('properties')
-    .select('*')
+    .select('*, profiles!user_id(role)')
     .eq('id', id)
     .single()
 
   if (!property) notFound()
+
+  // Room estimates use the property OWNER's markup tier (WS1 §5.6).
+  const ownerProfile = Array.isArray(property.profiles)
+    ? property.profiles[0] ?? null
+    : property.profiles
+  const ownerRole: UserRole =
+    ownerProfile?.role && isCustomerRole(ownerProfile.role as UserRole)
+      ? (ownerProfile.role as UserRole)
+      : 'retail_customer'
+
+  const { data: pricing } = await supabase
+    .from('pricing_config')
+    .select(ESTIMATE_CONFIG_COLUMNS)
+    .eq('id', 1)
+    .single()
 
   const { data: rooms, error: roomsError } = await supabase
     .from('rooms')
@@ -46,22 +63,11 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
     throw new Error(`Failed to load rooms: ${roomsError.message}`)
   }
 
-  // Calculate per-room totals based on configured windows
+  // Per-room totals via the shared estimate layer — full formula, matches a
+  // generated quote to the cent.
   const roomsWithTotals = (rooms || []).map(room => {
-    const windows = (room.windows || []) as Array<{
-      width_inches: number
-      height_inches: number
-      mount_type: 'inside' | 'outside'
-      has_blind: boolean
-      has_awning: boolean
-      product_id: string | null
-      awning_product_id: string | null
-      excluded_components: string[]
-      products: { components: Component[] } | null
-      awning_products: AwningProduct | null
-    }>
+    const windows = (room.windows || []) as EstimateWindow[]
 
-    let totalUsd = 0
     let configuredCount = 0
     let priceableCount = 0
     let noBlindCount = 0
@@ -70,36 +76,12 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
       const needsConfig = w.has_blind || w.has_awning
       if (needsConfig) priceableCount++
       if (!w.has_blind && !w.has_awning) noBlindCount++
-
-      let windowConfigured = false
-
-      if (w.has_blind && w.product_id && w.products?.components?.length) {
-        const result = calculateLineItem(
-          {
-            width_inches: Number(w.width_inches),
-            height_inches: Number(w.height_inches),
-            mount_type: w.mount_type,
-          },
-          w.products.components,
-          w.excluded_components || []
-        )
-        totalUsd += result.costs.line_total_usd
-        windowConfigured = true
-      }
-
-      if (w.has_awning && w.awning_product_id && w.awning_products) {
-        const result = calculateAwningLineItem(Number(w.width_inches), w.awning_products)
-        totalUsd += result.costs.line_total_usd
-        windowConfigured = true
-      }
-
-      // A window counts as "configured" only when all its toggled features are set
       const blindOk = !w.has_blind || !!w.product_id
       const awningOk = !w.has_awning || !!w.awning_product_id
-      if (needsConfig && blindOk && awningOk && windowConfigured) {
-        configuredCount++
-      }
+      if (needsConfig && blindOk && awningOk) configuredCount++
     }
+
+    const totals = pricing ? estimateWindowsTotals(windows, pricing, ownerRole) : null
 
     return {
       ...room,
@@ -107,7 +89,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
       configured_count: configuredCount,
       priceable_count: priceableCount,
       no_blind_count: noBlindCount,
-      preview_total_usd: totalUsd,
+      preview_total_ttd: totals?.grand_total_ttd ?? 0,
     }
   })
 

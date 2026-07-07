@@ -22,11 +22,85 @@ interface CatalogManagerProps {
   colours: CatalogItem[]
 }
 
+interface CatalogSectionProps {
+  title: string
+  table: CatalogTable
+  items: CatalogItem[]
+  onNew: (table: CatalogTable) => void
+  onEdit: (table: CatalogTable, item: CatalogItem) => void
+  onDelete: (table: CatalogTable, item: CatalogItem) => void
+}
+
+/**
+ * One catalog tab's card (hoisted out of CatalogManager per
+ * react-hooks/static-components). Colours render a swatch dot when a
+ * hex_code is set.
+ */
+function CatalogSection({ title, table, items, onNew, onEdit, onDelete }: CatalogSectionProps) {
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between pb-3">
+        <CardTitle className="text-lg">{title}</CardTitle>
+        <Button size="sm" onClick={() => onNew(table)}>
+          <Plus className="mr-2 h-4 w-4" />
+          Add
+        </Button>
+      </CardHeader>
+      <CardContent>
+        {items.length === 0 ? (
+          <p className="py-4 text-center text-sm text-muted-foreground">
+            No items yet. Add your first {title.toLowerCase().slice(0, -1)}.
+          </p>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {items.map(item => (
+              <div
+                key={item.id}
+                className="group flex items-center gap-2 rounded-full border bg-card px-3 py-1.5 text-sm transition-colors hover:bg-accent"
+              >
+                {table === 'colours' && (
+                  <span
+                    className="inline-block h-3.5 w-3.5 rounded-full border border-black/10"
+                    style={{ backgroundColor: item.hex_code || '#e2e8f0' }}
+                  />
+                )}
+                <span className={`capitalize ${!item.is_active ? 'text-muted-foreground line-through' : ''}`}>
+                  {item.name}
+                </span>
+                {!item.is_active && (
+                  <Badge variant="outline" className="text-[10px]">inactive</Badge>
+                )}
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => onEdit(table, item)}
+                    className="rounded p-0.5 hover:bg-accent"
+                    title="Edit"
+                  >
+                    <Pencil className="h-3 w-3" />
+                  </button>
+                  <button
+                    onClick={() => onDelete(table, item)}
+                    className="rounded p-0.5 text-destructive hover:bg-destructive/10"
+                    title="Delete"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
 export function CatalogManager({ shadeTypes, styles, colours }: CatalogManagerProps) {
   const [open, setOpen] = useState(false)
   const [targetTable, setTargetTable] = useState<CatalogTable>('shade_types')
   const [editItem, setEditItem] = useState<CatalogItem | null>(null)
   const [name, setName] = useState('')
+  const [hexCode, setHexCode] = useState('')
   const [isActive, setIsActive] = useState(true)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -35,6 +109,7 @@ export function CatalogManager({ shadeTypes, styles, colours }: CatalogManagerPr
     setTargetTable(table)
     setEditItem(null)
     setName('')
+    setHexCode('')
     setIsActive(true)
     setOpen(true)
   }
@@ -43,19 +118,26 @@ export function CatalogManager({ shadeTypes, styles, colours }: CatalogManagerPr
     setTargetTable(table)
     setEditItem(item)
     setName(item.name)
+    setHexCode(item.hex_code || '')
     setIsActive(item.is_active)
     setOpen(true)
   }
 
   async function handleSave() {
     if (!name.trim()) { toast.error('Name is required'); return }
+    if (targetTable === 'colours' && hexCode && !/^#[0-9a-fA-F]{6}$/.test(hexCode)) {
+      toast.error('Hex code must look like #aabbcc'); return
+    }
     setLoading(true)
     const supabase = createClient()
 
-    const data = {
+    const data: Record<string, unknown> = {
       name: name.trim().toLowerCase(),
       is_active: isActive,
       updated_at: new Date().toISOString(),
+    }
+    if (targetTable === 'colours') {
+      data.hex_code = hexCode ? hexCode.toLowerCase() : null
     }
 
     if (editItem) {
@@ -117,63 +199,6 @@ export function CatalogManager({ shadeTypes, styles, colours }: CatalogManagerPr
     router.refresh()
   }
 
-  function CatalogSection({
-    title,
-    table,
-    items,
-  }: { title: string; table: CatalogTable; items: CatalogItem[] }) {
-    return (
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between pb-3">
-          <CardTitle className="text-lg">{title}</CardTitle>
-          <Button size="sm" onClick={() => openNew(table)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add
-          </Button>
-        </CardHeader>
-        <CardContent>
-          {items.length === 0 ? (
-            <p className="py-4 text-center text-sm text-muted-foreground">
-              No items yet. Add your first {title.toLowerCase().slice(0, -1)}.
-            </p>
-          ) : (
-            <div className="flex flex-wrap gap-2">
-              {items.map(item => (
-                <div
-                  key={item.id}
-                  className="group flex items-center gap-2 rounded-full border bg-card px-3 py-1.5 text-sm transition-colors hover:bg-accent"
-                >
-                  <span className={`capitalize ${!item.is_active ? 'text-muted-foreground line-through' : ''}`}>
-                    {item.name}
-                  </span>
-                  {!item.is_active && (
-                    <Badge variant="outline" className="text-[10px]">inactive</Badge>
-                  )}
-                  <div className="flex gap-1">
-                    <button
-                      onClick={() => openEdit(table, item)}
-                      className="rounded p-0.5 hover:bg-accent"
-                      title="Edit"
-                    >
-                      <Pencil className="h-3 w-3" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(table, item)}
-                      className="rounded p-0.5 text-destructive hover:bg-destructive/10"
-                      title="Delete"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    )
-  }
-
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -195,6 +220,28 @@ export function CatalogManager({ shadeTypes, styles, colours }: CatalogManagerPr
               />
               <p className="text-xs text-muted-foreground">Stored in lowercase. Existing products using this value are not affected by renames.</p>
             </div>
+            {targetTable === 'colours' && (
+              <div className="space-y-2">
+                <Label htmlFor="catalog-hex">Swatch Colour (hex)</Label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    aria-label="Pick swatch colour"
+                    value={/^#[0-9a-fA-F]{6}$/.test(hexCode) ? hexCode : '#e2e8f0'}
+                    onChange={e => setHexCode(e.target.value)}
+                    className="h-9 w-12 cursor-pointer rounded border p-0.5"
+                  />
+                  <Input
+                    id="catalog-hex"
+                    value={hexCode}
+                    onChange={e => setHexCode(e.target.value)}
+                    placeholder="#aabbcc"
+                    className="flex-1"
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">Shown as the swatch chip in the configurator and the blind colour in diagrams.</p>
+              </div>
+            )}
             <div className="flex items-center justify-between rounded-md border p-3">
               <div>
                 <Label htmlFor="catalog-active">Active</Label>
@@ -222,13 +269,13 @@ export function CatalogManager({ shadeTypes, styles, colours }: CatalogManagerPr
           <TabsTrigger value="colours">Colours ({colours.length})</TabsTrigger>
         </TabsList>
         <TabsContent value="shade_types">
-          <CatalogSection title="Shade Types" table="shade_types" items={shadeTypes} />
+          <CatalogSection title="Shade Types" table="shade_types" items={shadeTypes} onNew={openNew} onEdit={openEdit} onDelete={handleDelete} />
         </TabsContent>
         <TabsContent value="styles">
-          <CatalogSection title="Styles" table="styles" items={styles} />
+          <CatalogSection title="Styles" table="styles" items={styles} onNew={openNew} onEdit={openEdit} onDelete={handleDelete} />
         </TabsContent>
         <TabsContent value="colours">
-          <CatalogSection title="Colours" table="colours" items={colours} />
+          <CatalogSection title="Colours" table="colours" items={colours} onNew={openNew} onEdit={openEdit} onDelete={handleDelete} />
         </TabsContent>
       </Tabs>
     </>

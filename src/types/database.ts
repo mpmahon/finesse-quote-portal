@@ -5,7 +5,25 @@ export type UserRole =
   | 'administrator'
 export type MountType = 'inside' | 'outside'
 export type UnitType = 'per_inch' | 'per_sq_inch' | 'fixed'
-export type QuoteStatus = 'draft' | 'final' | 'expired'
+/** 'final' is a legacy alias migrated to 'sent'; never write it. 'expired' is derived at read time from expires_at while sent. */
+export type QuoteStatus = 'draft' | 'sent' | 'accepted' | 'declined' | 'expired' | 'final'
+export type JobStatus = 'pending' | 'measure' | 'fabricate' | 'install' | 'complete' | 'on_hold'
+
+/**
+ * Effective lifecycle status for display and transition checks: a 'sent'
+ * quote past its expires_at reads as 'expired' without any cron; legacy
+ * 'final' rows read as 'sent'.
+ */
+export function effectiveQuoteStatus(quote: {
+  status: QuoteStatus
+  expires_at: string | null
+}): Exclude<QuoteStatus, 'final'> {
+  const status = quote.status === 'final' ? 'sent' : quote.status
+  if (status === 'sent' && quote.expires_at && new Date(quote.expires_at) < new Date()) {
+    return 'expired'
+  }
+  return status
+}
 
 /** True when the role is a staff member (not a customer). */
 export function isStaffRole(role: UserRole): boolean {
@@ -53,6 +71,8 @@ export interface Product {
   shade_types: string[]
   styles: string[]
   colours: string[]
+  /** Public URL of the product photo (product-images storage bucket). */
+  image_url: string | null
   is_active: boolean
   created_at: string
   updated_at: string
@@ -67,6 +87,8 @@ export interface AwningProduct {
   material_unit_price_usd: number
   fixed_cost_usd: number
   colours: string[]
+  /** Public URL of the product photo (product-images storage bucket). */
+  image_url: string | null
   is_active: boolean
   created_at: string
   updated_at: string
@@ -132,6 +154,32 @@ export interface Quote {
   notes: QuoteNote[]
   created_at: string
   expires_at: string | null
+  /** Lifecycle stamps (WS4). */
+  sent_at: string | null
+  accepted_at: string | null
+  accepted_by: string | null
+  declined_at: string | null
+  decline_reason: string | null
+}
+
+export interface Job {
+  id: string
+  quote_id: string
+  property_id: string
+  status: JobStatus
+  scheduled_install_date: string | null
+  install_notes: string | null
+  created_by: string
+  created_at: string
+  updated_at: string
+}
+
+export interface JobAssignment {
+  id: string
+  job_id: string
+  assignee_id: string
+  role: string
+  created_at: string
 }
 
 export interface QuoteLineItem {
@@ -163,8 +211,6 @@ export interface QuoteLineItem {
 export interface PricingConfig {
   id: number
   exchange_rate: number
-  reseller_discount_pct: number
-  default_markup_pct: number
   /** Markup applied to retail customer quotes. Not shown to the customer. */
   retail_markup_pct: number
   /** Markup applied to wholesale customer quotes. Not shown to the customer. */
@@ -183,6 +229,8 @@ export interface PricingConfig {
 export interface CatalogItem {
   id: string
   name: string
+  /** Optional hex colour (colours catalog only) for swatch chips and the window diagram. */
+  hex_code?: string | null
   is_active: boolean
   created_at: string
   updated_at: string

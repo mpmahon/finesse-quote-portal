@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from 'sonner'
+import { loginSchema } from '@/lib/validators'
 
 export default function LoginPage() {
   return (
@@ -25,13 +26,18 @@ function LoginForm() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
-  const redirect = searchParams.get('redirect') || '/properties'
+  const redirect = searchParams.get('redirect') || '/dashboard'
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
+    const parsed = loginSchema.safeParse({ email, password })
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? 'Invalid credentials')
+      return
+    }
     setLoading(true)
     const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { error } = await supabase.auth.signInWithPassword(parsed.data)
     if (error) {
       toast.error(error.message)
       setLoading(false)

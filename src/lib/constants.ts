@@ -5,7 +5,26 @@ export const USER_ROLES = [
   'administrator',
 ] as const
 export const MOUNT_TYPES = ['inside', 'outside'] as const
-export const QUOTE_STATUSES = ['draft', 'final', 'expired'] as const
+export const QUOTE_STATUSES = ['draft', 'sent', 'accepted', 'declined', 'expired'] as const
+export const JOB_STATUSES = ['pending', 'measure', 'fabricate', 'install', 'complete', 'on_hold'] as const
+
+export const QUOTE_STATUS_LABELS: Record<string, string> = {
+  draft: 'Draft',
+  sent: 'Sent',
+  accepted: 'Accepted',
+  declined: 'Declined',
+  expired: 'Expired',
+  final: 'Sent', // legacy alias
+}
+
+export const JOB_STATUS_LABELS: Record<string, string> = {
+  pending: 'Pending',
+  measure: 'Measure',
+  fabricate: 'Fabricate',
+  install: 'Install',
+  complete: 'Complete',
+  on_hold: 'On Hold',
+}
 
 export const ROLE_LABELS: Record<string, string> = {
   retail_customer: 'Retail Customer',

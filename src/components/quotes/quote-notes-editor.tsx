@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { updateQuoteNotesAction } from '@/app/quotes/actions'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
@@ -55,16 +55,13 @@ export function QuoteNotesEditor({ quoteId, initialNotes, isStaff }: QuoteNotesE
   }
 
   async function saveNotes() {
-    // Strip empty notes before saving
+    // Strip empty notes before saving. The server action re-validates and is
+    // the only write path — customers have no direct UPDATE on quotes.
     const cleaned = notes.filter(n => n.text.trim().length > 0)
     setSaving(true)
-    const supabase = createClient()
-    const { error } = await supabase
-      .from('quotes')
-      .update({ notes: cleaned })
-      .eq('id', quoteId)
-    if (error) {
-      toast.error(error.message)
+    const result = await updateQuoteNotesAction(quoteId, cleaned)
+    if (!result.ok) {
+      toast.error(result.error)
       setSaving(false)
       return
     }

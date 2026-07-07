@@ -39,6 +39,31 @@ export const windowSchema = z.object({
   has_awning: z.boolean().default(false),
 })
 
+/** Dimension limits sourced from pricing_config. */
+export interface WindowLimits {
+  min_window_size_in: number
+  max_window_width_in: number
+  max_window_height_in: number
+}
+
+/**
+ * Window schema with pricing_config dimension limits applied (WS1 §5.4).
+ * Used by both the window form (client) and /api/quotes/calculate (server)
+ * so out-of-range windows can never reach a quote.
+ */
+export function windowSchemaWithLimits(limits: WindowLimits) {
+  return windowSchema.extend({
+    width_inches: z.coerce
+      .number()
+      .min(limits.min_window_size_in, `Width must be at least ${limits.min_window_size_in}"`)
+      .max(limits.max_window_width_in, `Width cannot exceed ${limits.max_window_width_in}"`),
+    height_inches: z.coerce
+      .number()
+      .min(limits.min_window_size_in, `Height must be at least ${limits.min_window_size_in}"`)
+      .max(limits.max_window_height_in, `Height cannot exceed ${limits.max_window_height_in}"`),
+  })
+}
+
 export const windowConfigSchema = z.object({
   product_id: z.string().uuid('Select a product'),
   shade_type: z.string().min(1, 'Select a shade type'),
@@ -60,20 +85,28 @@ export const componentSchema = z.object({
   usd_price: z.coerce.number().nonnegative('Price must be non-negative'),
 })
 
+/**
+ * Pricing config form schema. Plain z.number() (not coerce) so the RHF
+ * resolver types line up — the editor registers inputs with
+ * `valueAsNumber: true`, and an emptied field becomes NaN, which fails
+ * validation instead of reaching the database (WS1 §5.3).
+ */
+const requiredNumber = z
+  .number({ error: 'Enter a number' })
+  .refine(n => !Number.isNaN(n), 'Enter a number')
+
 export const pricingConfigSchema = z.object({
-  exchange_rate: z.coerce.number().positive(),
-  reseller_discount_pct: z.coerce.number().min(0).max(100),
-  default_markup_pct: z.coerce.number().min(0).max(100),
-  retail_markup_pct: z.coerce.number().min(0).max(100),
-  wholesale_markup_pct: z.coerce.number().min(0).max(100),
-  labor_cost_ttd: z.coerce.number().nonnegative(),
-  installation_cost_ttd: z.coerce.number().nonnegative(),
-  duty_percent: z.coerce.number().min(0).max(100),
-  shipping_fee_ttd: z.coerce.number().nonnegative(),
-  max_window_width_in: z.coerce.number().positive(),
-  max_window_height_in: z.coerce.number().positive(),
-  min_window_size_in: z.coerce.number().positive(),
-  quote_validity_days: z.coerce.number().int().positive(),
+  exchange_rate: requiredNumber.refine(n => n > 0, 'Exchange rate must be positive'),
+  retail_markup_pct: requiredNumber.refine(n => n >= 0 && n <= 100, 'Must be 0–100'),
+  wholesale_markup_pct: requiredNumber.refine(n => n >= 0 && n <= 100, 'Must be 0–100'),
+  labor_cost_ttd: requiredNumber.refine(n => n >= 0, 'Must be 0 or more'),
+  installation_cost_ttd: requiredNumber.refine(n => n >= 0, 'Must be 0 or more'),
+  duty_percent: requiredNumber.refine(n => n >= 0 && n <= 100, 'Must be 0–100'),
+  shipping_fee_ttd: requiredNumber.refine(n => n >= 0, 'Must be 0 or more'),
+  max_window_width_in: requiredNumber.refine(n => n > 0, 'Must be positive'),
+  max_window_height_in: requiredNumber.refine(n => n > 0, 'Must be positive'),
+  min_window_size_in: requiredNumber.refine(n => n > 0, 'Must be positive'),
+  quote_validity_days: requiredNumber.refine(n => Number.isInteger(n) && n > 0, 'Whole number of days'),
 })
 
 export type LoginInput = z.infer<typeof loginSchema>

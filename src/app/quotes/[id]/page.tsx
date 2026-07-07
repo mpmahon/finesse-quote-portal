@@ -9,11 +9,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { format } from 'date-fns'
 import { QuotePdfButton } from '@/components/quotes/quote-pdf-button'
 import { RegenerateQuoteButton } from '@/components/quotes/regenerate-quote-button'
+import { QuoteStatusBadge } from '@/components/quotes/quote-status-badge'
+import { QuoteLifecycleActions } from '@/components/quotes/quote-lifecycle-actions'
+import { WindowDiagram } from '@/components/windows/window-diagram'
 import { computeStaleness, buildProductLatestMap } from '@/lib/quote-staleness'
 import { lineItemTtd } from '@/lib/quote-engine'
-import { isStaffRole } from '@/types/database'
+import { effectiveQuoteStatus, isStaffRole } from '@/types/database'
 import { QuoteNotesEditor } from '@/components/quotes/quote-notes-editor'
-import type { QuoteNote } from '@/types/database'
+import type { QuoteNote, QuoteStatus } from '@/types/database'
 
 /**
  * Quote detail page — customer-facing.
@@ -54,15 +57,22 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
     { data: lineItems },
     { data: config },
     { data: components },
+    { data: colourRows },
   ] = await Promise.all([
     supabase
       .from('quote_line_items')
-      .select('*, windows(excluded_components)')
+      .select('*, windows(excluded_components, width_inches, height_inches, mount_type)')
       .eq('quote_id', id)
       .order('room_name'),
     supabase.from('pricing_config').select('updated_at').eq('id', 1).single(),
     supabase.from('components').select('product_id, updated_at'),
+    supabase.from('colours').select('name, hex_code'),
   ])
+
+  const hexByColour: Record<string, string> = {}
+  for (const c of colourRows ?? []) {
+    if (c.hex_code) hexByColour[c.name.toLowerCase()] = c.hex_code
+  }
 
   // Snapshot values for TTD conversion
   const markupPct = Number(quote.markup_percent)
@@ -71,7 +81,12 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
   const installPerWindow = Number(quote.installation_cost_ttd)
 
   type LineItemWithWindow = NonNullable<typeof lineItems>[number] & {
-    windows: { excluded_components: string[] } | null
+    windows: {
+      excluded_components: string[]
+      width_inches: number
+      height_inches: number
+      mount_type: 'inside' | 'outside'
+    } | null
   }
   const items = (lineItems ?? []) as LineItemWithWindow[]
 
@@ -83,7 +98,8 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
   }
 
   const priceableCount = items.filter(li => li.line_type !== 'zero').length
-  const isExpired = quote.expires_at && new Date(quote.expires_at) < new Date()
+  const status = effectiveQuoteStatus(quote as { status: QuoteStatus; expires_at: string | null })
+  const isOwner = quote.user_id === user.id
 
   // Staleness check
   const productIds = Array.from(new Set(items.map(li => li.product_id)))
@@ -116,7 +132,31 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
         </div>
       </div>
 
-      {staleness.is_stale && (
+      {/* Lifecycle actions: Send (staff, draft) / Accept & Decline (sent) */}
+      {(status === 'draft' || status === 'sent') && (
+        <div className="mb-6">
+          <QuoteLifecycleActions
+            quoteId={id}
+            status={status}
+            isStaff={isStaff}
+            isOwner={isOwner}
+          />
+        </div>
+      )}
+
+      {status === 'expired' && (
+        <div className="mb-6 rounded-lg border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-900 dark:text-amber-200">
+          This quote has expired. {isStaff ? 'Regenerate it to re-issue with current pricing.' : 'Contact us to re-issue it with current pricing.'}
+        </div>
+      )}
+
+      {status === 'declined' && quote.decline_reason && isStaff && (
+        <div className="mb-6 rounded-lg border border-rose-500/40 bg-rose-500/10 p-4 text-sm">
+          <span className="font-medium">Decline reason:</span> {quote.decline_reason}
+        </div>
+      )}
+
+      {staleness.is_stale && status !== 'accepted' && status !== 'declined' && (
         <div className="mb-6 flex flex-col gap-3 rounded-lg border border-amber-500/40 bg-amber-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-3">
             <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600" />
@@ -142,9 +182,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Summary</CardTitle>
-            <Badge variant={isExpired ? 'destructive' : 'default'}>
-              {isExpired ? 'Expired' : quote.status}
-            </Badge>
+            <QuoteStatusBadge status={status} />
           </div>
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
@@ -152,7 +190,19 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
             <span className="text-muted-foreground">Date</span>
             <span>{format(new Date(quote.created_at), 'MMM d, yyyy')}</span>
           </div>
-          {quote.expires_at && (
+          {quote.sent_at && (
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Sent</span>
+              <span>{format(new Date(quote.sent_at), 'MMM d, yyyy')}</span>
+            </div>
+          )}
+          {quote.accepted_at && (
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Accepted</span>
+              <span>{format(new Date(quote.accepted_at), 'MMM d, yyyy')}</span>
+            </div>
+          )}
+          {quote.expires_at && status !== 'accepted' && status !== 'declined' && (
             <div className="flex justify-between">
               <span className="text-muted-foreground">Expires</span>
               <span>{format(new Date(quote.expires_at), 'MMM d, yyyy')}</span>
@@ -197,13 +247,24 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
                     return (
                       <TableRow key={item.id} className={isZero ? 'text-muted-foreground' : ''}>
                         <TableCell>
-                          <div>
-                            <span className="font-medium">{item.window_name}</span>
-                            {excluded.length > 0 && (
-                              <p className="text-[11px] italic text-muted-foreground">
-                                {excluded.map(formatName).join(', ')} not included
-                              </p>
+                          <div className="flex items-start gap-3">
+                            {item.windows && isBlind && (
+                              <WindowDiagram
+                                widthInches={Number(item.windows.width_inches)}
+                                heightInches={Number(item.windows.height_inches)}
+                                mountType={item.windows.mount_type}
+                                blindColour={item.colour ? hexByColour[item.colour.toLowerCase()] ?? null : null}
+                                className="hidden w-20 shrink-0 sm:block"
+                              />
                             )}
+                            <div>
+                              <span className="font-medium">{item.window_name}</span>
+                              {excluded.length > 0 && (
+                                <p className="text-[11px] italic text-muted-foreground">
+                                  {excluded.map(formatName).join(', ')} not included
+                                </p>
+                              )}
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell>

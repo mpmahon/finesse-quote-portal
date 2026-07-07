@@ -18,7 +18,8 @@ interface RoomWithStats extends Room {
   configured_count: number
   priceable_count: number
   no_blind_count: number
-  preview_total_usd: number
+  /** Full-formula TTD estimate for the room (shared estimate layer). */
+  preview_total_ttd: number
 }
 
 interface RoomListProps {
@@ -129,11 +130,11 @@ export function RoomList({ rooms, propertyId }: RoomListProps) {
                     </span>
                   )}
                 </p>
-                {room.preview_total_usd > 0 && (
+                {room.preview_total_ttd > 0 && (
                   <div className="flex items-center justify-between rounded-md bg-primary/5 px-3 py-2">
-                    <span className="text-xs font-medium text-muted-foreground">Room Total (USD)</span>
+                    <span className="text-xs font-medium text-muted-foreground">Est. Room Total</span>
                     <span className="text-sm font-semibold text-primary">
-                      ${room.preview_total_usd.toFixed(2)}
+                      TTD ${room.preview_total_ttd.toFixed(2)}
                     </span>
                   </div>
                 )}

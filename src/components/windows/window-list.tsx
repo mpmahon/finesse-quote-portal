@@ -15,20 +15,23 @@ import { Badge } from '@/components/ui/badge'
 import { SquareStack, Plus, Trash2, Pencil, Settings2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { MOUNT_TYPE_LABELS } from '@/lib/constants'
-import type { Window, Product } from '@/types/database'
+import { windowSchemaWithLimits, type WindowLimits } from '@/lib/validators'
+import type { Window } from '@/types/database'
 
 interface WindowListProps {
   windows: (Window & {
     products: { make: string; model: string } | null
     awning_products: { make: string; model: string } | null
-    preview_usd?: number | null
+    /** Full-formula per-window TTD estimate from the shared estimate layer. */
+    preview_ttd?: number | null
   })[]
   roomId: string
   propertyId: string
-  products: Product[]
+  /** Dimension limits from pricing_config, enforced on create/edit (WS1 §5.4). */
+  limits: WindowLimits
 }
 
-export function WindowList({ windows, roomId, propertyId, products }: WindowListProps) {
+export function WindowList({ windows, roomId, propertyId, limits }: WindowListProps) {
   const [open, setOpen] = useState(false)
   const [editId, setEditId] = useState<string | null>(null)
   const [form, setForm] = useState({
@@ -59,10 +62,21 @@ export function WindowList({ windows, roomId, propertyId, products }: WindowList
   }
 
   async function handleSave() {
-    if (!form.name.trim()) { toast.error('Name is required'); return }
-    const w = parseFloat(form.width_inches)
-    const h = parseFloat(form.height_inches)
-    if (isNaN(w) || w <= 0 || isNaN(h) || h <= 0) { toast.error('Valid dimensions are required'); return }
+    // Validate against the shared zod schema, including pricing_config
+    // dimension limits — the server enforces the same bounds at quote time.
+    const parsed = windowSchemaWithLimits(limits).safeParse({
+      name: form.name.trim(),
+      width_inches: form.width_inches,
+      height_inches: form.height_inches,
+      depth_inches: form.depth_inches || null,
+      mount_type: form.mount_type,
+      has_blind: form.has_blind,
+      has_awning: form.has_awning,
+    })
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? 'Invalid window details')
+      return
+    }
     if (form.mount_type === 'inside' && (!form.depth_inches || parseFloat(form.depth_inches) <= 0)) {
       toast.error('Window depth is required for inside mount'); return
     }
@@ -70,13 +84,13 @@ export function WindowList({ windows, roomId, propertyId, products }: WindowList
     setLoading(true)
     const supabase = createClient()
     const data = {
-      name: form.name.trim(),
-      width_inches: w,
-      height_inches: h,
-      depth_inches: form.depth_inches ? parseFloat(form.depth_inches) : null,
-      mount_type: form.mount_type,
-      has_blind: form.has_blind,
-      has_awning: form.has_awning,
+      name: parsed.data.name,
+      width_inches: parsed.data.width_inches,
+      height_inches: parsed.data.height_inches,
+      depth_inches: parsed.data.depth_inches ?? null,
+      mount_type: parsed.data.mount_type,
+      has_blind: parsed.data.has_blind,
+      has_awning: parsed.data.has_awning,
     }
 
     if (editId) {
@@ -114,11 +128,13 @@ export function WindowList({ windows, roomId, propertyId, products }: WindowList
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Width (inches)</Label>
-                <Input type="number" step="0.25" value={form.width_inches} onChange={e => setForm(f => ({ ...f, width_inches: e.target.value }))} />
+                <Input type="number" step="0.25" inputMode="decimal" min={limits.min_window_size_in} max={limits.max_window_width_in} value={form.width_inches} onChange={e => setForm(f => ({ ...f, width_inches: e.target.value }))} />
+                <p className="text-[11px] text-muted-foreground">{limits.min_window_size_in}&quot;–{limits.max_window_width_in}&quot;</p>
               </div>
               <div className="space-y-2">
                 <Label>Height (inches)</Label>
-                <Input type="number" step="0.25" value={form.height_inches} onChange={e => setForm(f => ({ ...f, height_inches: e.target.value }))} />
+                <Input type="number" step="0.25" inputMode="decimal" min={limits.min_window_size_in} max={limits.max_window_height_in} value={form.height_inches} onChange={e => setForm(f => ({ ...f, height_inches: e.target.value }))} />
+                <p className="text-[11px] text-muted-foreground">{limits.min_window_size_in}&quot;–{limits.max_window_height_in}&quot;</p>
               </div>
             </div>
             <div className="space-y-2">
@@ -232,11 +248,11 @@ export function WindowList({ windows, roomId, propertyId, products }: WindowList
                     )}
                   </div>
                 )}
-                {typeof w.preview_usd === 'number' && (w.has_blind || w.has_awning) && w.preview_usd > 0 && (
+                {typeof w.preview_ttd === 'number' && (w.has_blind || w.has_awning) && w.preview_ttd > 0 && (
                   <div className="flex items-center justify-between rounded-md bg-primary/5 px-3 py-2">
-                    <span className="text-xs font-medium text-muted-foreground">Components (USD)</span>
+                    <span className="text-xs font-medium text-muted-foreground">Estimate</span>
                     <span className="text-sm font-semibold text-primary">
-                      ${w.preview_usd.toFixed(2)}
+                      TTD ${w.preview_ttd.toFixed(2)}
                     </span>
                   </div>
                 )}
