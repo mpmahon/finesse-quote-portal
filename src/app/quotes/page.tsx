@@ -36,6 +36,7 @@ export default async function QuotesPage() {
           expires_at,
           total_ttd,
           status,
+          created_by,
           properties(name),
           profiles!user_id(id, first_name, last_name, email),
           quote_line_items(product_id)
@@ -65,6 +66,7 @@ export default async function QuotesPage() {
       created_at: q.created_at,
       expires_at: q.expires_at,
       total_ttd: q.total_ttd,
+      created_by: q.created_by as string,
       status: effectiveQuoteStatus({ status: q.status as QuoteStatus, expires_at: q.expires_at }),
       properties: Array.isArray(q.properties) ? q.properties[0] ?? null : q.properties,
       profiles: Array.isArray(q.profiles) ? q.profiles[0] ?? null : q.profiles,

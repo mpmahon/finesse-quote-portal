@@ -18,6 +18,8 @@ interface Quote {
   created_at: string
   expires_at: string | null
   total_ttd: number
+  /** Profile id of the staff member (or customer) who created the quote — drives the ?rep= filter. */
+  created_by?: string
   /** Effective lifecycle status (already resolved by the server page). */
   status: string
   properties: { name: string } | null
@@ -39,6 +41,8 @@ interface QuotesListClientProps {
 export function QuotesListClient({ quotes, showCustomer = false }: QuotesListClientProps) {
   const searchParams = useSearchParams()
   const initialStatus = searchParams.get('status')
+  // Deep-link filter from the dashboard pipeline chips: /quotes?status=sent&rep=<profile-id>
+  const repFilter = searchParams.get('rep')
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>(
     initialStatus && ([...QUOTE_STATUSES, 'stale'] as string[]).includes(initialStatus)
@@ -46,9 +50,10 @@ export function QuotesListClient({ quotes, showCustomer = false }: QuotesListCli
       : 'all'
   )
 
-  const staleCount = quotes.filter(q => q.is_stale).length
+  const scoped = repFilter ? quotes.filter(q => q.created_by === repFilter) : quotes
+  const staleCount = scoped.filter(q => q.is_stale).length
 
-  const filtered = quotes.filter(q => {
+  const filtered = scoped.filter(q => {
     const propName = q.properties?.name || ''
     const customerName = q.profiles ? `${q.profiles.first_name} ${q.profiles.last_name}` : ''
     const customerEmail = q.profiles?.email || ''
@@ -95,6 +100,13 @@ export function QuotesListClient({ quotes, showCustomer = false }: QuotesListCli
               Pricing has been updated since these quotes were generated. Open a quote to regenerate it with current prices.
             </p>
           </div>
+        </div>
+      )}
+
+      {repFilter && (
+        <div className="mb-4 flex items-center justify-between rounded-lg border bg-muted/40 px-3 py-2 text-sm">
+          <span>Showing quotes created by one rep only.</span>
+          <Link href="/quotes" className="text-primary hover:underline">Show all</Link>
         </div>
       )}
 

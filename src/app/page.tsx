@@ -45,7 +45,8 @@ export default function HomePage() {
                 </Button>
               </Link>
               <Link href="/auth/login">
-                <Button size="lg" variant="outline" className="w-full border-white/20 text-base text-white hover:bg-white/10 sm:w-auto">
+                {/* bg-transparent: the outline variant defaults to bg-background (white), which made the white label invisible on the dark hero */}
+                <Button size="lg" variant="outline" className="w-full border-white/30 bg-transparent text-base text-white hover:bg-white/10 hover:text-white sm:w-auto">
                   Sign In
                 </Button>
               </Link>

@@ -238,7 +238,7 @@ async function SalesDashboard({ userId, firstName }: { userId: string; firstName
             label={QUOTE_STATUS_LABELS[s]}
             value={String(byStatus[s].count)}
             sub={`TTD $${byStatus[s].value.toFixed(0)}`}
-            href={`/quotes?status=${s}`}
+            href={`/quotes?status=${s}&rep=${userId}`}
           />
         ))}
       </div>
@@ -365,7 +365,7 @@ async function AdminDashboard() {
   ] = await Promise.all([
     supabase
       .from('quotes')
-      .select('id, status, expires_at, total_ttd, created_at, sent_at, properties(name), creator:profiles!created_by(first_name, last_name)')
+      .select('id, status, expires_at, total_ttd, created_at, sent_at, created_by, properties(name), creator:profiles!created_by(first_name, last_name)')
       .order('created_at', { ascending: false }),
     supabase.from('jobs').select('id, status, scheduled_install_date, properties(name)'),
     supabase
@@ -387,7 +387,10 @@ async function AdminDashboard() {
       .maybeSingle(),
   ])
 
-  type AdminQuote = QuoteLite & { creator: { first_name: string; last_name: string } | { first_name: string; last_name: string }[] | null }
+  type AdminQuote = QuoteLite & {
+    created_by: string
+    creator: { first_name: string; last_name: string } | { first_name: string; last_name: string }[] | null
+  }
   const rows = ((quotes ?? []) as AdminQuote[]).map(q => ({ ...q, effective: effectiveQuoteStatus(q) }))
 
   const sentRows = rows.filter(q => q.effective === 'sent')
@@ -412,14 +415,15 @@ async function AdminDashboard() {
     return acc
   }, {})
 
-  // Pipeline by rep
-  const byRep: Record<string, { name: string; counts: Record<string, number>; value: number }> = {}
+  // Pipeline by rep — keyed by creator profile id so chips can deep-link
+  // into the quotes list (/quotes?status=…&rep=…).
+  const byRep: Record<string, { id: string; name: string; counts: Record<string, number>; value: number }> = {}
   for (const q of rows) {
     const c = Array.isArray(q.creator) ? q.creator[0] : q.creator
     const name = c ? `${c.first_name} ${c.last_name}`.trim() || 'Unknown' : 'Unknown'
-    if (!byRep[name]) byRep[name] = { name, counts: {}, value: 0 }
-    byRep[name].counts[q.effective] = (byRep[name].counts[q.effective] ?? 0) + 1
-    if (q.effective === 'sent') byRep[name].value += Number(q.total_ttd)
+    if (!byRep[q.created_by]) byRep[q.created_by] = { id: q.created_by, name, counts: {}, value: 0 }
+    byRep[q.created_by].counts[q.effective] = (byRep[q.created_by].counts[q.effective] ?? 0) + 1
+    if (q.effective === 'sent') byRep[q.created_by].value += Number(q.total_ttd)
   }
 
   const sample = sampleQuote
@@ -460,17 +464,23 @@ async function AdminDashboard() {
             ) : (
               <div className="space-y-3 text-sm">
                 {Object.values(byRep).map(rep => (
-                  <div key={rep.name} className="flex flex-wrap items-center justify-between gap-2 rounded-md border p-2.5">
-                    <span className="font-medium">{rep.name}</span>
+                  <div key={rep.id} className="flex flex-wrap items-center justify-between gap-2 rounded-md border p-2.5">
+                    <Link href={`/quotes?rep=${rep.id}`} className="font-medium hover:underline">
+                      {rep.name}
+                    </Link>
                     <span className="flex flex-wrap items-center gap-1.5">
                       {PIPELINE_STATUSES.map(s =>
                         rep.counts[s] ? (
-                          <Badge key={s} variant="outline" className="text-[11px]">
-                            {rep.counts[s]} {QUOTE_STATUS_LABELS[s].toLowerCase()}
-                          </Badge>
+                          <Link key={s} href={`/quotes?status=${s}&rep=${rep.id}`}>
+                            <Badge variant="outline" className="text-[11px] transition-colors hover:bg-accent">
+                              {rep.counts[s]} {QUOTE_STATUS_LABELS[s].toLowerCase()}
+                            </Badge>
+                          </Link>
                         ) : null
                       )}
-                      <span className="text-xs text-muted-foreground">${rep.value.toFixed(0)} sent</span>
+                      <Link href={`/quotes?status=sent&rep=${rep.id}`} className="text-xs text-muted-foreground hover:text-foreground hover:underline">
+                        ${rep.value.toFixed(0)} sent
+                      </Link>
                     </span>
                   </div>
                 ))}
