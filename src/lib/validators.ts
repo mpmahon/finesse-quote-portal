@@ -5,6 +5,24 @@ export const loginSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters'),
 })
 
+/** Self-service "forgot password" request — just the account email. */
+export const forgotPasswordSchema = z.object({
+  email: z.string().email('Invalid email address'),
+})
+
+/**
+ * Self-service password reset schema (the recovery-link landing page).
+ * Deliberately stricter than `loginSchema`'s min(6) — a password being set
+ * fresh should meet a higher bar than the legacy login minimum.
+ */
+export const resetPasswordSchema = z.object({
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  confirm_password: z.string(),
+}).refine(data => data.password === data.confirm_password, {
+  message: 'Passwords do not match',
+  path: ['confirm_password'],
+})
+
 /**
  * Public self-registration schema. Always creates a retail customer —
  * wholesale customers and salesmen are created by staff from inside the app.
@@ -114,6 +132,8 @@ export const pricingConfigSchema = z.object({
 })
 
 export type LoginInput = z.infer<typeof loginSchema>
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>
 export type RegisterInput = z.infer<typeof registerSchema>
 export type PropertyInput = z.infer<typeof propertySchema>
 export type RoomInput = z.infer<typeof roomSchema>

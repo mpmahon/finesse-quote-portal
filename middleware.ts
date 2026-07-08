@@ -55,7 +55,12 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Redirect authenticated users away from auth pages
+  // Redirect authenticated users away from auth pages. Deliberately scoped
+  // to /auth/login and /auth/register only (not a /auth/* startsWith) —
+  // this already excludes /auth/reset-password and /auth/forgot-password,
+  // so a recovery-link session (which Supabase issues as a real, signed-in
+  // `user`) is never bounced off the reset-password page before the user
+  // can set a new password. Keep this narrow if you add more /auth/* pages.
   if (user && (pathname.startsWith('/auth/login') || pathname.startsWith('/auth/register'))) {
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard'
