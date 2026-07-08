@@ -54,7 +54,9 @@ export function AuditLogViewer({ logs }: { logs: AuditLog[] }) {
           </div>
           <Select value={actionFilter} onValueChange={v => setActionFilter(v ?? 'all')}>
             <SelectTrigger className="sm:w-56">
-              <SelectValue />
+              <SelectValue>
+                {(v: string) => (v === 'all' ? 'All Actions' : v)}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Actions</SelectItem>

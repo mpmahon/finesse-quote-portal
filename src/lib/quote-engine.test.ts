@@ -10,6 +10,7 @@ import {
   resolveHardwareSpec,
 } from '@/lib/quote-engine'
 import { estimateWindowsTotals, estimateWindowTtd } from '@/lib/estimates'
+import type { BlindHierarchy } from '@/lib/blind-hierarchy'
 import type { AwningProduct, Component, HardwareSizeRule } from '@/types/database'
 
 /**
@@ -176,18 +177,111 @@ describe('calculateQuoteTotals', () => {
   })
 })
 
+// ============================================================
+// Room/window quantity multipliers (Batch 11 Part 2)
+// ============================================================
+
+describe('calculateQuoteTotals with quantity (units) multipliers', () => {
+  it('quantity=1 (explicit or omitted) identity — matches the un-multiplied result', () => {
+    const withoutUnits = calculateQuoteTotals(
+      [{ costs: { line_total_usd: 100 } }, { costs: { line_total_usd: 50 } }],
+      PRICING,
+      'retail_customer'
+    )
+    const withUnitsOne = calculateQuoteTotals(
+      [{ costs: { line_total_usd: 100 }, units: 1 }, { costs: { line_total_usd: 50 }, units: 1 }],
+      PRICING,
+      'retail_customer'
+    )
+    expect(withUnitsOne).toEqual(withoutUnits)
+  })
+
+  it('room x window multiplication scales subtotal, priceable_count, and grand total', () => {
+    // One line at $100 USD/unit, quantity 3 (e.g. a room x1 with a window x3,
+    // or vice versa — calculateQuoteTotals only sees the combined units).
+    const t = calculateQuoteTotals(
+      [{ costs: { line_total_usd: 100 }, units: 3 }],
+      PRICING,
+      'retail_customer'
+    )
+    expect(t.subtotal_usd).toBe(300) // 100 × 3
+    expect(t.priceable_count).toBe(3)
+    // 300 × 1.4 × 7 = 2940; + labour 3×30 = 3030; + install 3×60 = 3210
+    expect(t.grand_total_ttd).toBe(3210)
+    expect(t.installation_ttd).toBe(180)
+  })
+
+  it('labour and installation scale per unit, not per line', () => {
+    // A hotel-style case: one room configured once (quantity 40 rooms),
+    // one window per room, no window-level multiplier of its own.
+    const t = calculateQuoteTotals(
+      [{ costs: { line_total_usd: 10 }, units: 40 }],
+      PRICING,
+      'retail_customer'
+    )
+    // Labour: 30 × 40 = 1200. Installation: 60 × 40 = 2400.
+    expect(t.installation_ttd).toBe(2400)
+    // subtotal 400 × 1.4 × 7 = 3920; + labour 1200 = 5120; + install 2400 = 7520
+    expect(t.grand_total_ttd).toBe(7520)
+  })
+
+  it('mixed units across lines sum correctly (e.g. one qty-1 window plus one qty-3 window)', () => {
+    const t = calculateQuoteTotals(
+      [
+        { costs: { line_total_usd: 100 }, units: 1 },
+        { costs: { line_total_usd: 50 }, units: 3 },
+      ],
+      PRICING,
+      'wholesale_customer'
+    )
+    expect(t.priceable_count).toBe(4)
+    expect(t.subtotal_usd).toBe(250) // 100×1 + 50×3
+  })
+})
+
+describe('lineItemTtd with a units multiplier', () => {
+  it('units=1 (default) matches the pre-quantity formula', () => {
+    expect(lineItemTtd(100, 40, 7, 30)).toBe(lineItemTtd(100, 40, 7, 30, 1))
+  })
+
+  it('units=3 multiplies both the marked-up cost and the labour', () => {
+    // (100 × 3) × 1.4 × 7 = 2940; + labour 30×3 = 90 -> 3030
+    expect(lineItemTtd(100, 40, 7, 30, 3)).toBe(3030)
+  })
+})
+
 describe('shared estimate layer matches the engine to the cent', () => {
+  /** Minimal single-style hierarchy fixture mirroring COMPONENTS as that style's pricing rows. */
+  const HIERARCHY: BlindHierarchy = {
+    types: [{ id: 't1', name: 'Roller Shade', is_active: true, sort_order: 0, created_at: '', updated_at: '' }],
+    opacities: [{ id: 'o1', type_id: 't1', name: 'Sheer', is_active: true, sort_order: 0, created_at: '', updated_at: '' }],
+    styles: [{ id: 's1', opacity_id: 'o1', name: 'Standard', image_url: null, is_active: true, sort_order: 0, created_at: '', updated_at: '' }],
+    colours: [],
+    valances: [],
+    styleComponents: COMPONENTS.map(c => ({
+      id: `sc-${c.name}`,
+      style_id: 's1',
+      name: c.name,
+      unit: c.unit,
+      usd_price: c.usd_price,
+      created_at: '',
+      updated_at: '',
+    })),
+  }
+
   const window36x48 = {
     width_inches: 36,
     height_inches: 48,
     mount_type: 'inside' as const,
     has_blind: true,
     has_awning: false,
-    product_id: 'p-1',
+    shade_type: 'Roller Shade',
+    opacity: 'Sheer',
+    style: 'Standard',
     awning_product_id: null,
     excluded_components: [],
-    products: { components: COMPONENTS },
     awning_products: null,
+    quantity: 1,
   }
 
   const config = {
@@ -204,19 +298,44 @@ describe('shared estimate layer matches the engine to the cent', () => {
       COMPONENTS
     )
     const direct = calculateQuoteTotals([line], PRICING, 'retail_customer')
-    const estimated = estimateWindowsTotals([window36x48], config, 'retail_customer')
+    const estimated = estimateWindowsTotals([window36x48], config, 'retail_customer', HIERARCHY)
     expect(estimated.grand_total_ttd).toBe(direct.grand_total_ttd)
   })
 
   it('estimateWindowTtd = line TTD without installation', () => {
-    const ttd = estimateWindowTtd(window36x48, config, 'retail_customer')
+    const ttd = estimateWindowTtd(window36x48, config, 'retail_customer', HIERARCHY)
     expect(ttd).toBe(lineItemTtd(66.16, 40, 7, 30))
   })
 
-  it('unconfigured window estimates to null', () => {
+  it('unconfigured window (no style) estimates to null', () => {
     expect(
-      estimateWindowTtd({ ...window36x48, product_id: null }, config, 'retail_customer')
+      estimateWindowTtd({ ...window36x48, style: null }, config, 'retail_customer', HIERARCHY)
     ).toBeNull()
+  })
+
+  it('a style with no priced components estimates to null (not a silent $0)', () => {
+    const emptyHierarchy: BlindHierarchy = { ...HIERARCHY, styleComponents: [] }
+    expect(
+      estimateWindowTtd(window36x48, config, 'retail_customer', emptyHierarchy)
+    ).toBeNull()
+  })
+
+  it('room quantity multiplies the window estimate (hotel-style: one room x N)', () => {
+    const timesFive = estimateWindowTtd(window36x48, config, 'retail_customer', HIERARCHY, 5)
+    expect(timesFive).toBe(lineItemTtd(66.16, 40, 7, 30, 5))
+  })
+
+  it('window quantity x room quantity combine multiplicatively', () => {
+    const window3x = { ...window36x48, quantity: 3 }
+    // 3 identical windows (quantity 3) in a room quoted x2 (room quantity 2) = 6 units.
+    const ttd = estimateWindowTtd(window3x, config, 'retail_customer', HIERARCHY, 2)
+    expect(ttd).toBe(lineItemTtd(66.16, 40, 7, 30, 6))
+  })
+
+  it('estimateWindowsTotals applies the room quantity to every window passed in', () => {
+    const totals = estimateWindowsTotals([window36x48, window36x48], config, 'retail_customer', HIERARCHY, 4)
+    // Two windows, quantity 1 each, room quantity 4 -> 8 total units.
+    expect(totals.priceable_count).toBe(8)
   })
 })
 

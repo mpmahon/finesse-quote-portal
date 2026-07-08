@@ -13,7 +13,6 @@ import {
   type PropertyOption,
 } from '@/components/gallery/quote-from-style-dialog'
 import type { StyleQuerySource } from '@/lib/gallery-style-query'
-import { BLIND_TYPE_NAME_TO_PRODUCT_SLUG } from '@/lib/constants'
 
 export interface GalleryCard {
   id: string
@@ -24,7 +23,7 @@ export interface GalleryCard {
   shade_types: string[]
   styles: string[]
   colours: { name: string; hex: string | null }[]
-  /** Batch 7: `products.blind_type` tag (e.g. "roller_shade"). Null when untagged. Awning cards are always null — they filter under their own "Awning" bucket. */
+  /** Batch 11 Part 1: the blind's hierarchy Type NAME directly (every style has a real Type — no more slug indirection). Awning cards are always null — they filter under their own "Awning" bucket. */
   blind_type: string | null
   /** Indicative TTD price for a standard 36×48 window (viewer's customer tier). */
   from_ttd: number | null
@@ -33,23 +32,16 @@ export interface GalleryCard {
 const OTHER_UNMAPPED = 'Other / Unmapped'
 const AWNING_CATEGORY = 'Awning'
 
-/** Reverse of {@link BLIND_TYPE_NAME_TO_PRODUCT_SLUG} — product blind_type slug -> hierarchy Type display name. */
-const SLUG_TO_TYPE_NAME: Record<string, string> = Object.fromEntries(
-  Object.entries(BLIND_TYPE_NAME_TO_PRODUCT_SLUG).map(([typeName, slug]) => [slug, typeName])
-)
-
 /**
- * Batch 7 — a card's Blind Type filter category: the hierarchy Type name
- * when its `blind_type` tag maps to one (only Roller Shade / Neolux Shade
- * have tagged products today), "Awning" for awning cards, or "Other /
- * Unmapped" for blind products not yet tagged (most of the catalog, until
- * the full Type -> Opacity -> Style -> Colour taxonomy is linked to
- * products — see the design spec's open question 2).
+ * A card's Blind Type filter category: the hierarchy Type name for blind
+ * cards (every style resolves to a real Type since Batch 11 Part 1), or
+ * "Awning" for awning cards. "Other / Unmapped" is a defensive fallback for
+ * the unexpected case of a style whose parent chain doesn't resolve (e.g. a
+ * soft-deleted opacity/type) — it should not occur in practice.
  */
 function blindTypeCategory(card: GalleryCard): string {
   if (card.kind === 'awning') return AWNING_CATEGORY
-  if (card.blind_type && SLUG_TO_TYPE_NAME[card.blind_type]) return SLUG_TO_TYPE_NAME[card.blind_type]
-  return OTHER_UNMAPPED
+  return card.blind_type ?? OTHER_UNMAPPED
 }
 
 interface GalleryClientProps {
@@ -71,18 +63,14 @@ export function GalleryClient({ cards, isStaff, customers = [], properties = [] 
 
   /**
    * Builds the gallery→configurator hand-off values for a card and opens the
-   * customer/property picker. Batch 7: the gallery no longer tracks shade
-   * type/style/colour filter state (replaced by the Blind Type filter
-   * below) — only the product identity is carried through. The
-   * configurator's own gallery-style-query fallback still applies (it
-   * silently drops any hints that don't resolve against the hierarchy), so
-   * this stays harmless even for a card whose legacy tags happen to line up
-   * with hierarchy names.
+   * customer/property picker. Batch 11 Part 1: blind cards ARE styles now,
+   * so their id IS the Style id the configurator needs — no more name
+   * matching against the hierarchy.
    */
   function openQuoteFromStyle(card: GalleryCard) {
     const values: Record<string, string> = { kind: card.kind }
     if (card.kind === 'blind') {
-      values.productId = card.id
+      values.styleId = card.id
     } else {
       values.awningProductId = card.id
     }

@@ -21,10 +21,8 @@
 /** Search-param keys that carry a Style Gallery selection. */
 export const GALLERY_STYLE_QUERY_KEYS = [
   'kind',
-  'productId',
+  'styleId',
   'awningProductId',
-  'shadeType',
-  'style',
   'colour',
 ] as const
 
@@ -33,13 +31,17 @@ export type GalleryStyleQueryKey = (typeof GALLERY_STYLE_QUERY_KEYS)[number]
 /** Loosely-typed search params shape shared by Next.js server components and plain client-side objects. */
 export type StyleQuerySource = Record<string, string | string[] | undefined> | undefined | null
 
-/** A resolved gallery selection, ready to pre-fill the window configurator. */
+/**
+ * A resolved gallery selection, ready to pre-fill the window configurator.
+ *
+ * Batch 11 Part 1: gallery cards are now blind Styles (hierarchy nodes)
+ * rather than products, so the blind hand-off carries the Style's id
+ * directly (unambiguous — no more legacy free-text name matching needed).
+ */
 export interface GallerySelection {
   kind: 'blind' | 'awning'
-  productId?: string
+  styleId?: string
   awningProductId?: string
-  shadeType?: string
-  style?: string
   colour?: string
 }
 
@@ -77,15 +79,9 @@ export function parseGallerySelection(source: StyleQuerySource): GallerySelectio
   if (kind !== 'blind' && kind !== 'awning') return null
 
   if (kind === 'blind') {
-    const productId = firstValue(source, 'productId')
-    if (!productId) return null
-    return {
-      kind,
-      productId,
-      shadeType: firstValue(source, 'shadeType'),
-      style: firstValue(source, 'style'),
-      colour: firstValue(source, 'colour'),
-    }
+    const styleId = firstValue(source, 'styleId')
+    if (!styleId) return null
+    return { kind, styleId, colour: firstValue(source, 'colour') }
   }
 
   const awningProductId = firstValue(source, 'awningProductId')

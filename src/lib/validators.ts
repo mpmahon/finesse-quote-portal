@@ -25,8 +25,10 @@ export const propertySchema = z.object({
   address: z.string().optional(),
 })
 
+/** Identical-room quantity multiplier (e.g. hotel: one room config x 40 rooms). Defaults to 1 — no behaviour change for single-unit configs. */
 export const roomSchema = z.object({
   name: z.string().min(1, 'Room name is required'),
+  quantity: z.coerce.number().int('Must be a whole number').min(1, 'Must be at least 1').default(1),
 })
 
 export const windowSchema = z.object({
@@ -39,6 +41,8 @@ export const windowSchema = z.object({
   mount_type: z.enum(['inside', 'outside', 'undecided']),
   has_blind: z.boolean().default(true),
   has_awning: z.boolean().default(false),
+  /** Identical-window quantity multiplier within its room (e.g. 3 matching windows). Defaults to 1. */
+  quantity: z.coerce.number().int('Must be a whole number').min(1, 'Must be at least 1').default(1),
 })
 
 /** Dimension limits sourced from pricing_config. */
@@ -73,14 +77,12 @@ export const windowConfigSchema = z.object({
   colour: z.string().min(1, 'Select a colour'),
 })
 
-export const productSchema = z.object({
-  make: z.string().min(1, 'Make is required'),
-  model: z.string().min(1, 'Model is required'),
-  shade_types: z.array(z.string()).min(1, 'At least one shade type required'),
-  styles: z.array(z.string()).min(1, 'At least one style required'),
-  colours: z.array(z.string()).min(1, 'At least one colour required'),
-})
-
+/**
+ * Shared component-blueprint schema — used by the Blind Management style
+ * component editor (Batch 11 Part 1: blind pricing moved from products to
+ * blind_styles). Previously named `componentSchema` and scoped to the
+ * removed per-product Product Manager; same shape, now style-scoped.
+ */
 export const componentSchema = z.object({
   name: z.string().min(1, 'Component name is required'),
   unit: z.enum(['per_inch', 'per_sq_inch', 'fixed']),
@@ -117,6 +119,5 @@ export type PropertyInput = z.infer<typeof propertySchema>
 export type RoomInput = z.infer<typeof roomSchema>
 export type WindowInput = z.infer<typeof windowSchema>
 export type WindowConfigInput = z.infer<typeof windowConfigSchema>
-export type ProductInput = z.infer<typeof productSchema>
 export type ComponentInput = z.infer<typeof componentSchema>
 export type PricingConfigInput = z.infer<typeof pricingConfigSchema>

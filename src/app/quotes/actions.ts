@@ -3,8 +3,10 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { advanceJobStage } from '@/lib/jobs'
+import { PRE_QUOTE_WORKFLOW_STAGES } from '@/lib/constants'
 import { effectiveQuoteStatus, isStaffRole } from '@/types/database'
-import type { QuoteNote, QuoteStatus, UserRole } from '@/types/database'
+import type { QuoteNote, QuoteStatus, UserRole, WorkflowStage } from '@/types/database'
 
 /**
  * Quote server actions (WS1 §5.1).
@@ -144,16 +146,53 @@ export async function sendQuoteAction(quoteId: string): Promise<ActionResult> {
   if (error) return { ok: false, error: error.message }
 
   await logTransition(caller.user.id, quoteId, 'quote_sent', { from: 'draft', to: 'sent' })
+  await advancePreQuoteJobOnSend(admin, quoteId, quote.user_id, quote.property_id, caller.user.id)
   revalidatePath(`/quotes/${quoteId}`)
   revalidatePath('/quotes')
   revalidatePath('/dashboard')
+  revalidatePath('/jobs')
   return { ok: true }
+}
+
+/**
+ * Batch 11 lifecycle hookup: when a staff-created quote is sent, best-effort
+ * match it to a pre-quote order (workflow stages 1-5, no quote attached yet)
+ * for the same customer + property, and advance that order to `quote_sent` —
+ * linking `quote_id` at the same time so the later accept-quote upsert
+ * (keyed on `quote_id`) updates this same row instead of creating a
+ * duplicate order. Ambiguous matches (more than one candidate) are skipped
+ * silently rather than guessing which one this quote is for; so is the
+ * case where the customer has no matching pre-quote order at all (the
+ * normal case for a customer-self-generated quote, which never has one).
+ */
+async function advancePreQuoteJobOnSend(
+  admin: ReturnType<typeof createAdminClient>,
+  quoteId: string,
+  customerId: string,
+  propertyId: string,
+  actorId: string
+) {
+  const { data: candidates } = await admin
+    .from('jobs')
+    .select('id')
+    .is('quote_id', null)
+    .eq('customer_id', customerId)
+    .eq('property_id', propertyId)
+    .in('workflow_stage', PRE_QUOTE_WORKFLOW_STAGES)
+
+  if (!candidates || candidates.length !== 1) return
+
+  const jobId = candidates[0].id
+  const stage: WorkflowStage = 'quote_sent'
+  await admin.from('jobs').update({ quote_id: quoteId }).eq('id', jobId)
+  await advanceJobStage(admin, jobId, stage, actorId)
 }
 
 /**
  * Accept a sent quote. The owning customer accepts from their quote view;
  * staff may also mark a quote accepted (phone acceptance). Accepting
- * auto-creates the job in 'pending' (WS4 §9.2).
+ * auto-creates the job (or advances an existing pre-quote order) at the
+ * `job_approved` workflow stage (Batch 11, migration 00020).
  */
 export async function acceptQuoteAction(quoteId: string): Promise<ActionResult> {
   const loaded = await loadQuoteForTransition(quoteId)
@@ -185,21 +224,51 @@ export async function acceptQuoteAction(quoteId: string): Promise<ActionResult> 
     .eq('id', quoteId)
   if (error) return { ok: false, error: error.message }
 
-  // Auto-create the job (idempotent — quote_id is unique on jobs).
-  const { error: jobError } = await admin
+  // Auto-create the job, or advance it if one already exists. Batch 11: a
+  // pre-quote order may already be linked to this quote_id via
+  // `advancePreQuoteJobOnSend` (fired when the quote was sent) — in that
+  // case we must ADVANCE its existing row to `job_approved` rather than
+  // upsert-with-ignoreDuplicates, which would silently no-op on the
+  // existing row and leave it stuck at `quote_sent` forever. Acceptance
+  // starts the order at `job_approved` (stage 6) rather than the old
+  // `pending`, since acceptance is exactly the "written confirmation +
+  // deposit" stage.
+  const stage: WorkflowStage = 'job_approved'
+  const { data: existingJob } = await admin
     .from('jobs')
-    .upsert(
-      {
-        quote_id: quoteId,
-        property_id: quote.property_id,
-        status: 'pending',
-        created_by: caller.user.id,
-      },
-      { onConflict: 'quote_id', ignoreDuplicates: true }
-    )
-  if (jobError) {
+    .select('id')
+    .eq('quote_id', quoteId)
+    .maybeSingle()
+
+  let jobErrorMessage: string | null = null
+  if (existingJob) {
+    const { error: advanceError } = await advanceJobStage(admin, existingJob.id, stage, caller.user.id)
+    jobErrorMessage = advanceError
+    if (!advanceError) {
+      await admin
+        .from('jobs')
+        .update({ customer_id: quote.user_id, property_id: quote.property_id })
+        .eq('id', existingJob.id)
+    }
+  } else {
+    const { error: insertError } = await admin.from('jobs').insert({
+      quote_id: quoteId,
+      property_id: quote.property_id,
+      customer_id: quote.user_id,
+      status: 'pending',
+      workflow_stage: stage,
+      stage_history: [{ stage, at: new Date().toISOString(), actor_id: caller.user.id }],
+      created_by: caller.user.id,
+    })
+    // Race guard: two near-simultaneous "Accept" clicks could both see no
+    // existing row and both attempt an insert; quote_id's unique
+    // constraint rejects the second one (Postgres 23505) — treat that as
+    // "already created by the other request" rather than a real failure.
+    jobErrorMessage = insertError && insertError.code !== '23505' ? insertError.message : null
+  }
+  if (jobErrorMessage) {
     // The acceptance stands; surface the job problem for staff to fix.
-    await logTransition(caller.user.id, quoteId, 'job_create_failed', { error: jobError.message })
+    await logTransition(caller.user.id, quoteId, 'job_create_failed', { error: jobErrorMessage })
   }
 
   await logTransition(caller.user.id, quoteId, 'quote_accepted', { from: 'sent', to: 'accepted' })

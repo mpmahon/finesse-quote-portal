@@ -7,10 +7,17 @@ import { Badge } from '@/components/ui/badge'
 import { QuoteStatusBadge } from '@/components/quotes/quote-status-badge'
 import { StatCard } from '@/components/dashboard/stat-card'
 import { WhatIfPanel } from '@/components/dashboard/what-if-panel'
-import { QUOTE_STATUS_LABELS, JOB_STATUS_LABELS } from '@/lib/constants'
+import {
+  QUOTE_STATUS_LABELS,
+  JOB_STATUS_LABELS,
+  WORKFLOW_STAGES,
+  WORKFLOW_STAGE_SHORT_LABELS,
+  WORKFLOW_STAGE_COLORS,
+} from '@/lib/constants'
 import { formatTtd } from '@/lib/format'
+import { cn } from '@/lib/utils'
 import { effectiveQuoteStatus, isCustomerRole } from '@/types/database'
-import type { JobStatus, QuoteStatus, UserRole } from '@/types/database'
+import type { JobStatus, QuoteStatus, UserRole, WorkflowStage } from '@/types/database'
 import { format } from 'date-fns'
 import { Home, FileText, Images, Plus, UserPlus, CalendarDays, AlertTriangle } from 'lucide-react'
 
@@ -368,7 +375,7 @@ async function AdminDashboard() {
       .from('quotes')
       .select('id, status, expires_at, total_ttd, created_at, sent_at, created_by, properties(name), creator:profiles!created_by(first_name, last_name)')
       .order('created_at', { ascending: false }),
-    supabase.from('jobs').select('id, status, scheduled_install_date, properties(name)'),
+    supabase.from('jobs').select('id, status, workflow_stage, scheduled_install_date, properties(name)'),
     supabase
       .from('audit_logs')
       .select('id, action_type, created_at, actor:profiles!actor_id(first_name, last_name)')
@@ -411,8 +418,10 @@ async function AdminDashboard() {
     new Date(j.scheduled_install_date).getTime() >= dayAgo &&
     new Date(j.scheduled_install_date).getTime() <= weekAhead
   ).length
-  const jobsByStatus = jobRows.reduce<Record<string, number>>((acc, j) => {
-    acc[j.status] = (acc[j.status] ?? 0) + 1
+  // Batch 11: the workflow strip combines pre-quote and post-approval jobs
+  // by workflow_stage — they're all just "jobs" now, no separate concept.
+  const jobsByStage = (jobRows as Array<{ workflow_stage: WorkflowStage }>).reduce<Record<string, number>>((acc, j) => {
+    acc[j.workflow_stage] = (acc[j.workflow_stage] ?? 0) + 1
     return acc
   }, {})
 
@@ -457,6 +466,36 @@ async function AdminDashboard() {
         <StatCard label="Avg quote value" value={formatTtd(avgQuote)} />
       </div>
 
+      {/* Batch 11: 16-stage order workflow strip, replacing the old
+          job-status-only summary. Horizontally scrollable so all 16 stages
+          are always reachable without a separate filter control; each tile
+          deep-links into the stage-filtered board (`/jobs?stage=...`). */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Order Workflow</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {WORKFLOW_STAGES.map(stage => (
+              <Link
+                key={stage}
+                href={`/jobs?stage=${stage}`}
+                className={cn(
+                  'flex shrink-0 flex-col items-center gap-0.5 rounded-md border px-3 py-2 text-center transition-colors hover:opacity-80',
+                  WORKFLOW_STAGE_COLORS[stage]
+                )}
+              >
+                <p className="text-lg font-bold">{jobsByStage[stage] ?? 0}</p>
+                <p className="text-[11px] whitespace-nowrap">{WORKFLOW_STAGE_SHORT_LABELS[stage]}</p>
+              </Link>
+            ))}
+          </div>
+          <Link href="/jobs" className="mt-3 block text-xs text-primary hover:underline">
+            Open the jobs board →
+          </Link>
+        </CardContent>
+      </Card>
+
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Pipeline by rep */}
         <Card>
@@ -491,26 +530,6 @@ async function AdminDashboard() {
                 ))}
               </div>
             )}
-          </CardContent>
-        </Card>
-
-        {/* Jobs summary */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Jobs board</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-3 gap-2">
-              {Object.entries(JOB_STATUS_LABELS).map(([s, label]) => (
-                <Link key={s} href="/jobs" className="rounded-md border p-2 text-center hover:bg-accent/50">
-                  <p className="text-lg font-bold">{jobsByStatus[s] ?? 0}</p>
-                  <p className="text-[11px] text-muted-foreground">{label}</p>
-                </Link>
-              ))}
-            </div>
-            <Link href="/jobs" className="mt-3 block text-xs text-primary hover:underline">
-              Open the jobs board →
-            </Link>
           </CardContent>
         </Card>
 

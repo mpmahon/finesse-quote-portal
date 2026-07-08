@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { LayoutDashboard, Home, FileText, Shield, Package, DollarSign, ScrollText, LogOut, Users, Palette, Umbrella, Images, Wrench } from 'lucide-react'
+import { LayoutDashboard, Home, FileText, Shield, DollarSign, ScrollText, LogOut, Users, Palette, Umbrella, Images, Wrench } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { ROLE_LABELS } from '@/lib/constants'
@@ -28,10 +28,13 @@ const navItems = [
   { href: '/jobs', label: 'Jobs', icon: Wrench, roles: STAFF_ROLES },
 ]
 
+// Batch 11 Part 1: the separate blind "Products" page is removed per client
+// directive — Blind Management (the Type -> Opacity -> Style -> Colour
+// hierarchy) IS what Finesse sells; there's no separate make/model layer
+// for blinds any more. Awning Products stays — awnings are unaffected.
 const adminItems = [
   { href: '/admin', label: 'Overview', icon: Shield },
   { href: '/admin/users', label: 'Users', icon: Users },
-  { href: '/admin/products', label: 'Blind Products', icon: Package },
   { href: '/admin/awning-products', label: 'Awning Products', icon: Umbrella },
   { href: '/admin/catalog', label: 'Blind Management', icon: Palette },
   { href: '/admin/pricing', label: 'Pricing', icon: DollarSign },

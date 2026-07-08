@@ -3,8 +3,9 @@ import { redirect } from 'next/navigation'
 import { GalleryClient } from '@/components/gallery/gallery-client'
 import { lineItemTtd, calculateLineItem, calculateAwningLineItem } from '@/lib/quote-engine'
 import { markupPctForRole, ESTIMATE_CONFIG_COLUMNS } from '@/lib/estimates'
+import { fetchBlindHierarchy, componentsForStyle, coloursForStyle } from '@/lib/blind-hierarchy'
 import { isCustomerRole, isStaffRole } from '@/types/database'
-import type { AwningProduct, Component, UserRole } from '@/types/database'
+import type { AwningProduct, UserRole } from '@/types/database'
 import type { CustomerOption, PropertyOption } from '@/components/gallery/quote-from-style-dialog'
 
 /** Indicative pricing window: a standard 36" × 48" inside-mount window. */
@@ -14,21 +15,25 @@ const SAMPLE_WINDOW = { width_inches: 36, height_inches: 48, mount_type: 'inside
  * Style Gallery (WS3 §8.2) — the browsable, filterable product range with
  * images, colour swatches, and "from ~TTD X" indicative pricing computed
  * through the real quote engine (customer-type aware).
+ *
+ * Batch 11 Part 1: blind cards are now blind Styles (the Blind Management
+ * hierarchy is what Finesse sells) rather than products — each card joins
+ * up to its Opacity/Type for captions and prices itself from its own
+ * `blind_style_components`. Awning cards are unchanged (awnings still use
+ * `awning_products`).
  */
 export default async function GalleryPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
-  const [{ data: profile }, { data: products }, { data: awningProducts }, { data: pricing }, { data: colours }] = await Promise.all([
+  const [{ data: profile }, hierarchy, { data: awningProducts }, { data: pricing }, { data: legacyColours }] = await Promise.all([
     supabase.from('profiles').select('role').eq('id', user.id).single(),
-    supabase.from('products').select('*, components(*)').eq('is_active', true).order('make'),
+    fetchBlindHierarchy(supabase),
     supabase.from('awning_products').select('*').eq('is_active', true).order('make'),
     supabase.from('pricing_config').select(ESTIMATE_CONFIG_COLUMNS).eq('id', 1).single(),
-    // Batch 7: `colours` renamed to `legacy_colours`. products.colours is a
-    // legacy free-text array (products aren't linked to the new blind
-    // hierarchy yet) — the swatch display on gallery cards is unchanged,
-    // just re-pointed at the renamed table.
+    // Awning colours are still a legacy free-text array (awning_products
+    // aren't part of the hierarchy) — used only for awning swatch chips.
     supabase.from('legacy_colours').select('name, hex_code'),
   ])
 
@@ -75,27 +80,34 @@ export default async function GalleryPage() {
   const labor = pricing ? Number(pricing.labor_cost_ttd) : null
 
   const hexByColour: Record<string, string> = {}
-  for (const c of colours ?? []) {
+  for (const c of legacyColours ?? []) {
     if (c.hex_code) hexByColour[c.name.toLowerCase()] = c.hex_code
   }
 
-  const blindCards = ((products ?? []) as (import('@/types/database').Product & { components: Component[] })[]).map(p => {
+  const blindCards = hierarchy.styles.map(style => {
+    const opacity = hierarchy.opacities.find(o => o.id === style.opacity_id) ?? null
+    const type = opacity ? hierarchy.types.find(t => t.id === opacity.type_id) ?? null : null
+    const components = componentsForStyle(hierarchy, style.id)
+
     let fromTtd: number | null = null
-    if (pricing && markup !== null && rate !== null && labor !== null && p.components.length > 0) {
-      const line = calculateLineItem(SAMPLE_WINDOW, p.components)
+    if (pricing && markup !== null && rate !== null && labor !== null && components.length > 0) {
+      const line = calculateLineItem(SAMPLE_WINDOW, components)
       fromTtd = lineItemTtd(line.costs.line_total_usd, markup, rate, labor)
     }
+
     return {
-      id: p.id,
+      id: style.id,
       kind: 'blind' as const,
-      make: p.make,
-      model: p.model,
-      image_url: p.image_url,
-      shade_types: p.shade_types,
-      styles: p.styles,
-      colours: p.colours.map(c => ({ name: c, hex: hexByColour[c.toLowerCase()] ?? null })),
-      /** Batch 7: drives the gallery's Blind Type filter (see gallery-client.tsx). Null when untagged — shown under "Other / Unmapped". */
-      blind_type: p.blind_type,
+      // Type name heads the card; Style name is the "model" line — mirrors
+      // the old make/model card layout with minimal changes to gallery-client.tsx.
+      make: type?.name ?? 'Blind',
+      model: style.name,
+      image_url: style.image_url,
+      shade_types: opacity ? [opacity.name] : [],
+      styles: [] as string[],
+      colours: coloursForStyle(hierarchy, style.id).map(c => ({ name: c.name, hex: c.hex_code })),
+      /** Batch 11 Part 1: the resolved Type NAME (not a product slug) — every style has a real Type, so this drives the Blind Type filter directly. */
+      blind_type: type?.name ?? null,
       from_ttd: fromTtd,
     }
   })

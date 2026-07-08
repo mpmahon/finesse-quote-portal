@@ -12,8 +12,9 @@ import { QuoteStatusBadge } from '@/components/quotes/quote-status-badge'
 import { QuoteLifecycleActions } from '@/components/quotes/quote-lifecycle-actions'
 import { WindowDiagram } from '@/components/windows/window-diagram'
 import { PageBreadcrumb } from '@/components/layout/page-breadcrumb'
-import { computeStaleness, buildProductLatestMap } from '@/lib/quote-staleness'
+import { computeStaleness, buildProductLatestMap, buildStyleLatestMap } from '@/lib/quote-staleness'
 import { lineItemTtd } from '@/lib/quote-engine'
+import { fetchBlindHierarchy, resolveStyleId } from '@/lib/blind-hierarchy'
 import { effectiveQuoteStatus, isStaffRole } from '@/types/database'
 import { QuoteNotesEditor } from '@/components/quotes/quote-notes-editor'
 import type { QuoteNote, QuoteStatus, MountType, HardwareSpec } from '@/types/database'
@@ -67,8 +68,10 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
     { data: lineItems },
     { data: config },
     { data: components },
+    { data: styleComponentRows },
     { data: legacyColourRows },
     { data: blindColourRows },
+    hierarchy,
   ] = await Promise.all([
     supabase
       .from('quote_line_items')
@@ -77,11 +80,16 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
       .order('room_name'),
     supabase.from('pricing_config').select('updated_at').eq('id', 1).single(),
     supabase.from('components').select('product_id, updated_at'),
+    // Batch 11 Part 1: blind pricing lives on blind_styles now — its
+    // components' updated_at also needs to feed the staleness check
+    // alongside the legacy per-product one below.
+    supabase.from('blind_style_components').select('style_id, updated_at'),
     // Legacy flat colours (pre-Batch-7 line items) + the new hierarchy's
     // colours (Batch 7 onward) — merged so a swatch renders correctly
     // whichever taxonomy generated this line item's `colour` text.
     supabase.from('legacy_colours').select('name, hex_code'),
     supabase.from('blind_colours').select('name, hex_code'),
+    fetchBlindHierarchy(supabase, { activeOnly: false }),
   ])
 
   const hexByColour: Record<string, string> = {}
@@ -112,18 +120,31 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
     byRoom[item.room_name].push(item)
   }
 
-  const priceableCount = items.filter(li => li.line_type !== 'zero').length
+  // Total priceable UNITS (not row count) — a quantity-3 window contributes
+  // 3 to the installation count, matching calculateQuoteTotals' engine math.
+  const priceableCount = items
+    .filter(li => li.line_type !== 'zero')
+    .reduce((sum, li) => sum + li.quantity, 0)
   const status = effectiveQuoteStatus(quote as { status: QuoteStatus; expires_at: string | null })
   const isOwner = quote.user_id === user.id
 
-  // Staleness check
-  const productIds = Array.from(new Set(items.map(li => li.product_id)))
+  // Staleness check — tracks both the legacy per-product source (historical
+  // quotes) and the current per-style source (Batch 11 Part 1). Product ids
+  // and style ids never collide (different tables' uuids), so they're
+  // merged into one tracked-id list + one latest-update map.
+  const productIds = items.map(li => li.product_id).filter((pid): pid is string => !!pid)
+  const styleIds = items
+    .filter(li => li.line_type === 'blind')
+    .map(li => resolveStyleId(hierarchy, { shadeType: li.shade_type, opacity: li.opacity, style: li.style }))
+    .filter((sid): sid is string => !!sid)
+  const trackedIds = Array.from(new Set([...productIds, ...styleIds]))
   const productLatest = buildProductLatestMap(components || [])
+  const styleLatest = buildStyleLatestMap(styleComponentRows || [])
   const staleness = computeStaleness(
     quote.created_at,
-    productIds,
+    trackedIds,
     config?.updated_at || null,
-    productLatest
+    { ...productLatest, ...styleLatest }
   )
 
   /** Pretty-print a component name for the footnote. */
@@ -229,11 +250,12 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
         </CardContent>
       </Card>
 
-      {/* Per-Room Breakdown — one TTD price per window, no per-component USD */}
+      {/* Per-Room Breakdown — one TTD price per window (multiplied by its
+          quantity snapshot), no per-component USD */}
       {Object.entries(byRoom).map(([roomName, roomItems]) => {
         const roomTotalTtd = roomItems.reduce((sum, item) => {
           if (item.line_type === 'zero') return sum
-          return sum + lineItemTtd(Number(item.line_total_usd), markupPct, exchangeRate, laborTtd)
+          return sum + lineItemTtd(Number(item.line_total_usd), markupPct, exchangeRate, laborTtd, item.quantity)
         }, 0)
 
         return (
@@ -259,7 +281,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
                     const isZero = item.line_type === 'zero'
                     const windowTtd = isZero
                       ? 0
-                      : lineItemTtd(Number(item.line_total_usd), markupPct, exchangeRate, laborTtd)
+                      : lineItemTtd(Number(item.line_total_usd), markupPct, exchangeRate, laborTtd, item.quantity)
                     const excluded = item.windows?.excluded_components ?? []
                     const hardwareSpec = (item.hardware_spec ?? null) as HardwareSpec | null
 
@@ -278,6 +300,9 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
                             )}
                             <div>
                               <span className="font-medium">{item.window_name}</span>
+                              {item.quantity > 1 && (
+                                <Badge variant="outline" className="ml-1.5 text-[10px]">×{item.quantity}</Badge>
+                              )}
                               {excluded.length > 0 && (
                                 <p className="text-[11px] italic text-muted-foreground">
                                   {excluded.map(formatName).join(', ')} not included

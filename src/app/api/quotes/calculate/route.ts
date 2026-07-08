@@ -13,7 +13,9 @@ import type {
   LineItemResult,
   PricingParams,
 } from '@/lib/quote-engine'
-import type { AwningProduct, Component, HardwareSizeRule, HardwareSpec, MountType, UserRole } from '@/types/database'
+import { fetchBlindHierarchy, resolveStyleId, componentsForStyle } from '@/lib/blind-hierarchy'
+import { BLIND_TYPE_NAME_TO_PRODUCT_SLUG } from '@/lib/constants'
+import type { AwningProduct, HardwareSizeRule, HardwareSpec, MountType, UserRole } from '@/types/database'
 import { isCustomerRole } from '@/types/database'
 
 interface BlindRow {
@@ -21,7 +23,6 @@ interface BlindRow {
   window_id: string
   window_name: string
   room_name: string
-  product_id: string
   shade_type: string | null
   style: string | null
   colour: string | null
@@ -30,8 +31,12 @@ interface BlindRow {
   /** Batch 7: Valance/Finisher name snapshot. */
   valance: string | null
   result: LineItemResult
-  /** Resolved width-based hardware spec for this blind (null when the product has no blind_type or no rule matches). */
+  /** Resolved width-based hardware spec for this blind (null when the Type has no hardware slug mapping or no rule matches). */
   hardware_spec: HardwareSpec | null
+  /** Effective unit multiplier: window_quantity x room_quantity. */
+  units: number
+  room_quantity: number
+  window_quantity: number
 }
 
 interface AwningRow {
@@ -42,6 +47,9 @@ interface AwningRow {
   awning_product_id: string
   awning_colour: string | null
   result: AwningLineItemResult
+  units: number
+  room_quantity: number
+  window_quantity: number
 }
 
 interface ZeroRow {
@@ -51,6 +59,9 @@ interface ZeroRow {
   room_name: string
   width_inches: number
   height_inches: number
+  units: number
+  room_quantity: number
+  window_quantity: number
 }
 
 /**
@@ -77,6 +88,20 @@ interface ZeroRow {
  * `quote_line_items.hardware_spec` and also fed into `calculateLineItem` so
  * any future cost overrides on the matched rule are applied. Seeded
  * overrides are null today, so this has no cost impact yet.
+ *
+ * Batch 11 Part 1: blind pricing moved from `products`/`components` to the
+ * Blind Management hierarchy — each blind line's components come from
+ * `blind_style_components` for the window's stored Style (resolved from its
+ * Type/Opacity/Style name snapshot via `resolveStyleId`), and the
+ * width-based hardware slug is rekeyed off the Type name directly
+ * (`BLIND_TYPE_NAME_TO_PRODUCT_SLUG`) since there's no more product to carry
+ * the `blind_type` tag.
+ *
+ * Batch 11 Part 2: each line's `units` (window quantity x its room's
+ * quantity) scales both its USD cost contribution and its labour/
+ * installation charge in `calculateQuoteTotals`, and is snapshotted onto
+ * `quote_line_items.quantity`/`room_quantity`/`window_quantity` so a quote
+ * never drifts if the room/window's quantity is edited afterwards.
  */
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -137,17 +162,24 @@ export async function POST(request: Request) {
     .select('*')
   const allHardwareRules = (hardwareRules ?? []) as HardwareSizeRule[]
 
-  // Fetch ALL windows for this property + their products + awning products
+  // Blind pricing hierarchy (Batch 11 Part 1 — pricing moved from
+  // products/components to blind_styles). Fetched with activeOnly: false so
+  // an already-saved window's style still resolves even if it's since been
+  // deactivated in Blind Management.
+  const hierarchy = await fetchBlindHierarchy(supabase, { activeOnly: false })
+
+  // Fetch ALL windows for this property + their room (for its quantity) +
+  // awning products. Blind pricing no longer joins a product — it resolves
+  // from the window's own hierarchy name snapshot via `hierarchy` above.
   const { data: windows } = await supabase
     .from('windows')
     .select(`
       id, name, width_inches, height_inches, mount_type,
       has_blind, has_awning,
-      product_id, shade_type, style, colour, opacity, valance,
+      shade_type, style, colour, opacity, valance,
       awning_product_id, awning_colour,
-      excluded_components,
-      rooms!inner(name, property_id),
-      products(id, make, model, blind_type, components(*)),
+      excluded_components, quantity,
+      rooms!inner(name, property_id, quantity),
       awning_products(*)
     `)
     .eq('rooms.property_id', property_id)
@@ -173,13 +205,25 @@ export async function POST(request: Request) {
     }, { status: 400 })
   }
 
-  // Validate: any toggled-on product must be configured
-  const unconfiguredBlinds = windows.filter(w => w.has_blind && !w.product_id)
+  // Validate: any toggled-on blind/awning must be configured. Batch 11 Part
+  // 1: a blind is "configured" once it has a Style selected — pricing
+  // resolves from the style, not a product — and that style must actually
+  // have pricing components set up in Blind Management.
+  const unconfiguredBlinds = windows.filter(w => w.has_blind && !w.style)
+  const unpricedBlinds = windows.filter(w => {
+    if (!w.has_blind || !w.style) return false
+    const styleId = resolveStyleId(hierarchy, { shadeType: w.shade_type, opacity: w.opacity, style: w.style })
+    return componentsForStyle(hierarchy, styleId).length === 0
+  })
   const unconfiguredAwnings = windows.filter(w => w.has_awning && !w.awning_product_id)
-  if (unconfiguredBlinds.length > 0 || unconfiguredAwnings.length > 0) {
+  if (unconfiguredBlinds.length > 0 || unpricedBlinds.length > 0 || unconfiguredAwnings.length > 0) {
     const messages: string[] = []
     if (unconfiguredBlinds.length > 0) {
       messages.push(`${unconfiguredBlinds.length} window(s) with blinds are not configured`)
+    }
+    if (unpricedBlinds.length > 0) {
+      const names = unpricedBlinds.map(w => w.name).join(', ')
+      messages.push(`${unpricedBlinds.length} window(s) have a blind Style with no pricing set up yet (${names}) — add its components in Admin > Blind Management`)
     }
     if (unconfiguredAwnings.length > 0) {
       messages.push(`${unconfiguredAwnings.length} window(s) with awnings are not configured`)
@@ -200,7 +244,6 @@ export async function POST(request: Request) {
     mount_type: MountType
     has_blind: boolean
     has_awning: boolean
-    product_id: string | null
     shade_type: string | null
     style: string | null
     colour: string | null
@@ -211,35 +254,46 @@ export async function POST(request: Request) {
     awning_product_id: string | null
     awning_colour: string | null
     excluded_components: string[]
-    rooms: { name: string } | { name: string }[]
-    products: { components: Component[]; blind_type: string | null } | null
+    /** Batch 11 Part 2: this window's own identical-window multiplier. */
+    quantity: number
+    rooms: { name: string; quantity: number } | { name: string; quantity: number }[]
     awning_products: AwningProduct | null
   }
 
-  const getRoomName = (w: WindowWithRelations): string => {
+  const getRoom = (w: WindowWithRelations): { name: string; quantity: number } => {
     const r = w.rooms
-    if (Array.isArray(r)) return r[0]?.name || ''
-    return r?.name || ''
+    const room = Array.isArray(r) ? r[0] : r
+    return { name: room?.name || '', quantity: room?.quantity ?? 1 }
   }
 
   for (const w of windows as unknown as WindowWithRelations[]) {
-    const roomName = getRoomName(w)
+    const room = getRoom(w)
+    const roomName = room.name
+    const windowQuantity = Math.max(1, w.quantity)
+    const roomQuantity = Math.max(1, room.quantity)
+    const units = windowQuantity * roomQuantity
     let hasPriceableLine = false
 
-    if (w.has_blind && w.product_id && w.products) {
+    if (w.has_blind && w.style) {
       const windowConfig = {
         width_inches: Number(w.width_inches),
         height_inches: Number(w.height_inches),
         mount_type: w.mount_type,
       }
 
+      const styleId = resolveStyleId(hierarchy, { shadeType: w.shade_type, opacity: w.opacity, style: w.style })
+      const components = componentsForStyle(hierarchy, styleId)
+
       // Resolve the width-based hardware spec (Batch 7 pre-work) from the
       // FABRICATED blind width, not the raw window width, before pricing —
       // when the matched rule has cost overrides set, calculateLineItem
-      // needs the rule itself, not just the derived spec.
+      // needs the rule itself, not just the derived spec. Rekeyed off the
+      // window's Type name (Batch 11 Part 1 — the product's blind_type tag
+      // is gone) via the same slug map the configurator uses.
       const blindWidth = calculateBlindDimensions(windowConfig).blind_width
+      const hardwareSlug = w.shade_type ? BLIND_TYPE_NAME_TO_PRODUCT_SLUG[w.shade_type] : undefined
       const { spec: hardware_spec } = resolveHardwareSpec(
-        w.products.blind_type,
+        hardwareSlug ?? null,
         blindWidth,
         allHardwareRules
       )
@@ -249,7 +303,7 @@ export async function POST(request: Request) {
 
       const result = calculateLineItem(
         windowConfig,
-        w.products.components,
+        components,
         w.excluded_components || [],
         matchedRule
       )
@@ -258,7 +312,6 @@ export async function POST(request: Request) {
         window_id: w.id,
         window_name: w.name,
         room_name: roomName,
-        product_id: w.product_id,
         shade_type: w.shade_type,
         style: w.style,
         colour: w.colour,
@@ -266,6 +319,9 @@ export async function POST(request: Request) {
         valance: w.valance,
         result,
         hardware_spec,
+        units,
+        room_quantity: roomQuantity,
+        window_quantity: windowQuantity,
       })
       hasPriceableLine = true
     }
@@ -280,6 +336,9 @@ export async function POST(request: Request) {
         awning_product_id: w.awning_product_id,
         awning_colour: w.awning_colour,
         result,
+        units,
+        room_quantity: roomQuantity,
+        window_quantity: windowQuantity,
       })
       hasPriceableLine = true
     }
@@ -291,16 +350,20 @@ export async function POST(request: Request) {
         window_name: w.name,
         room_name: roomName,
         width_inches: Number(w.width_inches),
+        units,
+        room_quantity: roomQuantity,
+        window_quantity: windowQuantity,
         height_inches: Number(w.height_inches),
       })
     }
   }
 
-  // Collect priceable items for the totals calculation.
-  const priceableItems: { costs: { line_total_usd: number } }[] = []
+  // Collect priceable items for the totals calculation — `units` carries
+  // each line's room x window quantity multiplier through to the engine.
+  const priceableItems: { costs: { line_total_usd: number }; units: number }[] = []
   for (const row of rows) {
     if (row.type === 'blind' || row.type === 'awning') {
-      priceableItems.push({ costs: { line_total_usd: row.result.costs.line_total_usd } })
+      priceableItems.push({ costs: { line_total_usd: row.result.costs.line_total_usd }, units: row.units })
     }
   }
 
@@ -357,7 +420,10 @@ export async function POST(request: Request) {
       return {
         quote_id: quote.id,
         window_id: row.window_id,
-        product_id: row.product_id,
+        // Batch 11 Part 1: blind pricing no longer comes from a product —
+        // this column is left null for new-style quotes (still nullable
+        // since migration 00005; historical rows are untouched).
+        product_id: null,
         awning_product_id: null,
         line_type: 'blind',
         room_name: row.room_name,
@@ -372,6 +438,9 @@ export async function POST(request: Request) {
         opacity: row.opacity,
         valance: row.valance,
         hardware_spec: row.hardware_spec,
+        quantity: row.units,
+        room_quantity: row.room_quantity,
+        window_quantity: row.window_quantity,
         ...row.result.costs,
       }
     }
@@ -394,6 +463,9 @@ export async function POST(request: Request) {
         opacity: null,
         valance: null,
         hardware_spec: null,
+        quantity: row.units,
+        room_quantity: row.room_quantity,
+        window_quantity: row.window_quantity,
         cassette_cost: row.result.costs.frame_cost,
         tube_cost: 0,
         bottom_rail_cost: 0,
@@ -422,6 +494,9 @@ export async function POST(request: Request) {
       colour: null,
       opacity: null,
       valance: null,
+      quantity: row.units,
+      room_quantity: row.room_quantity,
+      window_quantity: row.window_quantity,
       cassette_cost: 0,
       tube_cost: 0,
       bottom_rail_cost: 0,

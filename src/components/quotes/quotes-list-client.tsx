@@ -11,6 +11,7 @@ import { FileText, Search, User, AlertTriangle } from 'lucide-react'
 import { format } from 'date-fns'
 import { QuoteStatusBadge } from '@/components/quotes/quote-status-badge'
 import { QUOTE_STATUSES, QUOTE_STATUS_LABELS } from '@/lib/constants'
+import type { QuoteStatus } from '@/types/database'
 import type { StaleReason } from '@/lib/quote-staleness'
 
 interface Quote {
@@ -123,7 +124,15 @@ export function QuotesListClient({ quotes, showCustomer = false }: QuotesListCli
           </div>
           <Select value={statusFilter} onValueChange={v => setStatusFilter(v ?? 'all')}>
             <SelectTrigger className="sm:w-56">
-              <SelectValue />
+              <SelectValue>
+                {(v: string) =>
+                  v === 'all'
+                    ? 'All Statuses'
+                    : v === 'stale'
+                      ? 'Affected by pricing change'
+                      : QUOTE_STATUS_LABELS[v as QuoteStatus] ?? v
+                }
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Statuses</SelectItem>

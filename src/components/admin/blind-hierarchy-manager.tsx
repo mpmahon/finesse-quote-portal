@@ -3,8 +3,9 @@
 import { useState } from 'react'
 import { ChevronRight } from 'lucide-react'
 import { BlindHierarchyLevel } from '@/components/admin/blind-hierarchy-level'
+import { BlindStyleEditor } from '@/components/admin/blind-style-editor'
 import type { BlindHierarchy } from '@/lib/blind-hierarchy'
-import { opacitiesForType, stylesForOpacity, coloursForStyle, valancesForType } from '@/lib/blind-hierarchy'
+import { opacitiesForType, stylesForOpacity, coloursForStyle, valancesForType, componentsForStyle } from '@/lib/blind-hierarchy'
 
 interface BlindHierarchyManagerProps {
   /** Full hierarchy including inactive nodes — admins need to see and reactivate deactivated options. */
@@ -124,14 +125,20 @@ export function BlindHierarchyManager({ hierarchy }: BlindHierarchyManagerProps)
       )}
 
       {selectedStyle && (
-        <BlindHierarchyLevel
-          title={`Colours — ${selectedType?.name} / ${selectedOpacity?.name} / ${selectedStyle.name}`}
-          items={coloursForStyle(hierarchy, selectedStyle.id)}
-          table="blind_colours"
-          scopeFields={{ style_id: selectedStyle.id }}
-          showHex
-          emptyHint="No colours yet for this style — add the first."
-        />
+        <>
+          <BlindHierarchyLevel
+            title={`Colours — ${selectedType?.name} / ${selectedOpacity?.name} / ${selectedStyle.name}`}
+            items={coloursForStyle(hierarchy, selectedStyle.id)}
+            table="blind_colours"
+            scopeFields={{ style_id: selectedStyle.id }}
+            showHex
+            emptyHint="No colours yet for this style — add the first."
+          />
+
+          {/* Batch 11 Part 1: pricing + photo now live on the Style itself
+              (the removed Product Management feature's replacement). */}
+          <BlindStyleEditor style={selectedStyle} components={componentsForStyle(hierarchy, selectedStyle.id)} />
+        </>
       )}
     </div>
   )

@@ -3,7 +3,8 @@ import { redirect } from 'next/navigation'
 import { Suspense } from 'react'
 import { QuotesListClient } from '@/components/quotes/quotes-list-client'
 import { PageBreadcrumb } from '@/components/layout/page-breadcrumb'
-import { computeStaleness, buildProductLatestMap } from '@/lib/quote-staleness'
+import { computeStaleness, buildProductLatestMap, buildStyleLatestMap } from '@/lib/quote-staleness'
+import { fetchBlindHierarchy, resolveStyleId } from '@/lib/blind-hierarchy'
 import { effectiveQuoteStatus, isStaffRole } from '@/types/database'
 import type { QuoteStatus, UserRole } from '@/types/database'
 
@@ -24,6 +25,8 @@ export default async function QuotesPage() {
     { data: quotes },
     { data: config },
     { data: components },
+    { data: styleComponentRows },
+    hierarchy,
   ] = await Promise.all([
     (() => {
       // `profiles!user_id(...)` disambiguates the join — quotes now has two
@@ -40,7 +43,7 @@ export default async function QuotesPage() {
           created_by,
           properties(name),
           profiles!user_id(id, first_name, last_name, email),
-          quote_line_items(product_id)
+          quote_line_items(product_id, line_type, shade_type, opacity, style)
         `)
         .order('created_at', { ascending: false })
       if (!isStaff) query = query.eq('user_id', user.id)
@@ -48,19 +51,30 @@ export default async function QuotesPage() {
     })(),
     supabase.from('pricing_config').select('updated_at').eq('id', 1).single(),
     supabase.from('components').select('product_id, updated_at'),
+    // Batch 11 Part 1: blind pricing lives on blind_styles now — feeds the
+    // staleness check alongside the legacy per-product one below.
+    supabase.from('blind_style_components').select('style_id, updated_at'),
+    fetchBlindHierarchy(supabase, { activeOnly: false }),
   ])
 
   const productLatest = buildProductLatestMap(components || [])
+  const styleLatest = buildStyleLatestMap(styleComponentRows || [])
+  const combinedLatest = { ...productLatest, ...styleLatest }
 
   const normalized = (quotes || []).map(q => {
-    const productIds = Array.from(
-      new Set(((q.quote_line_items || []) as { product_id: string }[]).map(li => li.product_id))
-    )
+    type LineItemRef = { product_id: string | null; line_type: string; shade_type: string | null; opacity: string | null; style: string | null }
+    const lineItemRefs = (q.quote_line_items || []) as LineItemRef[]
+    const productIds = lineItemRefs.map(li => li.product_id).filter((pid): pid is string => !!pid)
+    const styleIds = lineItemRefs
+      .filter(li => li.line_type === 'blind')
+      .map(li => resolveStyleId(hierarchy, { shadeType: li.shade_type, opacity: li.opacity, style: li.style }))
+      .filter((sid): sid is string => !!sid)
+    const trackedIds = Array.from(new Set([...productIds, ...styleIds]))
     const staleness = computeStaleness(
       q.created_at,
-      productIds,
+      trackedIds,
       config?.updated_at || null,
-      productLatest
+      combinedLatest
     )
     return {
       id: q.id,

@@ -36,7 +36,6 @@ export default async function WindowConfigPage({
   if (!window) notFound()
 
   const [
-    { data: products },
     { data: awningProducts },
     { data: viewerProfile },
     { data: pricing },
@@ -44,7 +43,6 @@ export default async function WindowConfigPage({
     { data: hardwareRules },
     hierarchy,
   ] = await Promise.all([
-    supabase.from('products').select('*, components(*)').eq('is_active', true).order('make'),
     supabase.from('awning_products').select('*').eq('is_active', true).order('make'),
     supabase.from('profiles').select('role').eq('id', user.id).single(),
     supabase.from('pricing_config').select(ESTIMATE_CONFIG_COLUMNS).eq('id', 1).single(),
@@ -100,7 +98,6 @@ export default async function WindowConfigPage({
 
       <WindowConfigurator
         window={window}
-        products={products || []}
         awningProducts={awningProducts || []}
         propertyId={id}
         roomId={roomId}

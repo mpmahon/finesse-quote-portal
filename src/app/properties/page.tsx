@@ -7,6 +7,7 @@ import { Plus } from 'lucide-react'
 import { PropertyList } from '@/components/properties/property-list'
 import { estimateWindowsTotals, ESTIMATE_CONFIG_COLUMNS } from '@/lib/estimates'
 import type { EstimateWindow } from '@/lib/estimates'
+import { fetchBlindHierarchy } from '@/lib/blind-hierarchy'
 import { isStaffRole, isCustomerRole } from '@/types/database'
 import type { UserRole } from '@/types/database'
 
@@ -36,11 +37,15 @@ export default async function PropertiesPage() {
   // Pull the pricing columns the shared estimate layer needs so card totals
   // match a freshly generated quote to the cent (WS1 §5.6). No USD or raw
   // rate is ever rendered — only the final TTD figure.
-  const { data: pricing } = await supabase
-    .from('pricing_config')
-    .select(ESTIMATE_CONFIG_COLUMNS)
-    .eq('id', 1)
-    .single()
+  const [{ data: pricing }, hierarchy] = await Promise.all([
+    supabase
+      .from('pricing_config')
+      .select(ESTIMATE_CONFIG_COLUMNS)
+      .eq('id', 1)
+      .single(),
+    // Batch 11 Part 1: blind pricing lives on blind_styles now.
+    fetchBlindHierarchy(supabase, { activeOnly: false }),
+  ])
 
   // Staff needs the full customer list for the Add-Property customer picker.
   // Customers don't see the picker, so skip the query for them.
@@ -78,6 +83,7 @@ export default async function PropertiesPage() {
       profiles!user_id(id, first_name, last_name, email, role),
       rooms(
         id,
+        quantity,
         windows(
           id,
           width_inches,
@@ -85,10 +91,12 @@ export default async function PropertiesPage() {
           mount_type,
           has_blind,
           has_awning,
-          product_id,
+          shade_type,
+          opacity,
+          style,
           awning_product_id,
           excluded_components,
-          products(components(*)),
+          quantity,
           awning_products(*)
         )
       )
@@ -104,25 +112,29 @@ export default async function PropertiesPage() {
     throw new Error(`Failed to load properties: ${propertiesError.message}`)
   }
 
-  // Calculate totals for each property via the shared estimate layer.
+  // Calculate totals for each property via the shared estimate layer. Each
+  // ROOM has its own quantity multiplier, so totals are computed per-room
+  // (each call gets that room's own quantity) and summed — a single flat
+  // call across every window in the property would apply only one room's
+  // quantity to all of them.
   const normalized = (properties || []).map(p => {
-    const rooms = (p.rooms || []) as Array<{ id: string; windows: EstimateWindow[] }>
+    const rooms = (p.rooms || []) as Array<{ id: string; quantity: number; windows: EstimateWindow[] }>
     const owner = Array.isArray(p.profiles) ? p.profiles[0] ?? null : p.profiles
 
     let totalWindows = 0
     let priceableWindows = 0
     let configuredWindows = 0
     let noBlindWindows = 0
-    const allWindows: EstimateWindow[] = []
 
     for (const room of rooms) {
       for (const w of room.windows || []) {
         totalWindows++
-        allWindows.push(w)
         const needsConfig = w.has_blind || w.has_awning
         if (needsConfig) priceableWindows++
         if (!w.has_blind && !w.has_awning) noBlindWindows++
-        const blindOk = !w.has_blind || !!w.product_id
+        // Batch 11 Part 1: a blind is "configured" once it has a Style
+        // selected (pricing now resolves from the style, not a product).
+        const blindOk = !w.has_blind || !!w.style
         const awningOk = !w.has_awning || !!w.awning_product_id
         if (needsConfig && blindOk && awningOk) configuredWindows++
       }
@@ -137,9 +149,12 @@ export default async function PropertiesPage() {
           ? role
           : 'retail_customer'
 
-    const totals = pricing
-      ? estimateWindowsTotals(allWindows, pricing, ownerRole)
-      : null
+    const previewTotalTtd = pricing
+      ? rooms.reduce((sum, room) => {
+          const totals = estimateWindowsTotals(room.windows, pricing, ownerRole, hierarchy, room.quantity)
+          return sum + totals.grand_total_ttd
+        }, 0)
+      : 0
 
     return {
       ...p,
@@ -149,8 +164,9 @@ export default async function PropertiesPage() {
       priceable_count: priceableWindows,
       configured_count: configuredWindows,
       no_blind_count: noBlindWindows,
-      // Full-formula TTD estimate — matches a generated quote to the cent.
-      preview_total_ttd: totals?.grand_total_ttd ?? 0,
+      // Full-formula TTD estimate (summed per-room, quantities included) —
+      // matches a generated quote to the cent.
+      preview_total_ttd: previewTotalTtd,
     }
   })
 

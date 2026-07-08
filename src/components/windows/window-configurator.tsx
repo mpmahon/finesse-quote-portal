@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -21,6 +21,7 @@ import {
   lineItemTtd,
   resolveHardwareSpec,
 } from '@/lib/quote-engine'
+import type { PricedComponent } from '@/lib/quote-engine'
 import { markupPctForRole } from '@/lib/estimates'
 import type { EstimateConfig } from '@/lib/estimates'
 import {
@@ -28,6 +29,7 @@ import {
   stylesForOpacity,
   coloursForStyle,
   valancesForType,
+  componentsForStyle,
   findTypeByName,
   findOpacityByName,
   findStyleByName,
@@ -37,7 +39,7 @@ import {
 import type { BlindHierarchy } from '@/lib/blind-hierarchy'
 import { MOUNT_TYPE_LABELS, BLIND_TYPE_NAME_TO_PRODUCT_SLUG } from '@/lib/constants'
 import { WindowDiagram } from '@/components/windows/window-diagram'
-import type { Window as WindowType, Product, Component, AwningProduct, UserRole, HardwareSizeRule } from '@/types/database'
+import type { Window as WindowType, AwningProduct, UserRole, HardwareSizeRule } from '@/types/database'
 import type { GallerySelection } from '@/lib/gallery-style-query'
 
 interface ColourSwatch {
@@ -47,7 +49,6 @@ interface ColourSwatch {
 
 interface WindowConfiguratorProps {
   window: WindowType
-  products: (Product & { components: Component[] })[]
   awningProducts: AwningProduct[]
   propertyId: string
   roomId: string
@@ -87,10 +88,9 @@ interface WindowConfiguratorProps {
    * Used only as a fallback default for fields the window doesn't already
    * have a value for — an already-configured window's own selection always
    * wins, so reconfiguring an existing window is never silently overwritten
-   * by a stale gallery link. The gallery hints are legacy free-text values
-   * (a product's old `shade_types`/`styles`/`colours` arrays) — Batch 7
-   * applies them only where they happen to match a hierarchy Type/Opacity/
-   * Style/Colour name exactly; otherwise they're dropped silently.
+   * by a stale gallery link. Batch 11 Part 1: the gallery now hands off a
+   * real hierarchy Style id directly (gallery cards ARE styles), so this is
+   * resolved unambiguously rather than by legacy free-text name matching.
    */
   gallerySelection?: GallerySelection | null
 }
@@ -123,7 +123,7 @@ const CATEGORY_ORDER = ['Casing', 'Rail', 'Mechanism', 'Mounting']
  * Groups unique hardware component names by functional category.
  * Hardware = everything except `fabric`. The groups drive the checkbox layout.
  */
-function getHardwareGroups(components: Component[]): HardwareGroup[] {
+function getHardwareGroups(components: PricedComponent[]): HardwareGroup[] {
   const seen = new Set<string>()
   const byCategory: Record<string, string[]> = {}
 
@@ -155,7 +155,6 @@ function formatComponentName(name: string): string {
 
 export function WindowConfigurator({
   window: win,
-  products,
   awningProducts,
   propertyId,
   roomId,
@@ -169,9 +168,7 @@ export function WindowConfigurator({
 }: WindowConfiguratorProps) {
   // Style Gallery fallback hints — only meaningful for the matching feature,
   // and only ever used as a fallback below (the window's own stored value
-  // always takes priority). These are legacy free-text values, so they're
-  // resolved against the hierarchy by exact name match; a miss is silently
-  // dropped rather than blocking the normal flow.
+  // always takes priority).
   const blindHint = gallerySelection?.kind === 'blind' ? gallerySelection : null
   const awningHint = gallerySelection?.kind === 'awning' ? gallerySelection : null
 
@@ -179,17 +176,24 @@ export function WindowConfigurator({
   const [hasBlind, setHasBlind] = useState(win.has_blind)
   const [hasAwning, setHasAwning] = useState(win.has_awning)
 
-  // Blind product state
-  const [productId, setProductId] = useState(win.product_id || blindHint?.productId || '')
-
   // Blind hierarchy state — IDs, not names, so the cascade is unambiguous
   // even where the same name appears under different parents (e.g. "Full
   // Privacy" is an Opacity under several Types). Resolved once on mount from
-  // the window's stored name strings (or the gallery hint as a fallback),
-  // then walked top-down as the salesperson makes selections.
-  const initialType = findTypeByName(hierarchy, win.shade_type) ?? findTypeByName(hierarchy, blindHint?.shadeType)
-  const initialOpacity = findOpacityByName(hierarchy, initialType?.id, win.opacity)
-  const initialStyle = findStyleByName(hierarchy, initialOpacity?.id, win.style ?? blindHint?.style)
+  // the window's stored name strings (the normal path), or — when the
+  // window has no selection of its own yet — from the gallery's hinted
+  // Style id, walked bottom-up to its Opacity/Type (the gallery hands off a
+  // real Style id directly, so this is unambiguous; no name matching).
+  const hintStyle = blindHint?.styleId ? hierarchy.styles.find(s => s.id === blindHint.styleId) ?? null : null
+  const hintOpacity = hintStyle ? hierarchy.opacities.find(o => o.id === hintStyle.opacity_id) ?? null : null
+  const hintType = hintOpacity ? hierarchy.types.find(t => t.id === hintOpacity.type_id) ?? null : null
+
+  const initialType = findTypeByName(hierarchy, win.shade_type) ?? hintType
+  const initialOpacity =
+    findOpacityByName(hierarchy, initialType?.id, win.opacity) ??
+    (initialType && hintType && initialType.id === hintType.id ? hintOpacity : null)
+  const initialStyle =
+    findStyleByName(hierarchy, initialOpacity?.id, win.style) ??
+    (initialOpacity && hintOpacity && initialOpacity.id === hintOpacity.id ? hintStyle : null)
   const initialColour = findColourByName(hierarchy, initialStyle?.id, win.colour ?? blindHint?.colour)
   const initialValance = findValanceByName(hierarchy, initialType?.id, win.valance)
 
@@ -224,15 +228,11 @@ export function WindowConfigurator({
   const selectedColour = availableColours.find(c => c.id === colourId) ?? null
   const selectedValance = availableValances.find(v => v.id === valanceId) ?? null
 
-  // Product list: filtered to the chosen Type's product line when a mapping
-  // exists (Roller Shade / Neolux Shade, the only Types with tagged
-  // products so far). Other Types have no product-line mapping yet, so
-  // every active product is offered with a muted note explaining why.
-  const productSlug = selectedType ? BLIND_TYPE_NAME_TO_PRODUCT_SLUG[selectedType.name] : undefined
-  const productMappingPending = Boolean(selectedType) && !productSlug
-  const filteredProducts = productSlug
-    ? products.filter(p => p.blind_type === productSlug)
-    : products
+  // Width-based hardware sizing (Batch 7 pre-work) keys off the selected
+  // Type's name via the same slug map that used to filter the (now-removed)
+  // product list — Roller Shade / Neolux Shade are the only Types with
+  // hardware-size rules today; every other Type resolves to no rule.
+  const hardwareTypeSlug = selectedType ? BLIND_TYPE_NAME_TO_PRODUCT_SLUG[selectedType.name] : undefined
 
   // Cascade resets: each child clears when its parent changes so a stale
   // selection from a different branch can never be saved.
@@ -242,9 +242,6 @@ export function WindowConfigurator({
     setStyleId('')
     setColourId('')
     setValanceId('')
-    // The product list may re-filter under the new Type — force a
-    // deliberate re-pick rather than leaving a now-hidden product selected.
-    setProductId('')
     setExcludedComponents([])
   }
   function handleOpacityChange(nextOpacityId: string) {
@@ -255,9 +252,18 @@ export function WindowConfigurator({
   function handleStyleChange(nextStyleId: string) {
     setStyleId(nextStyleId)
     setColourId('')
+    // Excluded-hardware selections are specific to a style's component set —
+    // reset on style change so an excluded name from a different style's
+    // blueprint can't silently carry over.
+    setExcludedComponents([])
   }
 
-  const selectedProduct = filteredProducts.find(p => p.id === productId)
+  // Blind pricing components (Batch 11 Part 1) — the selected Style's own
+  // blend_style_components rows, replacing the old per-product components.
+  const selectedStyleComponents = useMemo(
+    () => componentsForStyle(hierarchy, styleId),
+    [hierarchy, styleId]
+  )
   const selectedAwning = awningProducts.find(p => p.id === awningProductId)
 
   // Map legacy colour name → hex, for awning swatch chips only (blind
@@ -271,24 +277,11 @@ export function WindowConfigurator({
   }, [colourSwatches])
   const selectedHex = selectedColour?.hex_code ?? null
 
-  // Hardware component groups for the selected product
+  // Hardware component groups for the selected style
   const hardwareGroups = useMemo(
-    () => (selectedProduct ? getHardwareGroups(selectedProduct.components) : []),
-    [selectedProduct]
+    () => (selectedStyleComponents.length > 0 ? getHardwareGroups(selectedStyleComponents) : []),
+    [selectedStyleComponents]
   )
-
-  // If the product list re-filters (Type change) and the previously
-  // selected product silently falls out of it, drop the selection instead
-  // of saving a product that's no longer visible/valid for this Type.
-  useEffect(() => {
-    if (productId && !filteredProducts.some(p => p.id === productId)) {
-      setProductId('')
-      setExcludedComponents([])
-    }
-    // Only re-check when the filtered set itself changes (Type change),
-    // not on every render.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filteredProducts])
 
   function toggleComponent(name: string) {
     const key = name.toLowerCase()
@@ -307,14 +300,15 @@ export function WindowConfigurator({
   )
 
   // Width-based hardware spec (Batch 7 pre-work) — resolved from the
-  // selected product's blind_type and the window's FABRICATED width
-  // (blindDims.blind_width, not the raw window width). Width and mount type
-  // are fixed per this window (edited on the room's Add/Edit Window dialog,
-  // not here); this recomputes live whenever the product selection changes,
-  // the same reactive path the TTD estimate below already uses.
+  // selected Type's hardware slug (see `hardwareTypeSlug` above) and the
+  // window's FABRICATED width (blindDims.blind_width, not the raw window
+  // width). Width and mount type are fixed per this window (edited on the
+  // room's Add/Edit Window dialog, not here); this recomputes live whenever
+  // the Type selection changes, the same reactive path the TTD estimate
+  // below already uses.
   const hardwareResolution = useMemo(
-    () => resolveHardwareSpec(selectedProduct?.blind_type ?? null, blindDims.blind_width, hardwareRules),
-    [selectedProduct, blindDims.blind_width, hardwareRules]
+    () => resolveHardwareSpec(hardwareTypeSlug ?? null, blindDims.blind_width, hardwareRules),
+    [hardwareTypeSlug, blindDims.blind_width, hardwareRules]
   )
   const matchedHardwareRule = useMemo(() => {
     if (!hardwareResolution.spec) return null
@@ -322,18 +316,18 @@ export function WindowConfigurator({
   }, [hardwareResolution.spec, hardwareRules])
 
   const blindPreview = useMemo(() => {
-    if (!selectedProduct) return null
+    if (selectedStyleComponents.length === 0) return null
     return calculateLineItem(
       {
         width_inches: Number(win.width_inches),
         height_inches: Number(win.height_inches),
         mount_type: win.mount_type,
       },
-      selectedProduct.components,
+      selectedStyleComponents,
       excludedComponents,
       matchedHardwareRule
     )
-  }, [selectedProduct, win.width_inches, win.height_inches, win.mount_type, excludedComponents, matchedHardwareRule])
+  }, [selectedStyleComponents, win.width_inches, win.height_inches, win.mount_type, excludedComponents, matchedHardwareRule])
 
   // Awning dimensions + preview
   const awningDims = useMemo(() => {
@@ -370,7 +364,6 @@ export function WindowConfigurator({
   const valanceRequired = availableValances.length > 0
 
   const blindConfigIncomplete =
-    !productId ||
     !typeId ||
     (opacityRequired && !opacityId) ||
     (styleRequired && !styleId) ||
@@ -390,16 +383,20 @@ export function WindowConfigurator({
     // tolerant — see /api/quotes/calculate — this just stops a doomed save
     // before it happens).
     if (hasBlind && hardwareResolution.exceedsMax) {
-      toast.error('This blind exceeds the maximum fabricable width for its type. Reduce the width or choose a different product.')
+      toast.error('This blind exceeds the maximum fabricable width for its type. Reduce the width or choose a narrower blind type/style.')
       return
     }
 
     setLoading(true)
     const supabase = createClient()
+    // `product_id` is intentionally left out of this update — Batch 11 Part
+    // 1 removed the blind Make/Model pick (pricing now comes from the
+    // selected Style's own components), so the column is unused for new
+    // configs. Leaving it out preserves whatever legacy value a
+    // pre-Batch-11 window may still carry rather than nulling history.
     const updates = {
       has_blind: hasBlind,
       has_awning: hasAwning,
-      product_id: hasBlind ? productId : null,
       // Type name goes in the historical `shade_type` column (semantic
       // change only — see migration 00017); Opacity/Valance snapshot into
       // the two new columns.
@@ -567,9 +564,9 @@ export function WindowConfigurator({
                           {/* Explicit render function — Select.Value resolves
                               labels from its mounted-Select.Item registry,
                               which is unreliable for id-keyed values (same
-                              pitfall as the product select below and the
-                              gallery quote-from-style dialog); without this
-                              it renders the raw uuid instead of the name. */}
+                              pitfall as the gallery quote-from-style dialog);
+                              without this it renders the raw uuid instead of
+                              the name. */}
                           <SelectValue placeholder="Select">
                             {(value: string) => availableOpacities.find(o => o.id === value)?.name ?? 'Select'}
                           </SelectValue>
@@ -669,86 +666,52 @@ export function WindowConfigurator({
                 </div>
               )}
 
-              <Separator />
-
-              {/* Product selector — full width since the label text is long */}
-              <div className="space-y-2">
-                <Label>Make / Model</Label>
-                <Select
-                  value={productId}
-                  onValueChange={v => { setProductId(v ?? ''); setExcludedComponents([]) }}
-                  disabled={!typeId}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={typeId ? 'Select a product' : 'Select a blind type first'}>
-                      {(value: string) => {
-                        const p = filteredProducts.find(x => x.id === value)
-                        return p ? `${p.make} ${p.model}` : 'Select a product'
-                      }}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {filteredProducts.map(p => (
-                      <SelectItem key={p.id} value={p.id}>{p.make} {p.model}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {productMappingPending && (
-                  <p className="text-xs italic text-muted-foreground">
-                    Product-line mapping for {selectedType?.name} is pending — showing the full catalog until products are tagged in Blind Management.
-                  </p>
-                )}
-                {productSlug && filteredProducts.length === 0 && (
-                  <p className="text-xs italic text-amber-600">
-                    No products are tagged &quot;{selectedType?.name}&quot; yet — tag some in Admin &gt; Products.
-                  </p>
-                )}
-              </div>
-
-              {selectedProduct && (
+              {selectedStyle && (
                 <>
+                  <Separator />
                   {/* Hardware — grouped by category, multi-column layout */}
-                  {hardwareGroups.length > 0 && (
-                    <>
-                      <Separator />
-                      <div>
-                        <Label className="mb-2 block text-xs uppercase tracking-wider text-muted-foreground">
-                          Hardware Components
-                        </Label>
-                        <div className="grid grid-cols-2 gap-x-6 gap-y-3">
-                          {hardwareGroups.map(group => (
-                            <div key={group.label}>
-                              <p className="mb-1 text-[11px] font-medium text-muted-foreground/70">{group.label}</p>
-                              <div className="space-y-0.5">
-                                {group.items.map(name => {
-                                  const isExcluded = excludedComponents.includes(name.toLowerCase())
-                                  return (
-                                    <label
-                                      key={name}
-                                      className="flex items-center gap-1.5 rounded px-1 py-0.5 text-[13px] hover:bg-accent/50 cursor-pointer"
-                                    >
-                                      <Checkbox
-                                        checked={!isExcluded}
-                                        onCheckedChange={() => toggleComponent(name)}
-                                        className="h-3.5 w-3.5"
-                                      />
-                                      <span className={isExcluded ? 'text-muted-foreground line-through' : ''}>
-                                        {formatComponentName(name)}
-                                      </span>
-                                    </label>
-                                  )
-                                })}
-                              </div>
+                  {hardwareGroups.length > 0 ? (
+                    <div>
+                      <Label className="mb-2 block text-xs uppercase tracking-wider text-muted-foreground">
+                        Hardware Components
+                      </Label>
+                      <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                        {hardwareGroups.map(group => (
+                          <div key={group.label}>
+                            <p className="mb-1 text-[11px] font-medium text-muted-foreground/70">{group.label}</p>
+                            <div className="space-y-0.5">
+                              {group.items.map(name => {
+                                const isExcluded = excludedComponents.includes(name.toLowerCase())
+                                return (
+                                  <label
+                                    key={name}
+                                    className="flex items-center gap-1.5 rounded px-1 py-0.5 text-[13px] hover:bg-accent/50 cursor-pointer"
+                                  >
+                                    <Checkbox
+                                      checked={!isExcluded}
+                                      onCheckedChange={() => toggleComponent(name)}
+                                      className="h-3.5 w-3.5"
+                                    />
+                                    <span className={isExcluded ? 'text-muted-foreground line-through' : ''}>
+                                      {formatComponentName(name)}
+                                    </span>
+                                  </label>
+                                )
+                              })}
                             </div>
-                          ))}
-                        </div>
-                        {excludedComponents.length > 0 && (
-                          <p className="mt-2 text-xs italic text-muted-foreground">
-                            {excludedComponents.map(n => formatComponentName(n)).join(', ')} not included
-                          </p>
-                        )}
+                          </div>
+                        ))}
                       </div>
-                    </>
+                      {excludedComponents.length > 0 && (
+                        <p className="mt-2 text-xs italic text-muted-foreground">
+                          {excludedComponents.map(n => formatComponentName(n)).join(', ')} not included
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="rounded-md border border-dashed px-2.5 py-2 text-xs text-muted-foreground">
+                      No pricing components set up for this style yet — add them in Admin &gt; Blind Management.
+                    </p>
                   )}
                 </>
               )}

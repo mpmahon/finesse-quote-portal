@@ -38,7 +38,6 @@ function FieldHint({ text }: { text: string }) {
 
 interface WindowListProps {
   windows: (Window & {
-    products: { make: string; model: string } | null
     awning_products: { make: string; model: string } | null
     /** Full-formula per-window TTD estimate from the shared estimate layer. */
     preview_ttd?: number | null
@@ -61,6 +60,8 @@ export function WindowList({ windows, roomId, propertyId, limits, styleQuery = '
     // Default changed to outside mount per client request — most jobs are
     // outside mount, so it saves the salesperson a click on the common case.
     mount_type: 'outside' as MountType, has_blind: true, has_awning: false,
+    /** Identical-window quantity multiplier within this room. Kept as a string for a controlled input; parsed/validated on save. */
+    quantity: '1',
   })
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -74,6 +75,7 @@ export function WindowList({ windows, roomId, propertyId, limits, styleQuery = '
       // until the user manually flips the toggle themselves.
       has_blind: defaultKind !== 'awning',
       has_awning: defaultKind === 'awning',
+      quantity: '1',
     })
     setOpen(true)
   }
@@ -89,6 +91,7 @@ export function WindowList({ windows, roomId, propertyId, limits, styleQuery = '
       mount_type: w.mount_type,
       has_blind: w.has_blind,
       has_awning: w.has_awning,
+      quantity: String(w.quantity),
     })
     setOpen(true)
   }
@@ -105,6 +108,7 @@ export function WindowList({ windows, roomId, propertyId, limits, styleQuery = '
       mount_type: form.mount_type,
       has_blind: form.has_blind,
       has_awning: form.has_awning,
+      quantity: form.quantity,
     })
     if (!parsed.success) {
       toast.error(parsed.error.issues[0]?.message ?? 'Invalid window details')
@@ -125,6 +129,7 @@ export function WindowList({ windows, roomId, propertyId, limits, styleQuery = '
       mount_type: parsed.data.mount_type,
       has_blind: parsed.data.has_blind,
       has_awning: parsed.data.has_awning,
+      quantity: parsed.data.quantity,
     }
 
     if (editId) {
@@ -199,7 +204,13 @@ export function WindowList({ windows, roomId, propertyId, limits, styleQuery = '
                 <FieldHint text="Inside mount sits within the window reveal; outside mount overlaps the frame. Pick Undecided if the customer hasn't chosen yet — it's treated as outside mount until confirmed." />
               </div>
               <Select value={form.mount_type} onValueChange={v => setForm(f => ({ ...f, mount_type: (v ?? 'outside') as MountType }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  {/* Explicit render function — never show the raw enum ('undecided')
+                      if the Base UI item registry hasn't mounted. */}
+                  <SelectValue>
+                    {(v: string) => MOUNT_TYPE_LABELS[v as MountType] ?? 'Outside Mount'}
+                  </SelectValue>
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="inside">Inside Mount</SelectItem>
                   <SelectItem value="outside">Outside Mount</SelectItem>
@@ -218,6 +229,19 @@ export function WindowList({ windows, roomId, propertyId, limits, styleQuery = '
                 <Input type="number" step="0.25" value={form.depth_inches} onChange={e => setForm(f => ({ ...f, depth_inches: e.target.value }))} placeholder="Distance from wall face to window face" />
               </div>
             )}
+            <div className="space-y-2">
+              <div className="flex items-center gap-1.5">
+                <Label>Number of identical windows</Label>
+                <FieldHint text="If several windows in this room share this exact size and configuration, enter how many." />
+              </div>
+              <Input
+                type="number"
+                min={1}
+                step={1}
+                value={form.quantity}
+                onChange={e => setForm(f => ({ ...f, quantity: e.target.value }))}
+              />
+            </div>
             <div className="rounded-md border p-3">
               <p className="mb-3 text-xs text-muted-foreground">
                 Toggle off Blind and Awning to record a window with no cost — useful for tracking future sales opportunities.
@@ -263,7 +287,12 @@ export function WindowList({ windows, roomId, propertyId, limits, styleQuery = '
             <Card key={w.id} className="group relative">
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between">
-                  <CardTitle className="text-lg">{w.name}</CardTitle>
+                  <CardTitle className="flex items-center gap-1.5 text-lg">
+                    {w.name}
+                    {w.quantity > 1 && (
+                      <Badge variant="outline" className="text-[10px] font-normal">×{w.quantity}</Badge>
+                    )}
+                  </CardTitle>
                   <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                     <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(w)}>
                       <Pencil className="h-3 w-3" />
@@ -297,10 +326,13 @@ export function WindowList({ windows, roomId, propertyId, limits, styleQuery = '
                 ) : (
                   <div className="space-y-1 text-sm">
                     {w.has_blind && (
-                      w.products ? (
+                      // Batch 11 Part 1: a blind is "configured" once it has
+                      // a Style selected — pricing resolves from the style,
+                      // not a product, so there's no product to display.
+                      w.style ? (
                         <p className="text-muted-foreground">
-                          <span className="font-medium">Blind:</span> {w.products.make} {w.products.model}
-                          {w.shade_type && ` - ${w.shade_type}`}
+                          <span className="font-medium">Blind:</span>
+                          {w.shade_type && ` ${w.shade_type}`}
                           {w.opacity && ` / ${w.opacity}`}
                           {w.style && ` / ${w.style}`}
                           {w.colour && ` (${w.colour})`}
@@ -331,7 +363,7 @@ export function WindowList({ windows, roomId, propertyId, limits, styleQuery = '
                   </div>
                 )}
                 {(w.has_blind || w.has_awning) && (() => {
-                  const blindDone = !w.has_blind || !!w.products
+                  const blindDone = !w.has_blind || !!w.style
                   const awningDone = !w.has_awning || !!w.awning_products
                   const allDone = blindDone && awningDone
                   return (

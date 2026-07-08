@@ -71,7 +71,11 @@ export function QuotePDF({ quote, lineItems, profile }: QuotePDFProps) {
     byRoom[item.room_name].push(item)
   }
 
-  const priceableCount = lineItems.filter(li => li.line_type !== 'zero').length
+  // Total priceable UNITS (not row count) — a quantity-3 window contributes
+  // 3 to the installation count, matching calculateQuoteTotals' engine math.
+  const priceableCount = lineItems
+    .filter(li => li.line_type !== 'zero')
+    .reduce((sum, li) => sum + li.quantity, 0)
 
   return (
     <Document>
@@ -107,7 +111,7 @@ export function QuotePDF({ quote, lineItems, profile }: QuotePDFProps) {
         {Object.entries(byRoom).map(([roomName, items]) => {
           const roomTotalTtd = items.reduce((sum, item) => {
             if (item.line_type === 'zero') return sum
-            return sum + lineItemTtd(Number(item.line_total_usd), markupPct, exchangeRate, laborTtd)
+            return sum + lineItemTtd(Number(item.line_total_usd), markupPct, exchangeRate, laborTtd, item.quantity)
           }, 0)
 
           return (
@@ -126,7 +130,7 @@ export function QuotePDF({ quote, lineItems, profile }: QuotePDFProps) {
                 const typeLabel = isZero ? '' : isAwning ? 'Awning' : 'Blind'
                 const windowTtd = isZero
                   ? 0
-                  : lineItemTtd(Number(item.line_total_usd), markupPct, exchangeRate, laborTtd)
+                  : lineItemTtd(Number(item.line_total_usd), markupPct, exchangeRate, laborTtd, item.quantity)
                 const excluded = item.windows?.excluded_components ?? []
 
                 return (
@@ -135,6 +139,7 @@ export function QuotePDF({ quote, lineItems, profile }: QuotePDFProps) {
                       <View style={styles.colWindow}>
                         <Text>
                           {item.window_name}
+                          {item.quantity > 1 ? ` x${item.quantity}` : ''}
                           {item.hardware_spec?.is_motorized ? ' (Motorized)' : ''}
                         </Text>
                         {excluded.length > 0 && (

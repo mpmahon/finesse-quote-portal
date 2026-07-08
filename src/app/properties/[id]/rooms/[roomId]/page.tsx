@@ -4,6 +4,7 @@ import { WindowList } from '@/components/windows/window-list'
 import { PageBreadcrumb } from '@/components/layout/page-breadcrumb'
 import { estimateWindowTtd, ESTIMATE_CONFIG_COLUMNS } from '@/lib/estimates'
 import type { EstimateWindow } from '@/lib/estimates'
+import { fetchBlindHierarchy } from '@/lib/blind-hierarchy'
 import { isCustomerRole, isStaffRole } from '@/types/database'
 import type { UserRole } from '@/types/database'
 import { buildStyleQuerySuffix, parseGallerySelection } from '@/lib/gallery-style-query'
@@ -61,7 +62,7 @@ export default async function RoomPage({
 
   const { data: windows, error: windowsError } = await supabase
     .from('windows')
-    .select('*, products(id, make, model, components(*)), awning_products(*)')
+    .select('*, awning_products(*)')
     .eq('room_id', roomId)
     .order('created_at', { ascending: true })
 
@@ -69,19 +70,26 @@ export default async function RoomPage({
     throw new Error(`Failed to load windows: ${windowsError.message}`)
   }
 
-  const { data: pricing } = await supabase
-    .from('pricing_config')
-    .select(`${ESTIMATE_CONFIG_COLUMNS}, min_window_size_in, max_window_width_in, max_window_height_in`)
-    .eq('id', 1)
-    .single()
+  const [{ data: pricing }, hierarchy] = await Promise.all([
+    supabase
+      .from('pricing_config')
+      .select(`${ESTIMATE_CONFIG_COLUMNS}, min_window_size_in, max_window_width_in, max_window_height_in`)
+      .eq('id', 1)
+      .single(),
+    // Batch 11 Part 1: blind pricing lives on blind_styles now — the full
+    // hierarchy (inactive included) resolves each window's already-saved
+    // style even if it's since been deactivated.
+    fetchBlindHierarchy(supabase, { activeOnly: false }),
+  ])
 
   // Per-window TTD estimate via the shared estimate layer — full formula
-  // including excluded components and the owner's markup tier. No USD is
-  // exposed on this page.
+  // including excluded components, quantity multipliers (this window's own
+  // quantity x the room's), and the owner's markup tier. No USD is exposed
+  // on this page.
   const windowsWithPricing = (windows || []).map(w => ({
     ...w,
     preview_ttd: pricing
-      ? estimateWindowTtd(w as unknown as EstimateWindow, pricing, ownerRole)
+      ? estimateWindowTtd(w as unknown as EstimateWindow, pricing, ownerRole, hierarchy, room.quantity)
       : null,
   }))
 

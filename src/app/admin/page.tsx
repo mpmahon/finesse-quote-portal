@@ -8,12 +8,14 @@ export default async function AdminDashboard() {
   const [
     { count: userCount },
     { count: quoteCount },
-    { count: productCount },
+    { count: styleCount },
     { data: recentLogs },
   ] = await Promise.all([
     supabase.from('profiles').select('*', { count: 'exact', head: true }),
     supabase.from('quotes').select('*', { count: 'exact', head: true }),
-    supabase.from('products').select('*', { count: 'exact', head: true }),
+    // Batch 11 Part 1: the removed blind Products page's KPI is replaced by
+    // a count of active blind_styles — that hierarchy is what's sold now.
+    supabase.from('blind_styles').select('*', { count: 'exact', head: true }).eq('is_active', true),
     supabase.from('audit_logs').select('*, profiles!actor_id(first_name, last_name)').order('created_at', { ascending: false }).limit(10),
   ])
 
@@ -42,11 +44,11 @@ export default async function AdminDashboard() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Active Products</CardTitle>
+            <CardTitle className="text-sm font-medium">Active Blind Styles</CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">{productCount || 0}</p>
+            <p className="text-2xl font-bold">{styleCount || 0}</p>
           </CardContent>
         </Card>
       </div>

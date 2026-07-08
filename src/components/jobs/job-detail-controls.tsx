@@ -12,13 +12,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner'
 import { X } from 'lucide-react'
 import { scheduleJobAction, assignJobAction, unassignJobAction } from '@/app/jobs/actions'
-import { JobStatusSelect } from '@/components/jobs/job-status-select'
-import { JOB_STATUSES, JOB_STATUS_LABELS } from '@/lib/constants'
-import type { JobStatus } from '@/types/database'
+import { WorkflowStageSelect } from '@/components/jobs/workflow-stage-select'
+import { WorkflowStepper } from '@/components/jobs/workflow-stepper'
+import { StageHistoryList } from '@/components/jobs/stage-history-list'
+import type { StageHistoryEntry, WorkflowStage } from '@/types/database'
 
 interface JobDetailControlsProps {
   jobId: string
-  status: JobStatus
+  workflowStage: WorkflowStage
+  stageHistory: StageHistoryEntry[]
+  /** actor_id -> display name, resolved server-side for the stage-history list. */
+  actorNames: Record<string, string>
+  /** Only staff can move the workflow stage — gates the stage dropdown. Schedule/assignee actions were already staff-only server-side before this batch and are unchanged. */
+  isStaff: boolean
   scheduledInstallDate: string | null
   installNotes: string | null
   assignments: { id: string; assignee_id: string; name: string }[]
@@ -26,12 +32,18 @@ interface JobDetailControlsProps {
 }
 
 /**
- * Job detail controls (WS4 §9.2): status stepper, install date picker,
+ * Job detail controls (Batch 11): the 16-stage workflow stepper + stage
+ * dropdown + stage-history list, plus the pre-existing install date picker,
  * notes, and assignee management — all through staff-only server actions.
+ * Replaces the old 6-value status stepper (`JobStatusSelect`/`JOB_STATUSES`)
+ * as the primary progression control on this page.
  */
 export function JobDetailControls({
   jobId,
-  status,
+  workflowStage,
+  stageHistory,
+  actorNames,
+  isStaff,
   scheduledInstallDate,
   installNotes,
   assignments,
@@ -42,8 +54,6 @@ export function JobDetailControls({
   const [assignee, setAssignee] = useState('')
   const [busy, setBusy] = useState(false)
   const router = useRouter()
-
-  const currentIdx = JOB_STATUSES.indexOf(status)
 
   async function saveSchedule() {
     setBusy(true)
@@ -76,27 +86,18 @@ export function JobDetailControls({
 
   return (
     <div className="space-y-6">
-      {/* Status stepper */}
+      {/* Workflow stage stepper */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Status</CardTitle>
+          <CardTitle className="text-lg">Order Workflow</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="flex flex-wrap items-center gap-1.5">
-            {JOB_STATUSES.filter(s => s !== 'on_hold').map((s, i) => (
-              <Badge
-                key={s}
-                variant={s === status ? 'default' : 'outline'}
-                className={i <= currentIdx && status !== 'on_hold' ? '' : 'text-muted-foreground'}
-              >
-                {JOB_STATUS_LABELS[s]}
-              </Badge>
-            ))}
-            {status === 'on_hold' && <Badge variant="destructive">On Hold</Badge>}
-          </div>
-          <JobStatusSelect jobId={jobId} status={status} />
+          <WorkflowStepper stage={workflowStage} />
+          {isStaff && <WorkflowStageSelect jobId={jobId} stage={workflowStage} />}
         </CardContent>
       </Card>
+
+      <StageHistoryList history={stageHistory} actorNames={actorNames} />
 
       {/* Schedule */}
       <Card>

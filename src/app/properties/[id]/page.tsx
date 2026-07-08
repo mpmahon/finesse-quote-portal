@@ -5,6 +5,7 @@ import { GenerateQuoteButton } from '@/components/quotes/generate-quote-button'
 import { PageBreadcrumb } from '@/components/layout/page-breadcrumb'
 import { estimateWindowsTotals, ESTIMATE_CONFIG_COLUMNS } from '@/lib/estimates'
 import type { EstimateWindow } from '@/lib/estimates'
+import { fetchBlindHierarchy } from '@/lib/blind-hierarchy'
 import { isCustomerRole, isStaffRole } from '@/types/database'
 import type { UserRole } from '@/types/database'
 import { buildStyleQuerySuffix } from '@/lib/gallery-style-query'
@@ -50,11 +51,17 @@ export default async function PropertyPage({
   const ownerName = ownerProfile ? `${ownerProfile.first_name} ${ownerProfile.last_name}` : null
   const propertyCrumbLabel = isStaff && ownerName ? `${ownerName} — ${property.name}` : property.name
 
-  const { data: pricing } = await supabase
-    .from('pricing_config')
-    .select(ESTIMATE_CONFIG_COLUMNS)
-    .eq('id', 1)
-    .single()
+  const [{ data: pricing }, hierarchy] = await Promise.all([
+    supabase
+      .from('pricing_config')
+      .select(ESTIMATE_CONFIG_COLUMNS)
+      .eq('id', 1)
+      .single(),
+    // Batch 11 Part 1: blind pricing lives on blind_styles now — the full
+    // hierarchy (inactive included) resolves each window's already-saved
+    // style even if it's since been deactivated.
+    fetchBlindHierarchy(supabase, { activeOnly: false }),
+  ])
 
   const { data: rooms, error: roomsError } = await supabase
     .from('rooms')
@@ -67,10 +74,12 @@ export default async function PropertyPage({
         mount_type,
         has_blind,
         has_awning,
-        product_id,
+        shade_type,
+        opacity,
+        style,
         awning_product_id,
         excluded_components,
-        products(components(*)),
+        quantity,
         awning_products(*)
       )
     `)
@@ -81,8 +90,8 @@ export default async function PropertyPage({
     throw new Error(`Failed to load rooms: ${roomsError.message}`)
   }
 
-  // Per-room totals via the shared estimate layer — full formula, matches a
-  // generated quote to the cent.
+  // Per-room totals via the shared estimate layer — full formula (incl.
+  // room/window quantity multipliers), matches a generated quote to the cent.
   const roomsWithTotals = (rooms || []).map(room => {
     const windows = (room.windows || []) as EstimateWindow[]
 
@@ -94,12 +103,16 @@ export default async function PropertyPage({
       const needsConfig = w.has_blind || w.has_awning
       if (needsConfig) priceableCount++
       if (!w.has_blind && !w.has_awning) noBlindCount++
-      const blindOk = !w.has_blind || !!w.product_id
+      // Batch 11 Part 1: a blind is "configured" once it has a Style
+      // selected (pricing now resolves from the style, not a product).
+      const blindOk = !w.has_blind || !!w.style
       const awningOk = !w.has_awning || !!w.awning_product_id
       if (needsConfig && blindOk && awningOk) configuredCount++
     }
 
-    const totals = pricing ? estimateWindowsTotals(windows, pricing, ownerRole) : null
+    const totals = pricing
+      ? estimateWindowsTotals(windows, pricing, ownerRole, hierarchy, room.quantity)
+      : null
 
     return {
       ...room,

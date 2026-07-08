@@ -46,6 +46,12 @@ export function computeStaleness(
 /**
  * Builds a map of product_id -> latest components.updated_at for all
  * components in the database. A single query keeps this O(1) per quote.
+ *
+ * Legacy per-product staleness check — still relevant for quotes generated
+ * before Batch 11 Part 1 (blind pricing moved to blind_styles), whose line
+ * items may still carry a `product_id`. New blind lines never set one, so
+ * this simply won't match anything for them; see
+ * {@link buildStyleLatestMap} for the current pricing source.
  */
 export function buildProductLatestMap(
   components: { product_id: string; updated_at: string }[]
@@ -55,6 +61,29 @@ export function buildProductLatestMap(
     const current = map[c.product_id]
     if (!current || c.updated_at > current) {
       map[c.product_id] = c.updated_at
+    }
+  }
+  return map
+}
+
+/**
+ * Builds a map of style_id -> latest blind_style_components.updated_at.
+ * Batch 11 Part 1 counterpart to {@link buildProductLatestMap} — blind
+ * pricing now lives on `blind_styles`, so a quote must also react to Mike
+ * editing a style's component prices in Blind Management, not just the
+ * legacy per-product table. Callers should merge this with
+ * `buildProductLatestMap`'s output (the id spaces never collide — they're
+ * different tables' uuids) and pass the combined map + combined tracked-id
+ * list into {@link computeStaleness}.
+ */
+export function buildStyleLatestMap(
+  styleComponents: { style_id: string; updated_at: string }[]
+): Record<string, string> {
+  const map: Record<string, string> = {}
+  for (const c of styleComponents) {
+    const current = map[c.style_id]
+    if (!current || c.updated_at > current) {
+      map[c.style_id] = c.updated_at
     }
   }
   return map

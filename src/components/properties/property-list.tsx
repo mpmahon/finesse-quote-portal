@@ -269,7 +269,15 @@ export function PropertyList({
                   onValueChange={v => setSelectedCustomerId(v ?? '')}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select an existing customer…" />
+                    {/* Explicit render function: Base UI's SelectValue label registry
+                        can render the raw id (a UUID) for id-valued selects on
+                        remount — resolve the customer name from state instead. */}
+                    <SelectValue placeholder="Select an existing customer…">
+                      {(v: string | null) => {
+                        const c = customers.find(cu => cu.id === v)
+                        return c ? `${c.first_name} ${c.last_name}` : 'Select an existing customer…'
+                      }}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {customers.length === 0 ? (
@@ -362,7 +370,13 @@ export function PropertyList({
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue />
+                    {/* Explicit render function — never show the raw enum value
+                        ("retail_customer") if the item registry hasn't mounted. */}
+                    <SelectValue>
+                      {(v: string | null) =>
+                        v === 'wholesale_customer' ? 'Wholesale Customer' : 'Retail Customer'
+                      }
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="retail_customer">Retail Customer</SelectItem>

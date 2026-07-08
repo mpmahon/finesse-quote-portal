@@ -8,13 +8,16 @@ import { Button } from '@/components/ui/button'
 import { JobDetailControls } from '@/components/jobs/job-detail-controls'
 import { WindowDiagram } from '@/components/windows/window-diagram'
 import { MOUNT_TYPE_LABELS } from '@/lib/constants'
+import { isStaffRole } from '@/types/database'
 import { format } from 'date-fns'
-import type { JobStatus, MountType } from '@/types/database'
+import type { MountType, StageHistoryEntry, UserRole } from '@/types/database'
 
 /**
- * Job detail (WS4 §9.2): quote link, property/customer info, the window
- * list with diagrams (installers need dims + mount type on-site), status
- * stepper, install scheduling, and assignee management.
+ * Job detail (Batch 11): quote link, customer info, the window list with
+ * diagrams (installers need dims + mount type on-site), the 16-stage
+ * workflow stepper + dropdown + stage-history list, install date + notes,
+ * and assignee management. Property is optional now — a pre-quote order
+ * (workflow stages 1-5) may not have one picked yet.
  */
 export default async function JobDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -22,11 +25,19 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+  const isStaff = isStaffRole((profile?.role ?? 'retail_customer') as UserRole)
+
   const { data: job } = await supabase
     .from('jobs')
     .select(`
       *,
       properties(id, name, address, profiles!user_id(first_name, last_name, email, contact_number)),
+      customer:profiles!customer_id(id, first_name, last_name, email, contact_number),
       quotes(id, total_ttd, accepted_at),
       job_assignments(id, assignee_id, profiles!assignee_id(first_name, last_name))
     `)
@@ -36,7 +47,11 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
 
   const one = <T,>(v: T | T[] | null): T | null => (Array.isArray(v) ? v[0] ?? null : v)
   const property = one(job.properties)
-  const owner = property ? one(property.profiles) : null
+  const propertyOwner = property ? one(property.profiles) : null
+  // Prefer the job's own customer_id link; fall back to the property
+  // owner for any row where it's somehow unset (shouldn't happen post-
+  // migration-00020 backfill, but the fallback is cheap and defensive).
+  const owner = one(job.customer) ?? propertyOwner
   const quote = one(job.quotes)
 
   const [{ data: windows }, { data: staff }, { data: legacyColours }, { data: blindColours }] = await Promise.all([
@@ -63,6 +78,22 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
     if (c.hex_code) hexByColour[c.name.toLowerCase()] = c.hex_code
   }
 
+  // Resolve display names for every actor referenced in stage_history.
+  // The staff list covers the common case (stage moves are staff-only); a
+  // targeted lookup fills in anyone not currently salesman/administrator
+  // (e.g. a role change since the move was recorded).
+  const stageHistory: StageHistoryEntry[] = Array.isArray(job.stage_history) ? job.stage_history : []
+  const actorNames: Record<string, string> = {}
+  for (const s of staff ?? []) actorNames[s.id] = `${s.first_name} ${s.last_name}`.trim()
+  const missingActorIds = [...new Set(stageHistory.map(h => h.actor_id))].filter(actorId => !actorNames[actorId])
+  if (missingActorIds.length > 0) {
+    const { data: missingActors } = await supabase
+      .from('profiles')
+      .select('id, first_name, last_name')
+      .in('id', missingActorIds)
+    for (const a of missingActors ?? []) actorNames[a.id] = `${a.first_name} ${a.last_name}`.trim()
+  }
+
   return (
     <div>
       <div className="mb-6">
@@ -72,7 +103,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
         </Link>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold">{property?.name ?? 'Job'}</h1>
+            <h1 className="text-2xl font-bold">{property?.name ?? 'Order'}</h1>
             {property?.address && <p className="text-muted-foreground">{property.address}</p>}
           </div>
           {quote && (
@@ -118,7 +149,9 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
             </CardHeader>
             <CardContent className="space-y-3">
               {(windows ?? []).length === 0 ? (
-                <p className="text-sm text-muted-foreground">No windows recorded.</p>
+                <p className="text-sm text-muted-foreground">
+                  {property ? 'No windows recorded.' : 'No property picked yet.'}
+                </p>
               ) : (
                 (windows ?? []).map(w => {
                   const room = Array.isArray(w.rooms) ? w.rooms[0] : w.rooms
@@ -159,7 +192,10 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
 
         <JobDetailControls
           jobId={id}
-          status={job.status as JobStatus}
+          workflowStage={job.workflow_stage}
+          stageHistory={stageHistory}
+          actorNames={actorNames}
+          isStaff={isStaff}
           scheduledInstallDate={job.scheduled_install_date}
           installNotes={job.install_notes}
           assignments={(job.job_assignments ?? []).map((a: { id: string; assignee_id: string; profiles: { first_name: string; last_name: string } | { first_name: string; last_name: string }[] | null }) => {

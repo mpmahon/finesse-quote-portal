@@ -11,6 +11,37 @@ export type QuoteStatus = 'draft' | 'sent' | 'accepted' | 'declined' | 'expired'
 export type JobStatus = 'pending' | 'measure' | 'fabricate' | 'install' | 'complete' | 'on_hold'
 
 /**
+ * Batch 11 — the client's 16-stage order workflow (migration 00020),
+ * replacing `JobStatus` as the source of truth for the jobs board and the
+ * job-detail stepper. Order is defined by {@link WORKFLOW_STAGES} in
+ * constants.ts, not by declaration order here.
+ */
+export type WorkflowStage =
+  | 'request_received'
+  | 'site_visit_done'
+  | 'quote_complete'
+  | 'quote_sent'
+  | 'follow_up'
+  | 'job_approved'
+  | 'internal_order'
+  | 'stock_check'
+  | 'fabrication_scheduled'
+  | 'production_complete'
+  | 'installation_scheduled'
+  | 'invoice_created'
+  | 'invoice_sent'
+  | 'installation_complete'
+  | 'payment_follow_up'
+  | 'after_sales_follow_up'
+
+/** One entry in a job's `stage_history` append-only audit trail (migration 00020). */
+export interface StageHistoryEntry {
+  stage: WorkflowStage
+  at: string
+  actor_id: string
+}
+
+/**
  * Effective lifecycle status for display and transition checks: a 'sent'
  * quote past its expires_at reads as 'expired' without any cron; legacy
  * 'final' rows read as 'sent'.
@@ -62,6 +93,8 @@ export interface Room {
   id: string
   property_id: string
   name: string
+  /** Wholesale room-quantity multiplier (e.g. hotel: one room config x 40 identical rooms). Default 1 = no multiplier. */
+  quantity: number
   created_at: string
 }
 
@@ -142,6 +175,8 @@ export interface Window {
   awning_colour: string | null
   /** Hardware component names (from `components.name`) that have been unchecked for this window's blind. Empty array = all hardware included. */
   excluded_components: string[]
+  /** Identical-window quantity multiplier within its room (e.g. 3 matching windows in the same room). Default 1 = no multiplier. Combines with the room's own `quantity` at quote time. */
+  quantity: number
   created_at: string
   updated_at: string
 }
@@ -184,9 +219,18 @@ export interface Quote {
 
 export interface Job {
   id: string
-  quote_id: string
-  property_id: string
+  /** Nullable since Batch 11 (migration 00020) — a walk-in/staff-created order can exist before any quote (workflow stages 1-5). */
+  quote_id: string | null
+  /** Nullable since Batch 11 — populated once a property is picked; a fresh request may start with only a customer. */
+  property_id: string | null
+  /** Batch 11 — the customer this order is for. Backfilled from the linked quote for pre-Batch-11 rows; always set going forward (either from the accepted quote or the New Order dialog). */
+  customer_id: string | null
+  /** Legacy 6-value lifecycle field, kept for backward compatibility. No longer driven by the UI — see `workflow_stage`. */
   status: JobStatus
+  /** Batch 11 — the client's 16-stage order workflow; the source of truth for the jobs board and detail stepper. See {@link WorkflowStage}. */
+  workflow_stage: WorkflowStage
+  /** Batch 11 — append-only audit trail of workflow_stage transitions. See {@link StageHistoryEntry}. */
+  stage_history: StageHistoryEntry[]
   scheduled_install_date: string | null
   install_notes: string | null
   created_by: string
@@ -231,6 +275,12 @@ export interface QuoteLineItem {
   line_total_usd: number
   /** Snapshot of the width-based hardware rule applied at quote-generation time. Null for awning/zero lines, or blind lines whose product has no blind_type / no matching rule. */
   hardware_spec: HardwareSpec | null
+  /** Effective unit multiplier snapshotted at generation time: window_quantity x room_quantity. Drives the displayed/multiplied price on quote detail + PDF. */
+  quantity: number
+  /** The owning room's `quantity` at generation time. */
+  room_quantity: number
+  /** The window's own `quantity` at generation time. */
+  window_quantity: number
   created_at: string
 }
 
@@ -328,9 +378,29 @@ export interface BlindOpacity extends BlindHierarchyNode {
   type_id: string
 }
 
-/** Style level, scoped to a single {@link BlindOpacity} (e.g. "Faux wood", "Aurora"). */
+/** Style level, scoped to a single {@link BlindOpacity} (e.g. "Faux wood", "Aurora"). This is the level that carries pricing — see {@link BlindStyleComponent} — and, since the removal of the separate Product Management feature, the style photo. */
 export interface BlindStyle extends BlindHierarchyNode {
   opacity_id: string
+  /** Public URL of the style photo (product-images storage bucket), shown in the Style Gallery and the admin editor. Null until an admin uploads one. */
+  image_url: string | null
+}
+
+/**
+ * Per-style pricing component (blind pricing moved from `products`/
+ * `components` to the hierarchy — client directive 2026-07-07/08: "the
+ * structure we have created in Blind Management is what we sell"). Same
+ * {name, unit, usd_price} shape as the legacy {@link Component}, so it
+ * satisfies the quote engine's `PricedComponent` contract identically —
+ * the pure engine never needs to know which table a row came from.
+ */
+export interface BlindStyleComponent {
+  id: string
+  style_id: string
+  name: string
+  unit: UnitType
+  usd_price: number
+  created_at: string
+  updated_at: string
 }
 
 /** Colour level, scoped to a single {@link BlindStyle}. Optional hex for swatch chips — none seeded yet (all TBD). */

@@ -185,7 +185,11 @@ export function UserManager({ users }: UserManagerProps) {
           </div>
           <Select value={roleFilter} onValueChange={v => setRoleFilter(v ?? 'all')}>
             <SelectTrigger className="sm:w-48">
-              <SelectValue />
+              <SelectValue>
+                {(v: string) =>
+                  v === 'all' ? 'All Roles' : `${ROLE_LABELS[v as UserRole] ?? v}s`
+                }
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Roles</SelectItem>
@@ -333,7 +337,9 @@ export function UserManager({ users }: UserManagerProps) {
                   <Label>Role</Label>
                   <Select value={editForm.role} onValueChange={v => updateField('role', v ?? 'retail_customer')}>
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue>
+                        {(v: string) => ROLE_LABELS[v as UserRole] ?? 'Retail Customer'}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="retail_customer">Retail Customer</SelectItem>

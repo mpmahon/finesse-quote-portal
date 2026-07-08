@@ -1,9 +1,9 @@
 import type {
   AwningProduct,
-  Component,
   HardwareSizeRule,
   HardwareSpec,
   MountType,
+  UnitType,
   UserRole,
 } from '@/types/database'
 
@@ -11,6 +11,20 @@ import type {
 // hardware-sizing types from one place alongside the functions that use
 // them. Canonical definitions live in @/types/database.ts.
 export type { HardwareSizeRule, HardwareSpec }
+
+/**
+ * The minimal shape the engine actually needs from a priced component row.
+ * Satisfied structurally by both the legacy per-product `Component` and the
+ * new per-style `BlindStyleComponent` (see `@/types/database`) — the engine
+ * only ever reads `name`/`unit`/`usd_price`, so it never needs to know which
+ * table a row came from. This is what keeps the engine pure across the
+ * blind-pricing-source change from `products` to `blind_styles`.
+ */
+export interface PricedComponent {
+  name: string
+  unit: UnitType
+  usd_price: number
+}
 
 // ============================================================
 // Shared types
@@ -173,7 +187,10 @@ export function resolveHardwareSpec(
  * Calculate the USD cost breakdown for a single blind line item.
  *
  * @param config          Window dimensions + mount type.
- * @param components      All hardware + material components for the selected product.
+ * @param components      All hardware + material components pricing this blind
+ *                        (the selected blind Style's `blind_style_components`
+ *                        rows as of the products->blind_styles pricing move;
+ *                        any `PricedComponent`-shaped rows work).
  * @param excludedComponents  Names of hardware components the user has unchecked
  *                            (e.g. `['cassette', 'tube']`). Excluded components
  *                            contribute zero cost. Fabric is never excludable.
@@ -187,7 +204,7 @@ export function resolveHardwareSpec(
  */
 export function calculateLineItem(
   config: WindowDimensions,
-  components: Component[],
+  components: PricedComponent[],
   excludedComponents: string[] = [],
   hardwareRule?: HardwareSizeRule | null
 ): LineItemResult {
@@ -297,6 +314,20 @@ export function calculateLineItem(
 // ============================================================
 
 /**
+ * One priceable line's inputs to {@link calculateQuoteTotals}: its per-unit
+ * USD cost plus how many identical units it represents.
+ */
+export interface QuoteLineItemInput {
+  costs: { line_total_usd: number }
+  /**
+   * Effective unit multiplier for this line — window quantity x its room's
+   * quantity (wholesale room/window multipliers). Defaults to 1 when
+   * omitted, so pre-quantity callers/tests are unaffected.
+   */
+  units?: number
+}
+
+/**
  * Calculate the grand total for a property quote.
  *
  * Pricing logic (Batch 4):
@@ -309,25 +340,35 @@ export function calculateLineItem(
  *   and shown as a separate line.
  * - Duty and shipping are NOT applied — they belong to the Purchasing Module.
  * - Reseller discount is gone — salesmen are staff, not a discounted tier.
+ *
+ * Quantity multipliers (room x window, wholesale quoting): each line's
+ * `units` (default 1) scales BOTH its USD cost contribution and its
+ * labour/installation charge — a hotel room configured once at quantity 40
+ * contributes 40x the component cost and 40x labour/installation, not just
+ * 1x with a decorative counter. `priceable_count` becomes the sum of units
+ * (total priceable window instances), not the row count.
  */
 export function calculateQuoteTotals(
-  lineItems: { costs: { line_total_usd: number } }[],
+  lineItems: QuoteLineItemInput[],
   pricing: PricingParams,
   customerRole: UserRole
 ): QuoteTotals {
   const isRetail = customerRole === 'retail_customer'
   const markup_pct = isRetail ? pricing.retail_markup_pct : pricing.wholesale_markup_pct
-  const priceable_count = lineItems.length
 
-  const subtotal_usd = lineItems.reduce((sum, li) => sum + li.costs.line_total_usd, 0)
+  const priceable_count = lineItems.reduce((sum, li) => sum + (li.units ?? 1), 0)
+  const subtotal_usd = lineItems.reduce(
+    (sum, li) => sum + li.costs.line_total_usd * (li.units ?? 1),
+    0
+  )
 
-  // Per-window: (USD × markup) → TTD + labour
+  // Per-unit: (USD × markup) → TTD + labour, summed across all units
   const marked_up_usd = subtotal_usd * (1 + markup_pct / 100)
   const converted_ttd = marked_up_usd * pricing.exchange_rate
   const labor_total_ttd = pricing.labor_ttd * priceable_count
   const base_total_ttd = converted_ttd + labor_total_ttd
 
-  // Installation: retail only, per priceable window
+  // Installation: retail only, per priceable unit
   const installation_ttd = isRetail
     ? pricing.installation_ttd * priceable_count
     : 0
@@ -350,15 +391,20 @@ export function calculateQuoteTotals(
  * derives the per-window price from the stored quote-header values
  * so it doesn't need to re-run the full engine.
  *
- * Formula: (line_total_usd × (1 + markup_percent/100) × exchange_rate) + labor_cost_ttd
+ * Formula: ((line_total_usd × units) × (1 + markup_percent/100) × exchange_rate) + (labor_cost_ttd × units)
+ *
+ * @param units  Effective unit multiplier (window quantity x room quantity),
+ *   default 1. `line_total_usd` is always the cost of ONE unit — this
+ *   multiplies it (and its labour) out to the full quoted quantity.
  */
 export function lineItemTtd(
   lineUsd: number,
   markupPct: number,
   exchangeRate: number,
-  laborTtd: number
+  laborTtd: number,
+  units: number = 1
 ): number {
-  return round2(lineUsd * (1 + markupPct / 100) * exchangeRate + laborTtd)
+  return round2(lineUsd * units * (1 + markupPct / 100) * exchangeRate + laborTtd * units)
 }
 
 function round2(n: number): number {

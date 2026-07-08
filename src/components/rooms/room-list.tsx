@@ -9,8 +9,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { DoorOpen, Plus, Trash2, Pencil } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { DoorOpen, Plus, Trash2, Pencil, Info } from 'lucide-react'
 import { toast } from 'sonner'
 import { STANDARD_ROOMS, OTHER_ROOM_VALUE } from '@/lib/constants'
 import type { Room } from '@/types/database'
@@ -44,10 +46,12 @@ export function RoomList({ rooms, propertyId, styleQuery = '' }: RoomListProps) 
   // Only the resolved name (never the sentinel) is written to the DB.
   const [roomSelect, setRoomSelect] = useState<string>('')
   const [customName, setCustomName] = useState('')
+  /** Wholesale room-quantity multiplier — kept as a raw string for a controlled input; parsed/validated on save. */
+  const [quantity, setQuantity] = useState('1')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  function openNew() { setEditId(null); setRoomSelect(''); setCustomName(''); setOpen(true) }
+  function openNew() { setEditId(null); setRoomSelect(''); setCustomName(''); setQuantity('1'); setOpen(true) }
 
   function openEdit(room: Room) {
     setEditId(room.id)
@@ -58,6 +62,7 @@ export function RoomList({ rooms, propertyId, styleQuery = '' }: RoomListProps) 
       setRoomSelect(OTHER_ROOM_VALUE)
       setCustomName(room.name)
     }
+    setQuantity(String(room.quantity))
     setOpen(true)
   }
 
@@ -65,14 +70,19 @@ export function RoomList({ rooms, propertyId, styleQuery = '' }: RoomListProps) 
 
   async function handleSave() {
     if (!resolvedName) { toast.error('Name is required'); return }
+    const parsedQuantity = parseInt(quantity, 10)
+    if (!Number.isInteger(parsedQuantity) || parsedQuantity < 1) {
+      toast.error('Number of identical rooms must be a whole number of at least 1')
+      return
+    }
     setLoading(true)
     const supabase = createClient()
     if (editId) {
-      const { error } = await supabase.from('rooms').update({ name: resolvedName }).eq('id', editId)
+      const { error } = await supabase.from('rooms').update({ name: resolvedName, quantity: parsedQuantity }).eq('id', editId)
       if (error) { toast.error(error.message); setLoading(false); return }
       toast.success('Room updated')
     } else {
-      const { error } = await supabase.from('rooms').insert({ name: resolvedName, property_id: propertyId })
+      const { error } = await supabase.from('rooms').insert({ name: resolvedName, property_id: propertyId, quantity: parsedQuantity })
       if (error) { toast.error(error.message); setLoading(false); return }
       toast.success('Room created')
     }
@@ -98,7 +108,13 @@ export function RoomList({ rooms, propertyId, styleQuery = '' }: RoomListProps) 
             <div className="space-y-2">
               <Label htmlFor="room-name">Room Name</Label>
               <Select value={roomSelect} onValueChange={v => setRoomSelect(v ?? '')}>
-                <SelectTrigger id="room-name"><SelectValue placeholder="Select a room" /></SelectTrigger>
+                <SelectTrigger id="room-name">
+                  {/* Render function so the OTHER_ROOM_VALUE sentinel displays as
+                      "Other…" rather than its raw value. */}
+                  <SelectValue placeholder="Select a room">
+                    {(v: string) => (v === OTHER_ROOM_VALUE ? 'Other…' : v || 'Select a room')}
+                  </SelectValue>
+                </SelectTrigger>
                 <SelectContent>
                   {STANDARD_ROOMS.map(r => (
                     <SelectItem key={r} value={r}>{r}</SelectItem>
@@ -114,6 +130,27 @@ export function RoomList({ rooms, propertyId, styleQuery = '' }: RoomListProps) 
                   placeholder="Enter a custom room name"
                 />
               )}
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center gap-1.5">
+                <Label htmlFor="room-quantity">Number of identical rooms</Label>
+                <Tooltip>
+                  <TooltipTrigger type="button" className="inline-flex items-center align-middle text-muted-foreground hover:text-foreground" aria-label="More info">
+                    <Info className="h-3.5 w-3.5" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    If you have multiple rooms with the same configuration, enter how many rooms match this style.
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <Input
+                id="room-quantity"
+                type="number"
+                min={1}
+                step={1}
+                value={quantity}
+                onChange={e => setQuantity(e.target.value)}
+              />
             </div>
             <Button onClick={handleSave} className="w-full" disabled={loading}>
               {loading ? 'Saving...' : (editId ? 'Update' : 'Create')}
@@ -148,7 +185,12 @@ export function RoomList({ rooms, propertyId, styleQuery = '' }: RoomListProps) 
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between">
                   <Link href={`/properties/${propertyId}/rooms/${room.id}${styleQuery}`} className="flex-1">
-                    <CardTitle className="text-lg hover:underline">{room.name}</CardTitle>
+                    <CardTitle className="flex items-center gap-1.5 text-lg hover:underline">
+                      {room.name}
+                      {room.quantity > 1 && (
+                        <Badge variant="outline" className="text-[10px] font-normal">×{room.quantity}</Badge>
+                      )}
+                    </CardTitle>
                   </Link>
                   <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                     <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(room)}>
