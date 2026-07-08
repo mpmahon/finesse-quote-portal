@@ -5,6 +5,7 @@ import { lineItemTtd, calculateLineItem, calculateAwningLineItem } from '@/lib/q
 import { markupPctForRole, ESTIMATE_CONFIG_COLUMNS } from '@/lib/estimates'
 import { isCustomerRole, isStaffRole } from '@/types/database'
 import type { AwningProduct, Component, UserRole } from '@/types/database'
+import type { CustomerOption, PropertyOption } from '@/components/gallery/quote-from-style-dialog'
 
 /** Indicative pricing window: a standard 36" × 48" inside-mount window. */
 const SAMPLE_WINDOW = { width_inches: 36, height_inches: 48, mount_type: 'inside' as const }
@@ -24,13 +25,50 @@ export default async function GalleryPage() {
     supabase.from('products').select('*, components(*)').eq('is_active', true).order('make'),
     supabase.from('awning_products').select('*').eq('is_active', true).order('make'),
     supabase.from('pricing_config').select(ESTIMATE_CONFIG_COLUMNS).eq('id', 1).single(),
-    supabase.from('colours').select('name, hex_code'),
+    // Batch 7: `colours` renamed to `legacy_colours`. products.colours is a
+    // legacy free-text array (products aren't linked to the new blind
+    // hierarchy yet) — the swatch display on gallery cards is unchanged,
+    // just re-pointed at the renamed table.
+    supabase.from('legacy_colours').select('name, hex_code'),
   ])
 
   const role = (profile?.role ?? 'retail_customer') as UserRole
   const isStaff = isStaffRole(role)
   // Customers see their own tier's indicative pricing; staff preview retail.
   const priceRole: UserRole = isCustomerRole(role) ? role : 'retail_customer'
+
+  // "Quote from style" (staff only) needs the full customer + property list
+  // up front so the picker dialog can offer existing properties, not just
+  // "create new" — fetched here (read-only) rather than reusing the
+  // properties route's own query, per the gallery flow's file boundary.
+  let customers: CustomerOption[] = []
+  let properties: PropertyOption[] = []
+  if (isStaff) {
+    const [{ data: customerRows }, { data: propertyRows }] = await Promise.all([
+      supabase
+        .from('profiles')
+        .select('id, first_name, last_name, email, role')
+        .in('role', ['retail_customer', 'wholesale_customer'])
+        .order('last_name', { ascending: true }),
+      supabase
+        .from('properties')
+        .select('id, name, address, user_id')
+        .order('created_at', { ascending: false }),
+    ])
+    customers = (customerRows ?? []).map(c => ({
+      id: c.id,
+      first_name: c.first_name,
+      last_name: c.last_name,
+      email: c.email,
+      role: c.role as UserRole,
+    }))
+    properties = (propertyRows ?? []).map(p => ({
+      id: p.id,
+      name: p.name,
+      address: p.address,
+      user_id: p.user_id,
+    }))
+  }
 
   const markup = pricing ? markupPctForRole(priceRole, pricing) : null
   const rate = pricing ? Number(pricing.exchange_rate) : null
@@ -56,6 +94,8 @@ export default async function GalleryPage() {
       shade_types: p.shade_types,
       styles: p.styles,
       colours: p.colours.map(c => ({ name: c, hex: hexByColour[c.toLowerCase()] ?? null })),
+      /** Batch 7: drives the gallery's Blind Type filter (see gallery-client.tsx). Null when untagged — shown under "Other / Unmapped". */
+      blind_type: p.blind_type,
       from_ttd: fromTtd,
     }
   })
@@ -75,6 +115,7 @@ export default async function GalleryPage() {
       shade_types: [] as string[],
       styles: ['awning'],
       colours: p.colours.map(c => ({ name: c, hex: hexByColour[c.toLowerCase()] ?? null })),
+      blind_type: null,
       from_ttd: fromTtd,
     }
   })
@@ -87,7 +128,12 @@ export default async function GalleryPage() {
           Browse our range of blinds and awnings. Indicative pricing is for a standard 36&quot; × 48&quot; window — your quote is priced to your exact measurements.
         </p>
       </div>
-      <GalleryClient cards={[...blindCards, ...awningCards]} isStaff={isStaff} />
+      <GalleryClient
+        cards={[...blindCards, ...awningCards]}
+        isStaff={isStaff}
+        customers={customers}
+        properties={properties}
+      />
     </div>
   )
 }

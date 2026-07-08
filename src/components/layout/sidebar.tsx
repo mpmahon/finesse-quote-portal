@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import { LayoutDashboard, Home, FileText, Shield, Package, DollarSign, ScrollText, LogOut, Users, Palette, Umbrella, Images, Wrench } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { ROLE_LABELS } from '@/lib/constants'
 import type { UserRole } from '@/types/database'
 
 interface SidebarProps {
@@ -32,7 +33,7 @@ const adminItems = [
   { href: '/admin/users', label: 'Users', icon: Users },
   { href: '/admin/products', label: 'Blind Products', icon: Package },
   { href: '/admin/awning-products', label: 'Awning Products', icon: Umbrella },
-  { href: '/admin/catalog', label: 'Catalog', icon: Palette },
+  { href: '/admin/catalog', label: 'Blind Management', icon: Palette },
   { href: '/admin/pricing', label: 'Pricing', icon: DollarSign },
   { href: '/admin/audit-logs', label: 'Audit Logs', icon: ScrollText },
 ]
@@ -111,7 +112,7 @@ export function Sidebar({ role, userName, onNavigate }: SidebarProps) {
           </div>
           <div className="flex-1 overflow-hidden">
             <p className="truncate text-sm font-medium text-white">{userName}</p>
-            <p className="text-xs capitalize text-white/50">{role.replace(/_/g, ' ')}</p>
+            <p className="text-xs text-white/50">{ROLE_LABELS[role] ?? role}</p>
           </div>
         </div>
         <button

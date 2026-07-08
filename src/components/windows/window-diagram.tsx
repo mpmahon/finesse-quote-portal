@@ -19,7 +19,10 @@ interface WindowDiagramProps {
  * Draws the window opening to scale with the blind overlaid in the selected
  * colour. Inside mount renders the blind within the reveal; outside mount
  * renders it overlapping the frame (+6" width, header above the opening).
- * Pure SVG — reusable on the configurator, quote detail, and job pages.
+ * 'undecided' mount (Batch 6) falls back to the outside-mount rendering —
+ * same as the pricing engine — with a muted "mount TBD" label instead of
+ * the usual mount description. Pure SVG — reusable on the configurator,
+ * quote detail, and job pages.
  */
 export function WindowDiagram({
   widthInches,
@@ -32,6 +35,9 @@ export function WindowDiagram({
 }: WindowDiagramProps) {
   const w = Math.max(1, Number(widthInches) || 1)
   const h = Math.max(1, Number(heightInches) || 1)
+  // Undecided mount is rendered exactly like outside mount (same fallback
+  // the pricing engine uses) — only the caption differs.
+  const effectiveMount = mountType === 'inside' ? 'inside' : 'outside'
 
   // Fit the window into a 240×220 viewport area, leaving margin for labels
   // and the outside-mount overhang.
@@ -53,22 +59,28 @@ export function WindowDiagram({
 
   // Blind geometry. Outside mount: +6" width (3" each side), cassette sits
   // above the opening. Inside mount: exact width, cassette inside the reveal.
-  const overhang = mountType === 'outside' ? 3 * scale : 0
+  // 'undecided' uses the outside-mount geometry (effectiveMount above).
+  const overhang = effectiveMount === 'outside' ? 3 * scale : 0
   const blindX = originX - overhang
   const blindW = winW + overhang * 2
   const cassetteH = 12
-  const cassetteY = mountType === 'outside' ? originY - cassetteH : originY
+  const cassetteY = effectiveMount === 'outside' ? originY - cassetteH : originY
   const fabricTop = cassetteY + cassetteH
   const fabricLen = Math.max(8, (originY + winH - fabricTop) * Math.min(1, Math.max(0.1, drop)))
 
   const frame = 6
   const mullion = 2
 
+  const mountAriaLabel =
+    mountType === 'undecided'
+      ? 'Mount type undecided, shown as outside mount'
+      : `${effectiveMount === 'inside' ? 'Inside' : 'Outside'} mount`
+
   return (
     <svg
       viewBox={`0 0 ${viewW} ${viewH}`}
       role="img"
-      aria-label={`${mountType === 'inside' ? 'Inside' : 'Outside'} mount window, ${w} by ${h} inches`}
+      aria-label={`${mountAriaLabel} window, ${w} by ${h} inches`}
       className={className}
     >
       {/* Wall */}
@@ -133,8 +145,19 @@ export function WindowDiagram({
       </text>
 
       {/* Mount label */}
-      <text x={viewW / 2} y={20} textAnchor="middle" fontSize={11} fill="#64748b" fontFamily="ui-sans-serif, system-ui">
-        {mountType === 'inside' ? 'Inside mount — blind sits within the reveal' : 'Outside mount — blind overlaps the frame (+6")'}
+      <text
+        x={viewW / 2}
+        y={20}
+        textAnchor="middle"
+        fontSize={11}
+        fill={mountType === 'undecided' ? '#b45309' : '#64748b'}
+        fontFamily="ui-sans-serif, system-ui"
+      >
+        {mountType === 'undecided'
+          ? 'Mount TBD — shown as outside mount'
+          : effectiveMount === 'inside'
+            ? 'Inside mount — blind sits within the reveal'
+            : 'Outside mount — blind overlaps the frame (+6")'}
       </text>
     </svg>
   )

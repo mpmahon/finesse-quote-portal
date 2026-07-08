@@ -133,7 +133,10 @@ export function QuotePDF({ quote, lineItems, profile }: QuotePDFProps) {
                   <View key={item.id}>
                     <View style={styles.tableRow}>
                       <View style={styles.colWindow}>
-                        <Text>{item.window_name}</Text>
+                        <Text>
+                          {item.window_name}
+                          {item.hardware_spec?.is_motorized ? ' (Motorized)' : ''}
+                        </Text>
                         {excluded.length > 0 && (
                           <Text style={styles.footnote}>
                             {excluded.map(formatName).join(', ')} not included
@@ -144,7 +147,8 @@ export function QuotePDF({ quote, lineItems, profile }: QuotePDFProps) {
                       <Text style={styles.colDetails}>
                         {isZero
                           ? 'No blind/awning'
-                          : [item.shade_type, item.colour].filter(Boolean).join(' / ')
+                          : [item.shade_type, item.opacity, item.style, item.colour].filter(Boolean).join(' / ') +
+                            (item.valance ? ` (${item.valance})` : '')
                         }
                       </Text>
                       <Text style={styles.colDims}>

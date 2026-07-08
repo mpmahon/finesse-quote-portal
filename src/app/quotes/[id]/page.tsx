@@ -1,7 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect, notFound } from 'next/navigation'
-import Link from 'next/link'
-import { ChevronLeft, AlertTriangle } from 'lucide-react'
+import { AlertTriangle } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
@@ -12,11 +11,12 @@ import { RegenerateQuoteButton } from '@/components/quotes/regenerate-quote-butt
 import { QuoteStatusBadge } from '@/components/quotes/quote-status-badge'
 import { QuoteLifecycleActions } from '@/components/quotes/quote-lifecycle-actions'
 import { WindowDiagram } from '@/components/windows/window-diagram'
+import { PageBreadcrumb } from '@/components/layout/page-breadcrumb'
 import { computeStaleness, buildProductLatestMap } from '@/lib/quote-staleness'
 import { lineItemTtd } from '@/lib/quote-engine'
 import { effectiveQuoteStatus, isStaffRole } from '@/types/database'
 import { QuoteNotesEditor } from '@/components/quotes/quote-notes-editor'
-import type { QuoteNote, QuoteStatus } from '@/types/database'
+import type { QuoteNote, QuoteStatus, MountType, HardwareSpec } from '@/types/database'
 
 /**
  * Quote detail page — customer-facing.
@@ -37,9 +37,11 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
+  // `profiles!user_id(...)` disambiguates the join — quotes has two FKs to
+  // profiles (user_id = customer, created_by = staff who created it).
   const { data: quote } = await supabase
     .from('quotes')
-    .select('*, properties(name, address)')
+    .select('*, properties(name, address), profiles!user_id(first_name, last_name)')
     .eq('id', id)
     .single()
 
@@ -53,11 +55,20 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
     .single()
   const isStaff = isStaffRole((viewerProfile?.role ?? 'retail_customer') as import('@/types/database').UserRole)
 
+  // Staff see the quote owner's name in the breadcrumb trail.
+  const quoteOwner = Array.isArray(quote.profiles) ? quote.profiles[0] ?? null : quote.profiles
+  const ownerName = quoteOwner ? `${quoteOwner.first_name} ${quoteOwner.last_name}` : null
+  const quoteCrumbLabel =
+    isStaff && ownerName
+      ? `${ownerName} — ${quote.properties?.name ?? 'Quote'}`
+      : quote.properties?.name ?? 'Quote'
+
   const [
     { data: lineItems },
     { data: config },
     { data: components },
-    { data: colourRows },
+    { data: legacyColourRows },
+    { data: blindColourRows },
   ] = await Promise.all([
     supabase
       .from('quote_line_items')
@@ -66,11 +77,15 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
       .order('room_name'),
     supabase.from('pricing_config').select('updated_at').eq('id', 1).single(),
     supabase.from('components').select('product_id, updated_at'),
-    supabase.from('colours').select('name, hex_code'),
+    // Legacy flat colours (pre-Batch-7 line items) + the new hierarchy's
+    // colours (Batch 7 onward) — merged so a swatch renders correctly
+    // whichever taxonomy generated this line item's `colour` text.
+    supabase.from('legacy_colours').select('name, hex_code'),
+    supabase.from('blind_colours').select('name, hex_code'),
   ])
 
   const hexByColour: Record<string, string> = {}
-  for (const c of colourRows ?? []) {
+  for (const c of [...(legacyColourRows ?? []), ...(blindColourRows ?? [])]) {
     if (c.hex_code) hexByColour[c.name.toLowerCase()] = c.hex_code
   }
 
@@ -85,7 +100,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
       excluded_components: string[]
       width_inches: number
       height_inches: number
-      mount_type: 'inside' | 'outside'
+      mount_type: MountType
     } | null
   }
   const items = (lineItems ?? []) as LineItemWithWindow[]
@@ -119,10 +134,13 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
   return (
     <div>
       <div className="mb-6">
-        <Link href="/quotes" className="mb-2 inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
-          <ChevronLeft className="mr-1 h-4 w-4" />
-          Back to Quotes
-        </Link>
+        <PageBreadcrumb
+          className="mb-2"
+          segments={[
+            { label: 'Quotes', href: '/quotes' },
+            { label: quoteCrumbLabel },
+          ]}
+        />
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Quote Detail</h1>
@@ -243,6 +261,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
                       ? 0
                       : lineItemTtd(Number(item.line_total_usd), markupPct, exchangeRate, laborTtd)
                     const excluded = item.windows?.excluded_components ?? []
+                    const hardwareSpec = (item.hardware_spec ?? null) as HardwareSpec | null
 
                     return (
                       <TableRow key={item.id} className={isZero ? 'text-muted-foreground' : ''}>
@@ -264,6 +283,11 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
                                   {excluded.map(formatName).join(', ')} not included
                                 </p>
                               )}
+                              {hardwareSpec && (
+                                <p className="text-[11px] text-muted-foreground">
+                                  {hardwareSpec.tube_size} tube · {hardwareSpec.control_type} control
+                                </p>
+                              )}
                             </div>
                           </div>
                         </TableCell>
@@ -271,6 +295,11 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
                           {isBlind && <Badge variant="default">Blind</Badge>}
                           {isAwning && <Badge variant="secondary">Awning</Badge>}
                           {isZero && <span className="text-xs italic">—</span>}
+                          {hardwareSpec?.is_motorized && (
+                            <Badge variant="outline" className="ml-1 border-amber-500/50 text-[10px] text-amber-700 dark:text-amber-400">
+                              Motorized
+                            </Badge>
+                          )}
                         </TableCell>
                         <TableCell>
                           {isZero ? (
@@ -278,7 +307,12 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
                           ) : (
                             <div className="text-xs">
                               {item.shade_type && <span className="capitalize">{item.shade_type}</span>}
+                              {item.opacity && <span> · {item.opacity}</span>}
+                              {item.style && <span> / {item.style}</span>}
                               {item.colour && <span> / {item.colour}</span>}
+                              {item.valance && (
+                                <p className="text-muted-foreground">Valance: {item.valance}</p>
+                              )}
                             </div>
                           )}
                         </TableCell>

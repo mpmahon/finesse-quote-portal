@@ -1,13 +1,19 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import Link from 'next/link'
 import Image from 'next/image'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Blinds, Umbrella } from 'lucide-react'
+import {
+  QuoteFromStyleDialog,
+  type CustomerOption,
+  type PropertyOption,
+} from '@/components/gallery/quote-from-style-dialog'
+import type { StyleQuerySource } from '@/lib/gallery-style-query'
+import { BLIND_TYPE_NAME_TO_PRODUCT_SLUG } from '@/lib/constants'
 
 export interface GalleryCard {
   id: string
@@ -18,49 +24,84 @@ export interface GalleryCard {
   shade_types: string[]
   styles: string[]
   colours: { name: string; hex: string | null }[]
+  /** Batch 7: `products.blind_type` tag (e.g. "roller_shade"). Null when untagged. Awning cards are always null — they filter under their own "Awning" bucket. */
+  blind_type: string | null
   /** Indicative TTD price for a standard 36×48 window (viewer's customer tier). */
   from_ttd: number | null
+}
+
+const OTHER_UNMAPPED = 'Other / Unmapped'
+const AWNING_CATEGORY = 'Awning'
+
+/** Reverse of {@link BLIND_TYPE_NAME_TO_PRODUCT_SLUG} — product blind_type slug -> hierarchy Type display name. */
+const SLUG_TO_TYPE_NAME: Record<string, string> = Object.fromEntries(
+  Object.entries(BLIND_TYPE_NAME_TO_PRODUCT_SLUG).map(([typeName, slug]) => [slug, typeName])
+)
+
+/**
+ * Batch 7 — a card's Blind Type filter category: the hierarchy Type name
+ * when its `blind_type` tag maps to one (only Roller Shade / Neolux Shade
+ * have tagged products today), "Awning" for awning cards, or "Other /
+ * Unmapped" for blind products not yet tagged (most of the catalog, until
+ * the full Type -> Opacity -> Style -> Colour taxonomy is linked to
+ * products — see the design spec's open question 2).
+ */
+function blindTypeCategory(card: GalleryCard): string {
+  if (card.kind === 'awning') return AWNING_CATEGORY
+  if (card.blind_type && SLUG_TO_TYPE_NAME[card.blind_type]) return SLUG_TO_TYPE_NAME[card.blind_type]
+  return OTHER_UNMAPPED
 }
 
 interface GalleryClientProps {
   cards: GalleryCard[]
   isStaff: boolean
+  /** All retail + wholesale customers. Only populated when isStaff=true. */
+  customers?: CustomerOption[]
+  /** All properties (id/name/address/owner). Only populated when isStaff=true. */
+  properties?: PropertyOption[]
 }
 
-/** Filterable product grid: shade type / style / colour, images + swatches + indicative pricing. */
-export function GalleryClient({ cards, isStaff }: GalleryClientProps) {
-  const [shadeType, setShadeType] = useState('all')
-  const [style, setStyle] = useState('all')
-  const [colour, setColour] = useState('all')
+/** Filterable product grid: Blind Type (Batch 7), images + swatches + indicative pricing. */
+export function GalleryClient({ cards, isStaff, customers = [], properties = [] }: GalleryClientProps) {
+  const [typeFilter, setTypeFilter] = useState('all')
 
-  const options = useMemo(() => {
-    const shadeTypes = new Set<string>()
-    const styles = new Set<string>()
-    const colours = new Set<string>()
-    for (const c of cards) {
-      c.shade_types.forEach(s => shadeTypes.add(s))
-      c.styles.forEach(s => styles.add(s))
-      c.colours.forEach(col => colours.add(col.name))
+  // "Quote from style" (staff only): which card triggered the picker, and
+  // the resolved query-param values to carry through to the configurator.
+  const [styleSelection, setStyleSelection] = useState<StyleQuerySource>(null)
+
+  /**
+   * Builds the gallery→configurator hand-off values for a card and opens the
+   * customer/property picker. Batch 7: the gallery no longer tracks shade
+   * type/style/colour filter state (replaced by the Blind Type filter
+   * below) — only the product identity is carried through. The
+   * configurator's own gallery-style-query fallback still applies (it
+   * silently drops any hints that don't resolve against the hierarchy), so
+   * this stays harmless even for a card whose legacy tags happen to line up
+   * with hierarchy names.
+   */
+  function openQuoteFromStyle(card: GalleryCard) {
+    const values: Record<string, string> = { kind: card.kind }
+    if (card.kind === 'blind') {
+      values.productId = card.id
+    } else {
+      values.awningProductId = card.id
     }
-    return {
-      shadeTypes: Array.from(shadeTypes).sort(),
-      styles: Array.from(styles).sort(),
-      colours: Array.from(colours).sort(),
-    }
+    setStyleSelection(values)
+  }
+
+  /** Blind Type filter options, derived from the cards actually present (only categories with at least one card are offered). */
+  const typeOptions = useMemo(() => {
+    const categories = new Set<string>()
+    for (const c of cards) categories.add(blindTypeCategory(c))
+    return Array.from(categories).sort()
   }, [cards])
 
-  const filtered = cards.filter(c =>
-    (shadeType === 'all' || c.shade_types.includes(shadeType)) &&
-    (style === 'all' || c.styles.includes(style)) &&
-    (colour === 'all' || c.colours.some(col => col.name === colour))
-  )
+  const filtered = cards.filter(c => typeFilter === 'all' || blindTypeCategory(c) === typeFilter)
 
   return (
     <>
-      <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <FilterSelect label="Shade type" value={shadeType} onChange={setShadeType} options={options.shadeTypes} />
-        <FilterSelect label="Style" value={style} onChange={setStyle} options={options.styles} />
-        <FilterSelect label="Colour" value={colour} onChange={setColour} options={options.colours} />
+      <div className="mb-6 max-w-xs">
+        <FilterSelect label="Blind type" value={typeFilter} onChange={setTypeFilter} options={typeOptions} />
       </div>
 
       {filtered.length === 0 ? (
@@ -128,15 +169,25 @@ export function GalleryClient({ cards, isStaff }: GalleryClientProps) {
                     )}
                   </p>
                   {isStaff && (
-                    <Link href="/properties?new=true">
-                      <Button size="sm" variant="outline">Quote this style</Button>
-                    </Link>
+                    <Button size="sm" variant="outline" onClick={() => openQuoteFromStyle(card)}>
+                      Quote this style
+                    </Button>
                   )}
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
+      )}
+
+      {isStaff && (
+        <QuoteFromStyleDialog
+          styleSelection={styleSelection}
+          open={styleSelection !== null}
+          onOpenChange={open => { if (!open) setStyleSelection(null) }}
+          customers={customers}
+          properties={properties}
+        />
       )}
     </>
   )

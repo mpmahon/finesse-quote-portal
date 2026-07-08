@@ -16,6 +16,7 @@ import { Separator } from '@/components/ui/separator'
 import { Mail, Phone, Users, Search, Building2, FileText } from 'lucide-react'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
+import { ROLE_LABELS } from '@/lib/constants'
 import type { Profile, UserRole } from '@/types/database'
 
 interface UserWithDetails extends Profile {
@@ -32,13 +33,6 @@ const roleColors: Record<UserRole, string> = {
   salesman: 'bg-blue-500/10 text-blue-700 border-blue-200 dark:text-blue-300',
   retail_customer: 'bg-slate-500/10 text-slate-700 border-slate-200 dark:text-slate-300',
   wholesale_customer: 'bg-emerald-500/10 text-emerald-700 border-emerald-200 dark:text-emerald-300',
-}
-
-const roleLabels: Record<UserRole, string> = {
-  administrator: 'Administrator',
-  salesman: 'Salesman',
-  retail_customer: 'Retail Customer',
-  wholesale_customer: 'Wholesale Customer',
 }
 
 export function UserManager({ users }: UserManagerProps) {
@@ -254,7 +248,7 @@ export function UserManager({ users }: UserManagerProps) {
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className={roleColors[u.role]}>
-                        {roleLabels[u.role]}
+                        {ROLE_LABELS[u.role] ?? u.role}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">{u.properties?.length || 0}</TableCell>

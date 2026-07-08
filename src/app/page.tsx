@@ -3,6 +3,15 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Ruler, Calculator, FileText } from 'lucide-react'
 
+/** Real Finesse installation photos shown in the landing-page gallery strip. */
+const INSTALLATION_PHOTOS = [
+  { src: '/images/marketing/Installation03.jpg', alt: 'Layered zebra shades in a bedroom' },
+  { src: '/images/marketing/Installation05.jpg', alt: 'Motorised roller shades in a modern living room' },
+  { src: '/images/marketing/Installation07.jpg', alt: 'Zebra shades across an open-plan living and dining area' },
+  { src: '/images/marketing/Installation09.jpg', alt: 'Zebra shades in a bathroom with a freestanding tub' },
+  { src: '/images/marketing/Installation13.jpg', alt: 'Roman shades and drapery in a waterfront living room' },
+]
+
 export default function HomePage() {
   return (
     <div className="flex min-h-screen flex-col">
@@ -24,8 +33,17 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[oklch(0.18_0.02_250)] to-[oklch(0.25_0.04_260)]">
+      {/* Hero — real installation photo as background, dark gradient overlay for text contrast */}
+      <section className="relative overflow-hidden">
+        <Image
+          src="/images/marketing/Banner.jpg"
+          alt="Finesse motorised awning installation overlooking the ocean"
+          fill
+          priority
+          className="object-cover"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-[oklch(0.18_0.02_250/0.92)] to-[oklch(0.25_0.04_260/0.85)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,oklch(0.55_0.18_250/0.15),transparent_70%)]" />
         <div className="container relative mx-auto px-4 py-24 sm:py-32">
           <div className="mx-auto max-w-3xl text-center">
@@ -85,6 +103,26 @@ export default function HomePage() {
             <p className="text-sm leading-relaxed text-muted-foreground">
               Generate detailed quotes with per-component breakdowns, export to PDF, and share with clients.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Installation gallery — real Finesse jobs */}
+      <section className="border-t bg-muted/30 py-20">
+        <div className="container mx-auto px-4">
+          <h2 className="mb-12 text-center text-2xl font-bold sm:text-3xl">Recent Installations</h2>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+            {INSTALLATION_PHOTOS.map(photo => (
+              <div key={photo.src} className="group relative aspect-square overflow-hidden rounded-xl shadow-sm">
+                <Image
+                  src={photo.src}
+                  alt={photo.alt}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  sizes="(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw"
+                />
+              </div>
+            ))}
           </div>
         </div>
       </section>

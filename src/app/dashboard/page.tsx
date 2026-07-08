@@ -8,6 +8,7 @@ import { QuoteStatusBadge } from '@/components/quotes/quote-status-badge'
 import { StatCard } from '@/components/dashboard/stat-card'
 import { WhatIfPanel } from '@/components/dashboard/what-if-panel'
 import { QUOTE_STATUS_LABELS, JOB_STATUS_LABELS } from '@/lib/constants'
+import { formatTtd } from '@/lib/format'
 import { effectiveQuoteStatus, isCustomerRole } from '@/types/database'
 import type { JobStatus, QuoteStatus, UserRole } from '@/types/database'
 import { format } from 'date-fns'
@@ -443,13 +444,17 @@ async function AdminDashboard() {
         <p className="text-muted-foreground">The whole pipeline at a glance.</p>
       </div>
 
-      {/* KPI row */}
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
-        <StatCard label="Pipeline (sent)" value={`$${pipelineValue.toFixed(0)}`} sub="TTD" href="/quotes?status=sent" />
+      {/* KPI row — grid-cols-N gives equal-fraction columns; items-stretch
+          (the CSS grid default, made explicit here) plus StatCard's own
+          h-full/reserved-sub-line fix make every card read as the same
+          size regardless of which ones have a sub-label (client feedback,
+          2026-07-07 QA). */}
+      <div className="grid grid-cols-2 items-stretch gap-3 lg:grid-cols-5">
+        <StatCard label="Pipeline (sent)" value={formatTtd(pipelineValue)} href="/quotes?status=sent" />
         <StatCard label="Acceptance rate" value={acceptanceRate === null ? '—' : `${acceptanceRate}%`} sub="last 90 days" />
         <StatCard label="Quotes this month" value={String(quotesThisMonth)} href="/quotes" />
         <StatCard label="Jobs this week" value={String(jobsThisWeek)} href="/jobs/calendar" />
-        <StatCard label="Avg quote value" value={`$${avgQuote.toFixed(0)}`} sub="TTD" />
+        <StatCard label="Avg quote value" value={formatTtd(avgQuote)} />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">

@@ -31,10 +31,12 @@ export const roomSchema = z.object({
 
 export const windowSchema = z.object({
   name: z.string().min(1, 'Window name is required'),
+  /** Optional free-text notes (e.g. "faces the pool, arched top"). Empty string is normalised to null before it reaches the DB. */
+  description: z.string().max(1000, 'Description is too long').optional().nullable(),
   width_inches: z.coerce.number().positive('Width must be positive'),
   height_inches: z.coerce.number().positive('Height must be positive'),
   depth_inches: z.coerce.number().positive('Depth must be positive').optional().nullable(),
-  mount_type: z.enum(['inside', 'outside']),
+  mount_type: z.enum(['inside', 'outside', 'undecided']),
   has_blind: z.boolean().default(true),
   has_awning: z.boolean().default(false),
 })

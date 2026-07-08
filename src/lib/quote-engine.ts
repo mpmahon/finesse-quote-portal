@@ -1,4 +1,16 @@
-import type { AwningProduct, Component, MountType, UserRole } from '@/types/database'
+import type {
+  AwningProduct,
+  Component,
+  HardwareSizeRule,
+  HardwareSpec,
+  MountType,
+  UserRole,
+} from '@/types/database'
+
+// Re-exported so callers of the engine (and its test suite) can pull the
+// hardware-sizing types from one place alongside the functions that use
+// them. Canonical definitions live in @/types/database.ts.
+export type { HardwareSizeRule, HardwareSpec }
 
 // ============================================================
 // Shared types
@@ -98,6 +110,65 @@ export function calculateChainLength(window_height: number): number {
   return (window_height * 1.6) / 2
 }
 
+// ============================================================
+// Width-based hardware support rules (Batch 7 pre-work)
+// ============================================================
+
+/**
+ * Resolve the tube/control hardware spec for a blind given its client-tagged
+ * `blind_type` and its FABRICATED width (i.e. `calculateBlindDimensions().blind_width`,
+ * not the raw window width).
+ *
+ * Matching picks the smallest tier whose `max_width_in` covers the width
+ * (rules sorted by max ascending), NOT a strict `[min, max]` containment:
+ * the client's tiers step in whole inches (…–84, 85–…) but widths are
+ * measured to 1/8", so strict containment would drop fractional widths like
+ * 84.5" into a gap between tiers. Anything past a tier boundary rolls up to
+ * the next tier's heavier hardware. `min_width_in` is display/admin metadata.
+ * `exceedsMax` only trips when the width is beyond the largest max in the set.
+ *
+ * @param blindType  The product's `blind_type` tag, or null if untagged —
+ *                    always resolves to a null spec (this feature doesn't
+ *                    apply to untagged/legacy products).
+ * @param blindWidthIn  Fabricated blind width in inches.
+ * @param rules      All hardware_size_rules rows (unfiltered — this function
+ *                    does the blind_type filtering).
+ * @returns `spec` is the matched rule's hardware info (null if blindType is
+ *   null, there are no rules for that type, or the width exceeds the max).
+ *   `exceedsMax` is true only when a rule set exists for the type but the
+ *   width is beyond its largest max_width_in — the caller should block
+ *   saving/quoting in that case.
+ */
+export function resolveHardwareSpec(
+  blindType: string | null,
+  blindWidthIn: number,
+  rules: HardwareSizeRule[]
+): { spec: HardwareSpec | null; exceedsMax: boolean } {
+  if (!blindType) return { spec: null, exceedsMax: false }
+
+  const typeRules = rules.filter(r => r.blind_type === blindType)
+  if (typeRules.length === 0) return { spec: null, exceedsMax: false }
+
+  const matched = [...typeRules]
+    .sort((a, b) => Number(a.max_width_in) - Number(b.max_width_in))
+    .find(r => blindWidthIn <= Number(r.max_width_in))
+  if (matched) {
+    return {
+      spec: {
+        tube_size: matched.tube_size,
+        control_type: matched.control_type,
+        is_motorized: matched.is_motorized,
+        blind_type: matched.blind_type,
+        rule_id: matched.id,
+      },
+      exceedsMax: false,
+    }
+  }
+
+  const largestMax = Math.max(...typeRules.map(r => Number(r.max_width_in)))
+  return { spec: null, exceedsMax: blindWidthIn > largestMax }
+}
+
 /**
  * Calculate the USD cost breakdown for a single blind line item.
  *
@@ -106,11 +177,19 @@ export function calculateChainLength(window_height: number): number {
  * @param excludedComponents  Names of hardware components the user has unchecked
  *                            (e.g. `['cassette', 'tube']`). Excluded components
  *                            contribute zero cost. Fabric is never excludable.
+ * @param hardwareRule    The resolved width-based hardware rule for this blind
+ *                        (see `resolveHardwareSpec`), or null/undefined when
+ *                        none applies. When its `tube_usd_per_inch_override` is
+ *                        set, it replaces the tube component's per-inch USD
+ *                        price; when `control_fixed_usd` is set, it's added to
+ *                        `fixed_costs`. A rule with both overrides null (the
+ *                        seeded state) leaves costs identical to omitting it.
  */
 export function calculateLineItem(
   config: WindowDimensions,
   components: Component[],
-  excludedComponents: string[] = []
+  excludedComponents: string[] = [],
+  hardwareRule?: HardwareSizeRule | null
 ): LineItemResult {
   const dims = calculateBlindDimensions(config)
   const fabric_area = calculateFabricArea(dims.blind_width, dims.blind_height)
@@ -138,7 +217,15 @@ export function calculateLineItem(
       continue
     }
 
-    const price = Number(comp.usd_price)
+    // The hardware rule's tube override, when set, replaces the tube
+    // component's own per-inch USD price (client fabrication upcharge for
+    // wider tubes). Null override (seeded state) falls through to the
+    // component's stored price, so cost is unchanged.
+    const tubeOverride = hardwareRule?.tube_usd_per_inch_override
+    const price =
+      comp.name === 'tube' && tubeOverride !== null && tubeOverride !== undefined
+        ? Number(tubeOverride)
+        : Number(comp.usd_price)
     let cost = 0
 
     switch (comp.unit) {
@@ -174,6 +261,13 @@ export function calculateLineItem(
       // adapters, brackets, end_caps
       fixed_costs += cost
     }
+  }
+
+  // Control cost from the hardware rule (e.g. a motorized-control upcharge)
+  // is a flat addition, not tied to any single component row. Null
+  // (seeded state) adds nothing, preserving today's costs.
+  if (hardwareRule?.control_fixed_usd !== null && hardwareRule?.control_fixed_usd !== undefined) {
+    fixed_costs += Math.round(Number(hardwareRule.control_fixed_usd) * 100) / 100
   }
 
   const line_total_usd = Math.round(

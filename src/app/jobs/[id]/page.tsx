@@ -39,11 +39,11 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
   const owner = property ? one(property.profiles) : null
   const quote = one(job.quotes)
 
-  const [{ data: windows }, { data: staff }, { data: colours }] = await Promise.all([
+  const [{ data: windows }, { data: staff }, { data: legacyColours }, { data: blindColours }] = await Promise.all([
     property
       ? supabase
           .from('windows')
-          .select('id, name, width_inches, height_inches, mount_type, has_blind, has_awning, colour, shade_type, rooms!inner(name, property_id)')
+          .select('id, name, width_inches, height_inches, mount_type, has_blind, has_awning, colour, shade_type, style, opacity, valance, rooms!inner(name, property_id)')
           .eq('rooms.property_id', property.id)
       : Promise.resolve({ data: [] }),
     supabase
@@ -51,11 +51,15 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
       .select('id, first_name, last_name')
       .in('role', ['salesman', 'administrator'])
       .order('first_name'),
-    supabase.from('colours').select('name, hex_code'),
+    // Legacy flat colours (pre-Batch-7 windows) + the new hierarchy's
+    // colours (Batch 7 onward) — merged so a swatch renders correctly
+    // whichever taxonomy configured this window.
+    supabase.from('legacy_colours').select('name, hex_code'),
+    supabase.from('blind_colours').select('name, hex_code'),
   ])
 
   const hexByColour: Record<string, string> = {}
-  for (const c of colours ?? []) {
+  for (const c of [...(legacyColours ?? []), ...(blindColours ?? [])]) {
     if (c.hex_code) hexByColour[c.name.toLowerCase()] = c.hex_code
   }
 
@@ -134,6 +138,12 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                           {Number(w.width_inches)}&quot; × {Number(w.height_inches)}&quot; · {MOUNT_TYPE_LABELS[w.mount_type as MountType]}
                           {w.colour && <> · <span className="capitalize">{w.colour}</span></>}
                         </p>
+                        {(w.opacity || w.style || w.valance) && (
+                          <p className="text-xs text-muted-foreground">
+                            {[w.opacity, w.style].filter(Boolean).join(' / ')}
+                            {w.valance && <> · Valance: {w.valance}</>}
+                          </p>
+                        )}
                         <div className="mt-1 flex gap-1">
                           {w.has_blind && <Badge className="text-[10px]">Blind</Badge>}
                           {w.has_awning && <Badge variant="secondary" className="text-[10px]">Awning</Badge>}

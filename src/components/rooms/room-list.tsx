@@ -9,9 +9,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { DoorOpen, Plus, Trash2, Pencil } from 'lucide-react'
 import { toast } from 'sonner'
+import { STANDARD_ROOMS, OTHER_ROOM_VALUE } from '@/lib/constants'
 import type { Room } from '@/types/database'
+
+/** True when a stored room name matches one of the standard dropdown options (case-insensitive). */
+function isStandardRoomName(name: string): boolean {
+  return STANDARD_ROOMS.some(r => r.toLowerCase() === name.trim().toLowerCase())
+}
 
 interface RoomWithStats extends Room {
   window_count: number
@@ -25,28 +32,47 @@ interface RoomWithStats extends Room {
 interface RoomListProps {
   rooms: RoomWithStats[]
   propertyId: string
+  /** Query-string suffix (including leading `?`) carrying a "Quote from style" selection through to the room's windows. Empty string on a normal visit. */
+  styleQuery?: string
 }
 
-export function RoomList({ rooms, propertyId }: RoomListProps) {
+export function RoomList({ rooms, propertyId, styleQuery = '' }: RoomListProps) {
   const [open, setOpen] = useState(false)
   const [editId, setEditId] = useState<string | null>(null)
-  const [name, setName] = useState('')
+  // `roomSelect` holds either a standard room name or the OTHER_ROOM_VALUE
+  // sentinel; `customName` holds the free-text name when "Other…" is picked.
+  // Only the resolved name (never the sentinel) is written to the DB.
+  const [roomSelect, setRoomSelect] = useState<string>('')
+  const [customName, setCustomName] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  function openNew() { setEditId(null); setName(''); setOpen(true) }
-  function openEdit(room: Room) { setEditId(room.id); setName(room.name); setOpen(true) }
+  function openNew() { setEditId(null); setRoomSelect(''); setCustomName(''); setOpen(true) }
+
+  function openEdit(room: Room) {
+    setEditId(room.id)
+    if (isStandardRoomName(room.name)) {
+      setRoomSelect(room.name)
+      setCustomName('')
+    } else {
+      setRoomSelect(OTHER_ROOM_VALUE)
+      setCustomName(room.name)
+    }
+    setOpen(true)
+  }
+
+  const resolvedName = roomSelect === OTHER_ROOM_VALUE ? customName.trim() : roomSelect
 
   async function handleSave() {
-    if (!name.trim()) { toast.error('Name is required'); return }
+    if (!resolvedName) { toast.error('Name is required'); return }
     setLoading(true)
     const supabase = createClient()
     if (editId) {
-      const { error } = await supabase.from('rooms').update({ name: name.trim() }).eq('id', editId)
+      const { error } = await supabase.from('rooms').update({ name: resolvedName }).eq('id', editId)
       if (error) { toast.error(error.message); setLoading(false); return }
       toast.success('Room updated')
     } else {
-      const { error } = await supabase.from('rooms').insert({ name: name.trim(), property_id: propertyId })
+      const { error } = await supabase.from('rooms').insert({ name: resolvedName, property_id: propertyId })
       if (error) { toast.error(error.message); setLoading(false); return }
       toast.success('Room created')
     }
@@ -71,7 +97,23 @@ export function RoomList({ rooms, propertyId }: RoomListProps) {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="room-name">Room Name</Label>
-              <Input id="room-name" value={name} onChange={e => setName(e.target.value)} placeholder="Living Room" />
+              <Select value={roomSelect} onValueChange={v => setRoomSelect(v ?? '')}>
+                <SelectTrigger id="room-name"><SelectValue placeholder="Select a room" /></SelectTrigger>
+                <SelectContent>
+                  {STANDARD_ROOMS.map(r => (
+                    <SelectItem key={r} value={r}>{r}</SelectItem>
+                  ))}
+                  <SelectItem value={OTHER_ROOM_VALUE}>Other…</SelectItem>
+                </SelectContent>
+              </Select>
+              {roomSelect === OTHER_ROOM_VALUE && (
+                <Input
+                  autoFocus
+                  value={customName}
+                  onChange={e => setCustomName(e.target.value)}
+                  placeholder="Enter a custom room name"
+                />
+              )}
             </div>
             <Button onClick={handleSave} className="w-full" disabled={loading}>
               {loading ? 'Saving...' : (editId ? 'Update' : 'Create')}
@@ -105,7 +147,7 @@ export function RoomList({ rooms, propertyId }: RoomListProps) {
             <Card key={room.id} className="group relative">
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between">
-                  <Link href={`/properties/${propertyId}/rooms/${room.id}`} className="flex-1">
+                  <Link href={`/properties/${propertyId}/rooms/${room.id}${styleQuery}`} className="flex-1">
                     <CardTitle className="text-lg hover:underline">{room.name}</CardTitle>
                   </Link>
                   <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">

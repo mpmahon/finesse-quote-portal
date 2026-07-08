@@ -18,7 +18,11 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { ProductImageField } from '@/components/admin/product-image-field'
 import { componentSchema, productSchema } from '@/lib/validators'
+import { BLIND_TYPES, BLIND_TYPE_LABELS } from '@/lib/constants'
 import type { Product, Component } from '@/types/database'
+
+/** Sentinel Select value for "no blind type tagged". Never written to the DB — resolves to null. */
+const NO_BLIND_TYPE = '__none__'
 
 interface ProductManagerProps {
   products: (Product & { components: Component[] })[]
@@ -51,14 +55,15 @@ export function ProductManager({ products, shadeTypeOptions, styleOptions, colou
     styles: string[]
     colours: string[]
     image_url: string | null
-  }>({ make: '', model: '', shade_types: [], styles: [], colours: [], image_url: null })
+    blind_type: string | null
+  }>({ make: '', model: '', shade_types: [], styles: [], colours: [], image_url: null, blind_type: null })
   const [compForm, setCompForm] = useState({ name: '', unit: 'per_inch' as string, usd_price: '' })
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
   function openNewProduct() {
     setEditProduct(null)
-    setForm({ make: '', model: '', shade_types: [], styles: [], colours: [], image_url: null })
+    setForm({ make: '', model: '', shade_types: [], styles: [], colours: [], image_url: null, blind_type: null })
     setProductDialog(true)
   }
 
@@ -71,6 +76,7 @@ export function ProductManager({ products, shadeTypeOptions, styleOptions, colou
       styles: p.styles,
       colours: p.colours,
       image_url: p.image_url ?? null,
+      blind_type: p.blind_type ?? null,
     })
     setProductDialog(true)
   }
@@ -104,6 +110,7 @@ export function ProductManager({ products, shadeTypeOptions, styleOptions, colou
       styles: parsed.data.styles,
       colours: parsed.data.colours,
       image_url: form.image_url,
+      blind_type: form.blind_type,
     }
 
     if (editProduct) {
@@ -115,6 +122,20 @@ export function ProductManager({ products, shadeTypeOptions, styleOptions, colou
       if (error) { toast.error(error.message); setLoading(false); return }
       toast.success('Product created')
     }
+
+    // Audit log — mirrors the pattern used by awning-product-manager /
+    // catalog-manager (this manager didn't audit-log product edits before).
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      await supabase.from('audit_logs').insert({
+        actor_id: user.id,
+        action_type: editProduct ? 'product_update' : 'product_create',
+        target_table: 'products',
+        target_id: editProduct?.id || null,
+        change_summary: data,
+      })
+    }
+
     setProductDialog(false); setLoading(false); router.refresh()
   }
 
@@ -180,6 +201,12 @@ export function ProductManager({ products, shadeTypeOptions, styleOptions, colou
                 <Input value={form.model} onChange={e => setForm(f => ({ ...f, model: e.target.value }))} />
               </div>
             </div>
+            <p className="rounded-md border border-dashed px-3 py-2 text-xs text-muted-foreground">
+              Shade Types / Styles / Colours below are legacy tags carried over from the old flat catalog — they no
+              longer drive window configuration (superseded by the Type &rarr; Opacity &rarr; Style &rarr; Colour
+              hierarchy in <Link href="/admin/catalog" className="underline">Blind Management</Link>). Kept here only
+              for search/reference on existing products.
+            </p>
             <div className="space-y-2">
               <Label>Shade Types</Label>
               <MultiSelect
@@ -210,6 +237,25 @@ export function ProductManager({ products, shadeTypeOptions, styleOptions, colou
                 emptyText="No colours in catalog"
               />
             </div>
+            <div className="space-y-2">
+              <Label>Blind Type</Label>
+              <Select
+                value={form.blind_type ?? NO_BLIND_TYPE}
+                onValueChange={v => setForm(f => ({ ...f, blind_type: v === NO_BLIND_TYPE ? null : (v ?? null) }))}
+              >
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={NO_BLIND_TYPE}>None</SelectItem>
+                  {BLIND_TYPES.map(bt => (
+                    <SelectItem key={bt} value={bt}>{BLIND_TYPE_LABELS[bt]}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                Drives width-based tube/control hardware sizing (see Hardware Size Rules in{' '}
+                <Link href="/admin/catalog" className="underline">Admin &gt; Blind Management</Link>). Leave as None for products this doesn&apos;t apply to.
+              </p>
+            </div>
             <ProductImageField
               value={form.image_url}
               onChange={url => setForm(f => ({ ...f, image_url: url }))}
@@ -217,8 +263,8 @@ export function ProductManager({ products, shadeTypeOptions, styleOptions, colou
             />
             {(shadeTypeOptions.length === 0 || styleOptions.length === 0 || colourOptions.length === 0) && (
               <p className="text-xs text-amber-600">
-                Missing options? Add them in{' '}
-                <Link href="/admin/catalog" className="underline">Admin &gt; Catalog</Link>.
+                No legacy options recorded at one or more levels — this tagging is optional/reference-only, so it&apos;s
+                safe to leave blank.
               </p>
             )}
             <Button onClick={saveProduct} className="w-full" disabled={loading}>

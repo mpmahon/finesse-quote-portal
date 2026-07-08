@@ -1,27 +1,40 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect, notFound } from 'next/navigation'
-import Link from 'next/link'
-import { ChevronLeft } from 'lucide-react'
 import { RoomList } from '@/components/rooms/room-list'
 import { GenerateQuoteButton } from '@/components/quotes/generate-quote-button'
+import { PageBreadcrumb } from '@/components/layout/page-breadcrumb'
 import { estimateWindowsTotals, ESTIMATE_CONFIG_COLUMNS } from '@/lib/estimates'
 import type { EstimateWindow } from '@/lib/estimates'
-import { isCustomerRole } from '@/types/database'
+import { isCustomerRole, isStaffRole } from '@/types/database'
 import type { UserRole } from '@/types/database'
+import { buildStyleQuerySuffix } from '@/lib/gallery-style-query'
 
-export default async function PropertyPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function PropertyPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>
+  /** Carries a "Quote from style" selection (see gallery-style-query.ts) through to the room list. Absent on normal visits. */
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
   const { id } = await params
+  const styleQuery = buildStyleQuerySuffix(await searchParams)
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
-  const { data: property } = await supabase
-    .from('properties')
-    .select('*, profiles!user_id(role)')
-    .eq('id', id)
-    .single()
+  const [{ data: property }, { data: viewerProfile }] = await Promise.all([
+    supabase
+      .from('properties')
+      .select('*, profiles!user_id(role, first_name, last_name)')
+      .eq('id', id)
+      .single(),
+    supabase.from('profiles').select('role').eq('id', user.id).single(),
+  ])
 
   if (!property) notFound()
+
+  const isStaff = isStaffRole((viewerProfile?.role ?? 'retail_customer') as UserRole)
 
   // Room estimates use the property OWNER's markup tier (WS1 §5.6).
   const ownerProfile = Array.isArray(property.profiles)
@@ -31,6 +44,11 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
     ownerProfile?.role && isCustomerRole(ownerProfile.role as UserRole)
       ? (ownerProfile.role as UserRole)
       : 'retail_customer'
+
+  // Staff see the owner's name in the breadcrumb trail; customers viewing
+  // their own property never see it (it would just be redundant with them).
+  const ownerName = ownerProfile ? `${ownerProfile.first_name} ${ownerProfile.last_name}` : null
+  const propertyCrumbLabel = isStaff && ownerName ? `${ownerName} — ${property.name}` : property.name
 
   const { data: pricing } = await supabase
     .from('pricing_config')
@@ -96,10 +114,13 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
   return (
     <div>
       <div className="mb-6">
-        <Link href="/properties" className="mb-2 inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
-          <ChevronLeft className="mr-1 h-4 w-4" />
-          Back to Properties
-        </Link>
+        <PageBreadcrumb
+          className="mb-2"
+          segments={[
+            { label: 'Properties', href: '/properties' },
+            { label: propertyCrumbLabel },
+          ]}
+        />
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">{property.name}</h1>
@@ -109,7 +130,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
         </div>
       </div>
 
-      <RoomList rooms={roomsWithTotals} propertyId={id} />
+      <RoomList rooms={roomsWithTotals} propertyId={id} styleQuery={styleQuery} />
     </div>
   )
 }

@@ -11,9 +11,16 @@ export default async function AdminProductsPage() {
     { data: colours },
   ] = await Promise.all([
     supabase.from('products').select('*, components(*)').order('make'),
-    supabase.from('shade_types').select('*').eq('is_active', true).order('name'),
-    supabase.from('styles').select('*').eq('is_active', true).order('name'),
-    supabase.from('colours').select('*').eq('is_active', true).order('name'),
+    // Batch 7: `shade_types`/`styles`/`colours` were renamed to
+    // `legacy_shade_types`/`legacy_styles`/`legacy_colours` when the
+    // Type -> Opacity -> Style -> Colour hierarchy replaced them for window
+    // configuration. products.shade_types/styles/colours are legacy
+    // free-text tags left untouched (not linked to the new hierarchy yet —
+    // see the design spec's open question 2) — still sourced from the
+    // legacy tables so this admin form keeps working for historical data.
+    supabase.from('legacy_shade_types').select('*').eq('is_active', true).order('name'),
+    supabase.from('legacy_styles').select('*').eq('is_active', true).order('name'),
+    supabase.from('legacy_colours').select('*').eq('is_active', true).order('name'),
   ])
 
   return (

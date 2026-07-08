@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Suspense } from 'react'
 import { QuotesListClient } from '@/components/quotes/quotes-list-client'
+import { PageBreadcrumb } from '@/components/layout/page-breadcrumb'
 import { computeStaleness, buildProductLatestMap } from '@/lib/quote-staleness'
 import { effectiveQuoteStatus, isStaffRole } from '@/types/database'
 import type { QuoteStatus, UserRole } from '@/types/database'
@@ -77,6 +78,7 @@ export default async function QuotesPage() {
 
   return (
     <div>
+      <PageBreadcrumb className="mb-2" segments={[{ label: 'Quotes' }]} />
       <h1 className="mb-6 text-2xl font-bold">
         {isStaff ? 'All Quotes' : 'My Quotes'}
       </h1>

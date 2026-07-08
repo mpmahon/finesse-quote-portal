@@ -13,6 +13,14 @@ import type { AwningProduct, Component, MountType, UserRole } from '@/types/data
  * Every card/list "estimate" in the app goes through these functions so that
  * a property/room estimate always equals a freshly generated quote to the
  * cent. Do NOT re-implement summation loops in pages — extend this instead.
+ *
+ * Hardware size rules (Batch 7 pre-work, quote-engine.ts `resolveHardwareSpec`
+ * / `calculateLineItem`'s `hardwareRule` param) are NOT wired in here. Their
+ * seeded cost overrides are null, so they're cost-neutral today — this layer
+ * intentionally doesn't fetch `hardware_size_rules` to avoid an unused query.
+ * Once the client confirms upcharge pricing and overrides are set, this file
+ * will need updating alongside the calculate route so card estimates keep
+ * matching generated quotes to the cent.
  */
 
 /** Window shape as loaded by the properties/rooms pages (with embedded product data). */

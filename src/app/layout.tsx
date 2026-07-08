@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Nunito, Nunito_Sans } from 'next/font/google'
 import { Toaster } from '@/components/ui/sonner'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import './globals.css'
 
 const nunito = Nunito({
@@ -28,8 +29,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${nunito.variable} ${nunitoSans.variable}`}>
       <body className="min-h-screen bg-background font-sans antialiased">
-        {children}
-        <Toaster />
+        <TooltipProvider delay={200}>
+          {children}
+          <Toaster />
+        </TooltipProvider>
       </body>
     </html>
   )

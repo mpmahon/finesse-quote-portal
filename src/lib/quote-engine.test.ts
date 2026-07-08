@@ -7,9 +7,10 @@ import {
   calculateLineItem,
   calculateQuoteTotals,
   lineItemTtd,
+  resolveHardwareSpec,
 } from '@/lib/quote-engine'
 import { estimateWindowsTotals, estimateWindowTtd } from '@/lib/estimates'
-import type { AwningProduct, Component } from '@/types/database'
+import type { AwningProduct, Component, HardwareSizeRule } from '@/types/database'
 
 /**
  * Canonical formula lock (design doc v2 §6, resolved 2026-07-07):
@@ -216,5 +217,172 @@ describe('shared estimate layer matches the engine to the cent', () => {
     expect(
       estimateWindowTtd({ ...window36x48, product_id: null }, config, 'retail_customer')
     ).toBeNull()
+  })
+})
+
+// ============================================================
+// Width-based hardware support rules (Batch 7 pre-work)
+// ============================================================
+
+function hwRule(
+  overrides: Partial<HardwareSizeRule> & Pick<HardwareSizeRule, 'blind_type' | 'min_width_in' | 'max_width_in' | 'tube_size' | 'control_type'>
+): HardwareSizeRule {
+  return {
+    id: `${overrides.blind_type}-${overrides.min_width_in}-${overrides.max_width_in}`,
+    is_motorized: false,
+    tube_usd_per_inch_override: null,
+    control_fixed_usd: null,
+    created_at: '',
+    updated_at: '',
+    ...overrides,
+  }
+}
+
+/** Mirrors the six seeded tiers from migration 00016, for 'roller_shade' only (the 'neolux' seed is identical). */
+const ROLLER_RULES: HardwareSizeRule[] = [
+  hwRule({ blind_type: 'roller_shade', min_width_in: 0, max_width_in: 84, tube_size: '1 1/4"', control_type: 'VTX 15' }),
+  hwRule({ blind_type: 'roller_shade', min_width_in: 85, max_width_in: 108, tube_size: '1 1/2"', control_type: 'VTX 20' }),
+  hwRule({ blind_type: 'roller_shade', min_width_in: 109, max_width_in: 120, tube_size: '1 3/4"', control_type: 'VTX 30' }),
+  hwRule({ blind_type: 'roller_shade', min_width_in: 121, max_width_in: 144, tube_size: '2"', control_type: 'Motor', is_motorized: true }),
+  hwRule({ blind_type: 'roller_shade', min_width_in: 145, max_width_in: 180, tube_size: '2 1/2"', control_type: 'Motor', is_motorized: true }),
+  hwRule({ blind_type: 'roller_shade', min_width_in: 181, max_width_in: 228, tube_size: '3 1/4"', control_type: 'Motor', is_motorized: true }),
+]
+
+describe('resolveHardwareSpec', () => {
+  it('null blind_type always resolves to a null spec, never exceedsMax', () => {
+    expect(resolveHardwareSpec(null, 500, ROLLER_RULES)).toEqual({ spec: null, exceedsMax: false })
+  })
+
+  it('blind_type with no matching rules resolves to a null spec, never exceedsMax', () => {
+    expect(resolveHardwareSpec('sliding_panel', 50, ROLLER_RULES)).toEqual({ spec: null, exceedsMax: false })
+  })
+
+  it('84 (tier 1 boundary) resolves VTX 15, not motorized', () => {
+    const { spec, exceedsMax } = resolveHardwareSpec('roller_shade', 84, ROLLER_RULES)
+    expect(exceedsMax).toBe(false)
+    expect(spec).toMatchObject({ tube_size: '1 1/4"', control_type: 'VTX 15', is_motorized: false })
+  })
+
+  it('85 (tier 2 boundary) resolves VTX 20', () => {
+    const { spec } = resolveHardwareSpec('roller_shade', 85, ROLLER_RULES)
+    expect(spec).toMatchObject({ tube_size: '1 1/2"', control_type: 'VTX 20', is_motorized: false })
+  })
+
+  it('84.5 (fractional width between whole-inch tiers) rolls up to the next tier, not a gap', () => {
+    // Widths are measured to 1/8"; the seeded tiers step 84 → 85. A width a
+    // fraction past a tier max must resolve to the next (heavier) tier.
+    const { spec, exceedsMax } = resolveHardwareSpec('roller_shade', 84.5, ROLLER_RULES)
+    expect(exceedsMax).toBe(false)
+    expect(spec).toMatchObject({ tube_size: '1 1/2"', control_type: 'VTX 20', is_motorized: false })
+  })
+
+  it('120.5 (fractional width at the motorization boundary) rolls up to Motor', () => {
+    const { spec } = resolveHardwareSpec('roller_shade', 120.5, ROLLER_RULES)
+    expect(spec).toMatchObject({ tube_size: '2"', control_type: 'Motor', is_motorized: true })
+  })
+
+  it('108 (tier 2 boundary) resolves VTX 20', () => {
+    const { spec } = resolveHardwareSpec('roller_shade', 108, ROLLER_RULES)
+    expect(spec).toMatchObject({ tube_size: '1 1/2"', control_type: 'VTX 20' })
+  })
+
+  it('109 (tier 3 boundary) resolves VTX 30', () => {
+    const { spec } = resolveHardwareSpec('roller_shade', 109, ROLLER_RULES)
+    expect(spec).toMatchObject({ tube_size: '1 3/4"', control_type: 'VTX 30', is_motorized: false })
+  })
+
+  it('120 (motorization boundary, still manual) resolves VTX 30, not motorized', () => {
+    const { spec } = resolveHardwareSpec('roller_shade', 120, ROLLER_RULES)
+    expect(spec).toMatchObject({ control_type: 'VTX 30', is_motorized: false })
+  })
+
+  it('121 (motorization boundary, now motorized) resolves Motor', () => {
+    const { spec } = resolveHardwareSpec('roller_shade', 121, ROLLER_RULES)
+    expect(spec).toMatchObject({ tube_size: '2"', control_type: 'Motor', is_motorized: true })
+  })
+
+  it('228 (absolute fabrication max) resolves fine, not exceeded', () => {
+    const { spec, exceedsMax } = resolveHardwareSpec('roller_shade', 228, ROLLER_RULES)
+    expect(exceedsMax).toBe(false)
+    expect(spec).toMatchObject({ tube_size: '3 1/4"', control_type: 'Motor', is_motorized: true })
+  })
+
+  it('228.01 exceeds the fabrication max — null spec, exceedsMax true', () => {
+    const { spec, exceedsMax } = resolveHardwareSpec('roller_shade', 228.01, ROLLER_RULES)
+    expect(spec).toBeNull()
+    expect(exceedsMax).toBe(true)
+  })
+
+  it('rule_id on the matched rule is passed through', () => {
+    const { spec } = resolveHardwareSpec('roller_shade', 50, ROLLER_RULES)
+    expect(spec?.rule_id).toBe(ROLLER_RULES[0].id)
+    expect(spec?.blind_type).toBe('roller_shade')
+  })
+})
+
+describe('calculateLineItem with a hardware rule', () => {
+  it('a rule with both overrides null leaves costs identical to no rule at all', () => {
+    const withoutRule = calculateLineItem(
+      { width_inches: 36, height_inches: 48, mount_type: 'inside' },
+      COMPONENTS
+    )
+    const nullOverrideRule = hwRule({
+      blind_type: 'roller_shade', min_width_in: 0, max_width_in: 84,
+      tube_size: '1 1/4"', control_type: 'VTX 15',
+    })
+    const withRule = calculateLineItem(
+      { width_inches: 36, height_inches: 48, mount_type: 'inside' },
+      COMPONENTS,
+      [],
+      nullOverrideRule
+    )
+    expect(withRule).toEqual(withoutRule)
+  })
+
+  it('a tube price override replaces the tube component cost', () => {
+    const rule = hwRule({
+      blind_type: 'roller_shade', min_width_in: 0, max_width_in: 84,
+      tube_size: '1 1/4"', control_type: 'VTX 15',
+      tube_usd_per_inch_override: 0.75,
+    })
+    const r = calculateLineItem(
+      { width_inches: 36, height_inches: 48, mount_type: 'inside' },
+      COMPONENTS,
+      [],
+      rule
+    )
+    expect(r.costs.tube_cost).toBe(27) // 0.75 × 36, not the component's 0.3 × 36
+    expect(r.costs.line_total_usd).toBe(66.16 - 10.8 + 27) // swap the original tube cost for the override
+  })
+
+  it('a control_fixed_usd override adds to fixed_costs', () => {
+    const rule = hwRule({
+      blind_type: 'roller_shade', min_width_in: 121, max_width_in: 144,
+      tube_size: '2"', control_type: 'Motor', is_motorized: true,
+      control_fixed_usd: 45,
+    })
+    const r = calculateLineItem(
+      { width_inches: 36, height_inches: 48, mount_type: 'inside' },
+      COMPONENTS,
+      [],
+      rule
+    )
+    expect(r.costs.fixed_costs).toBe(49) // 4 (brackets) + 45 (control)
+    expect(r.costs.line_total_usd).toBe(66.16 + 45)
+  })
+
+  it('excluded tube is still zero even with a tube override set', () => {
+    const rule = hwRule({
+      blind_type: 'roller_shade', min_width_in: 0, max_width_in: 84,
+      tube_size: '1 1/4"', control_type: 'VTX 15',
+      tube_usd_per_inch_override: 0.75,
+    })
+    const r = calculateLineItem(
+      { width_inches: 36, height_inches: 48, mount_type: 'inside' },
+      COMPONENTS,
+      ['tube'],
+      rule
+    )
+    expect(r.costs.tube_cost).toBe(0)
   })
 })

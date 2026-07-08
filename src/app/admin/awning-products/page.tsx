@@ -9,7 +9,9 @@ export default async function AdminAwningProductsPage() {
     { data: colours },
   ] = await Promise.all([
     supabase.from('awning_products').select('*').order('make'),
-    supabase.from('colours').select('*').eq('is_active', true).order('name'),
+    // Batch 7: `colours` renamed to `legacy_colours` — awnings aren't part
+    // of the new blind hierarchy, so they keep using the legacy flat list.
+    supabase.from('legacy_colours').select('*').eq('is_active', true).order('name'),
   ])
 
   return (

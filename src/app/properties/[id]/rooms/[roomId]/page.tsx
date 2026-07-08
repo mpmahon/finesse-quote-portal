@@ -1,29 +1,43 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect, notFound } from 'next/navigation'
-import Link from 'next/link'
-import { ChevronLeft } from 'lucide-react'
 import { WindowList } from '@/components/windows/window-list'
+import { PageBreadcrumb } from '@/components/layout/page-breadcrumb'
 import { estimateWindowTtd, ESTIMATE_CONFIG_COLUMNS } from '@/lib/estimates'
 import type { EstimateWindow } from '@/lib/estimates'
-import { isCustomerRole } from '@/types/database'
+import { isCustomerRole, isStaffRole } from '@/types/database'
 import type { UserRole } from '@/types/database'
+import { buildStyleQuerySuffix, parseGallerySelection } from '@/lib/gallery-style-query'
 
 export default async function RoomPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string; roomId: string }>
+  /** Carries a "Quote from style" selection (see gallery-style-query.ts) through to the window list. Absent on normal visits. */
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const { id, roomId } = await params
+  const resolvedSearchParams = await searchParams
+  const styleQuery = buildStyleQuerySuffix(resolvedSearchParams)
+  // Only used to default the "Add Window" dialog's Blind/Awning toggle — the
+  // full selection (product/shade/style/colour) is re-parsed at the
+  // configurator itself, once we know whether the window already has one.
+  const defaultKind = parseGallerySelection(resolvedSearchParams)?.kind
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
-  const { data: property } = await supabase
-    .from('properties')
-    .select('name, profiles!user_id(role)')
-    .eq('id', id)
-    .single()
+  const [{ data: property }, { data: viewerProfile }] = await Promise.all([
+    supabase
+      .from('properties')
+      .select('name, profiles!user_id(role, first_name, last_name)')
+      .eq('id', id)
+      .single(),
+    supabase.from('profiles').select('role').eq('id', user.id).single(),
+  ])
   if (!property) notFound()
+
+  const isStaff = isStaffRole((viewerProfile?.role ?? 'retail_customer') as UserRole)
 
   const ownerProfile = Array.isArray(property.profiles)
     ? property.profiles[0] ?? null
@@ -32,6 +46,11 @@ export default async function RoomPage({
     ownerProfile?.role && isCustomerRole(ownerProfile.role as UserRole)
       ? (ownerProfile.role as UserRole)
       : 'retail_customer'
+
+  // Staff see the owner's name in the breadcrumb; customers viewing their
+  // own property don't need to see their own name repeated.
+  const ownerName = ownerProfile ? `${ownerProfile.first_name} ${ownerProfile.last_name}` : null
+  const propertyCrumbLabel = isStaff && ownerName ? `${ownerName} — ${property.name}` : property.name
 
   const { data: room } = await supabase
     .from('rooms')
@@ -75,10 +94,14 @@ export default async function RoomPage({
   return (
     <div>
       <div className="mb-6">
-        <Link href={`/properties/${id}`} className="mb-2 inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
-          <ChevronLeft className="mr-1 h-4 w-4" />
-          Back to {property.name}
-        </Link>
+        <PageBreadcrumb
+          className="mb-2"
+          segments={[
+            { label: 'Properties', href: '/properties' },
+            { label: propertyCrumbLabel, href: `/properties/${id}` },
+            { label: room.name },
+          ]}
+        />
         <h1 className="text-2xl font-bold">{room.name}</h1>
       </div>
 
@@ -87,6 +110,8 @@ export default async function RoomPage({
         roomId={roomId}
         propertyId={id}
         limits={limits}
+        styleQuery={styleQuery}
+        defaultKind={defaultKind}
       />
     </div>
   )

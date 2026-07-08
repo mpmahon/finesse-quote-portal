@@ -205,7 +205,7 @@ export function AwningProductManager({ products, colourOptions }: AwningProductM
               {colourOptions.length === 0 && (
                 <p className="text-xs text-amber-600">
                   No colours available. Add some in{' '}
-                  <Link href="/admin/catalog" className="underline">Admin &gt; Catalog</Link>.
+                  <Link href="/admin/catalog" className="underline">Admin &gt; Blind Management</Link>.
                 </p>
               )}
               <ProductImageField
