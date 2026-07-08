@@ -112,6 +112,10 @@ Waiting on the user for: Batch 6 + 7 QA on production (Mark will check the next 
 
 ## 6. Change log
 
+### 2026-07-08 — Self-service password reset (deployed, `dfe6934`)
+
+Mark got locked out (no reset feature existed). Immediate fix: admin-API password reset to the standard temp password. Feature: "Forgot password?" on login → /auth/forgot-password (neutral response, no account enumeration; Supabase built-in mailer — rate-limited on the current plan) → emailed link → /auth/reset-password (PKCE code exchange with implicit-flow fallback, expired-link state) → updateUser + redirect to /dashboard. ⚠ Requires `https://finesse-quote-portal.vercel.app/auth/reset-password` in Supabase Auth → URL Configuration → Redirect URLs (dashboard-only setting) — untestable until added. Note: reset link must be opened in the same browser the request was made from (PKCE verifier cookie).
+
 ### 2026-07-08 — Batch 8: hierarchy-as-product, quantities, 16-stage workflow, select sweep, demo reseed
 
 Client directives from the second QA round: Blind Management IS the product (no separate Product Management / Make & Model), wholesale needs room/window quantity multipliers, the 16-stage order workflow must show on the jobs board + admin dashboard, the Add-Property customer picker showed a UUID, and demo data should be rebuilt on the new structure.
