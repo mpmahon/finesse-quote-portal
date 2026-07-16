@@ -107,16 +107,26 @@ function ResetPasswordForm() {
     setSubmitting(true)
     const supabase = createClient()
     const { error } = await supabase.auth.updateUser({ password: parsed.data.password })
-    setSubmitting(false)
 
     if (error) {
       toast.error(error.message)
+      setSubmitting(false)
       return
     }
 
-    toast.success('Password updated — you are signed in')
-    router.push('/dashboard')
-    router.refresh()
+    // Tear down the recovery session and make the user sign in again with the
+    // new password. This confirms the new credential works and guarantees no
+    // `amr: recovery` session lingers with access to the app.
+    await supabase.auth.signOut()
+    setSubmitting(false)
+    router.push('/auth/login?message=' + encodeURIComponent('Password updated — sign in with your new password'))
+  }
+
+  /** Abandon the reset: destroy the recovery session before returning to sign-in. */
+  async function handleCancel() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/auth/login')
   }
 
   if (status === 'verifying') {
@@ -187,6 +197,15 @@ function ResetPasswordForm() {
           </Button>
         </form>
       </CardContent>
+      <CardFooter className="justify-center">
+        <button
+          type="button"
+          onClick={handleCancel}
+          className="text-sm text-muted-foreground underline hover:text-primary"
+        >
+          Cancel and return to sign in
+        </button>
+      </CardFooter>
     </PageShell>
   )
 }

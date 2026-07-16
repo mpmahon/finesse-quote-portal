@@ -1,0 +1,204 @@
+{
+  "products": [
+    {
+      "name": "Solis",
+      "url": "https://partner.vertilux.com/en/products/solis",
+      "item_code": "0-001-84-10X00",
+      "specs": {
+        "composition": "100% PES",
+        "weight": "125 ± 5% g/m² | 3.69 ± 5% oz/yd²",
+        "thickness": "0.22 ± 5% mm | 0.009 ± 5% in",
+        "roll_width": "3.0 m | 118 in",
+        "light_fastness": "4 Xenotest Grade",
+        "cell_size": "38 mm | 1½ in",
+        "cells_per_box": "680 Cells"
+      },
+      "colours": [
+        {
+          "name": "White",
+          "code": "0-001-84-10100",
+          "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018410100.jpg"
+        },
+        {
+          "name": "Cream",
+          "code": "0-001-84-10200",
+          "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018410200.jpg"
+        }
+      ]
+    },
+    {
+      "name": "Bolero Translucent",
+      "url": "https://partner.vertilux.com/en/products/bolero",
+      "item_code": "0-001-82-1XXXX",
+      "specs": {
+        "composition": "100% PES",
+        "weight": "186 ± 5% g/m² | 5.49 ± 5% oz/yd²",
+        "thickness": "0.22 ± 5% mm | 0.009 ± 5% in",
+        "roll_width": "366 cm | 144 in",
+        "light_fastness": "4-4.5 Xenotest Grade",
+        "cell_size": "25 mm | 1 in",
+        "cells_per_box": "935 Cells"
+      },
+      "colours": [
+        {
+          "name": "White",
+          "code": "0-001-82-10100",
+          "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018210100.jpg"
+        },
+        {
+          "name": "Ivory",
+          "code": "0-001-82-10200",
+          "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018210200.jpg"
+        },
+        {
+          "name": "Beige",
+          "code": "0-001-82-10300",
+          "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018210300.jpg"
+        },
+        {
+          "name": "Sand",
+          "code": "0-001-82-10400",
+          "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018210400.jpg"
+        },
+        {
+          "name": "Chocolate",
+          "code": "0-001-82-10500",
+          "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018210500.jpg"
+        },
+        {
+          "name": "Navy",
+          "code": "0-001-82-10600",
+          "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018210600.jpg"
+        },
+        {
+          "name": "Grey",
+          "code": "0-001-82-10700",
+          "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018210700.jpg"
+        }
+      ]
+    },
+    {
+      "name": "Privee Blackout",
+      "url": "https://partner.vertilux.com/en/products/privee",
+      "item_code": "0-001-82-2XXXX",
+      "specs": {
+        "composition": "100% PES",
+        "weight": "166 ± 5% g/m² | 490 ± 5% oz/yd² [sic - as published]",
+        "thickness": "0.22 ± 5% mm | 0.009 ± 5% in",
+        "roll_width": "366 cm | 144 in",
+        "light_fastness": "4-4.5 Xenotest Grade",
+        "cell_size": "25 mm | 1 in",
+        "cells_per_box": "1100 Cells"
+      },
+      "colours": [
+        {
+          "name": "White",
+          "code": "0-001-82-20100",
+          "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018220100.jpg"
+        },
+        {
+          "name": "Ivory",
+          "code": "0-001-82-20200",
+          "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018220200.jpg"
+        },
+        {
+          "name": "Beige",
+          "code": "0-001-82-20300",
+          "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018220300.jpg"
+        },
+        {
+          "name": "Sand",
+          "code": "0-001-82-20400",
+          "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018220400.jpg"
+        },
+        {
+          "name": "Grey",
+          "code": "0-001-82-20700",
+          "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018220700.jpg"
+        }
+      ]
+    },
+    {
+      "name": "Romance Translucent",
+      "url": "https://partner.vertilux.com/en/products/romance",
+      "item_code": "0-001-83-1XXXX",
+      "specs": {
+        "composition": "100% PES",
+        "weight": "174 ± 5% g/m² | 5.16 ± 5% oz/yd²",
+        "thickness": "0.22 ± 5% mm | 0.009 ± 5% in",
+        "roll_width": "366 cm | 144 in",
+        "light_fastness": "4-4.5 Xenotest Grade",
+        "cell_size": "38 mm | 1½ in",
+        "cells_per_box": "759 Cells"
+      },
+      "colours": [
+        {
+          "name": "White",
+          "code": "0-001-83-10100",
+          "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018310100.jpg"
+        },
+        {
+          "name": "Ivory",
+          "code": "0-001-83-10200",
+          "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018310200.jpg"
+        },
+        {
+          "name": "Beige",
+          "code": "0-001-83-10300",
+          "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018310300.jpg"
+        },
+        {
+          "name": "Sand",
+          "code": "0-001-83-10400",
+          "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018310400.jpg"
+        },
+        {
+          "name": "Grey",
+          "code": "0-001-83-10700",
+          "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018310700.jpg"
+        }
+      ]
+    },
+    {
+      "name": "Noite Blackout",
+      "url": "https://partner.vertilux.com/en/products/noite",
+      "item_code": "0-001-83-2XXXX",
+      "specs": {
+        "composition": "100% PES",
+        "weight": "200 ± 5% g/m² | 5.90 ± 5% oz/yd²",
+        "thickness": "0.22 ± 5% mm | 0.009 ± 5% in",
+        "roll_width": "366 cm | 144 in",
+        "light_fastness": "4-4.5 Xenotest Grade",
+        "cell_size": "38 mm | 1½ in",
+        "cells_per_box": "759 Cells"
+      },
+      "colours": [
+        {
+          "name": "White",
+          "code": "0-001-83-20100",
+          "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018320100.jpg"
+        },
+        {
+          "name": "Ivory",
+          "code": "0-001-83-20200",
+          "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018320200.jpg"
+        },
+        {
+          "name": "Beige",
+          "code": "0-001-83-20300",
+          "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018320300.jpg"
+        },
+        {
+          "name": "Sand",
+          "code": "0-001-83-20400",
+          "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018320400.jpg"
+        },
+        {
+          "name": "Grey",
+          "code": "0-001-83-20700",
+          "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018320700.jpg"
+        }
+      ]
+    }
+  ]
+}

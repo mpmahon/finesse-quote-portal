@@ -1,0 +1,2643 @@
+{
+ "styles": [
+  {
+   "type": "Roller Shade",
+   "opacity": "Sheer",
+   "style": "Screen 5%",
+   "supplier": "Loman Distributors",
+   "sp_name": "Screen 5% - 3000 Series",
+   "code": "3000-01, 3000-002, 3000-034, 3000-210, 3000-3435, 3000-910, 3000-914, 3000-916",
+   "url": "http://lomandistributors.com/roller-shades/tejido-series-3000-screen-5/?lang=en",
+   "desc": "An airy solar screen with 5% openness \u2014 keeps your view and daylight while cutting glare and UV. A favourite for living areas and offices.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "3000-01",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-5-3000-01-WHITE.jpg",
+     "hex_source": "swatch",
+     "hex": "#EFEDEB",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/b4a6d85fced64867712d8523f234baff.img"
+    },
+    {
+     "name": "White Linen",
+     "code": "3000-002",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-5-3000-002-WHITE-LINEN.jpg",
+     "hex_source": "swatch",
+     "hex": "#D8CEBE",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/485ce829349d42d6b2f66b43f7d0b33b.img"
+    },
+    {
+     "name": "White Pearl",
+     "code": "3000-034",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-5-3000-034-WHITE-PEARL.jpg",
+     "hex_source": "swatch",
+     "hex": "#C4C3C0",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/6863fc4403ba4a76fe4b102c650363cd.img"
+    },
+    {
+     "name": "Linen",
+     "code": "3000-210",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-5-3000-002-WHITE-LINEN.jpg",
+     "hex_source": "swatch",
+     "hex": "#D8CEBE",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/485ce829349d42d6b2f66b43f7d0b33b.img"
+    },
+    {
+     "name": "Pearl Linen",
+     "code": "3000-3435",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-5-3000-3435-PEARL-LINEN.jpg",
+     "hex_source": "swatch",
+     "hex": "#B8B4AC",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/df02536b419ef67c8f2bce711242fbb6.img"
+    },
+    {
+     "name": "Bronze",
+     "code": "3000-910",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-5-3000-910-BRONZE.jpg",
+     "hex_source": "swatch",
+     "hex": "#403C39",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/78d0e9ec506cdbf014a98d2e1d1eb23b.img"
+    },
+    {
+     "name": "Black",
+     "code": "3000-914",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-5-3000-916-BLACK-PEARL.jpg",
+     "hex_source": "swatch",
+     "hex": "#616061",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/0b7db900beef33ec6ec99c0dc4c17431.img"
+    },
+    {
+     "name": "Black Pearl",
+     "code": "3000-916",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-5-3000-916-BLACK-PEARL.jpg",
+     "hex_source": "swatch",
+     "hex": "#616061",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/0b7db900beef33ec6ec99c0dc4c17431.img"
+    }
+   ],
+   "pick": 3,
+   "slug": "roller-shade-sheer-screen-5",
+   "image_url": "/images/catalog/styles/roller-shade-sheer-screen-5.jpg"
+  },
+  {
+   "type": "Roller Shade",
+   "opacity": "Semi Privacy",
+   "style": "Screen 3%",
+   "supplier": "Loman Distributors",
+   "sp_name": "Screen 3%",
+   "code": "03-DN001, 03-DN002, 03-DN003, 03-DN034, 03-DN201, 03-DN910, 03-DN914, 03-DN915",
+   "url": "http://lomandistributors.com/roller-shades/screen-3/?lang=en",
+   "desc": "A balanced 3% openness technical screen: daytime privacy and glare control with a softly filtered view. Flame rated, 5-year warranty.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "03-DN001",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-03-DN001-WHITE.jpg",
+     "hex_source": "swatch",
+     "hex": "#EBEAE7",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/ddfb4deaf5ba5d6d84671f9bfc501565.img"
+    },
+    {
+     "name": "White Linen",
+     "code": "03-DN002",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-03-DN002-WHITE-LINEN.jpg",
+     "hex_source": "swatch",
+     "hex": "#DFD8C8",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/a53f4e293872877b0eb22884cdb3fe0d.img"
+    },
+    {
+     "name": "White Grey",
+     "code": "03-DN003",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-03-DN003-WHITE-GREY.jpg",
+     "hex_source": "swatch",
+     "hex": "#AAAAAC",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/93de4f872dd3b872933f70a01ca3154a.img"
+    },
+    {
+     "name": "White Pearl",
+     "code": "03-DN034",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-03-DN034-WHITE-PEARL.jpg",
+     "hex_source": "swatch",
+     "hex": "#BDBEBC",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/853dcb358bbe2e6e3d8d5c1473c4447c.img"
+    },
+    {
+     "name": "Linen",
+     "code": "03-DN201",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-03-DN002-WHITE-LINEN.jpg",
+     "hex_source": "swatch",
+     "hex": "#DFD8C8",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/a53f4e293872877b0eb22884cdb3fe0d.img"
+    },
+    {
+     "name": "Dark Bronze",
+     "code": "03-DN910",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-03-DN910-DARK-BRONZE.jpg",
+     "hex_source": "swatch",
+     "hex": "#362E2E",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/608b248b0d713c5c4ed5bcdd3f6b392b.img"
+    },
+    {
+     "name": "Black",
+     "code": "03-DN914",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-03-DN914-BLACK.jpg",
+     "hex_source": "swatch",
+     "hex": "#2E2D30",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/1e422f44df0b6d3b6a47f26bf44fc9b2.img"
+    },
+    {
+     "name": "Black Bronze",
+     "code": "03-DN915",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-03-DN915-BRONZE.jpg",
+     "hex_source": "swatch",
+     "hex": "#46403A",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/df9760329a836856b62149d33a969dc9.img"
+    }
+   ],
+   "pick": 4,
+   "slug": "roller-shade-semi-privacy-screen-3",
+   "image_url": "/images/catalog/styles/roller-shade-semi-privacy-screen-3.jpg"
+  },
+  {
+   "type": "Roller Shade",
+   "opacity": "Semi Privacy",
+   "style": "Screen 1%",
+   "supplier": "Loman Distributors",
+   "sp_name": "Screen 1%",
+   "code": "DN001, DN002, DN201, DN034",
+   "url": "http://lomandistributors.com/roller-shades/screen-fabric-1pct/?lang=en",
+   "desc": "Our tightest solar screen \u2014 1% openness for maximum daytime privacy and heat rejection while keeping a connection to outside.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "DN001",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/02/1-FAB-01-DN001-2WHITE.jpg",
+     "hex_source": "swatch",
+     "hex": "#EBEAE9",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/188719737ad698641d840f5f2d6f5345.img"
+    },
+    {
+     "name": "White Linen",
+     "code": "DN002",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/02/1-FAB-01-DN002-2WLINEN.jpg",
+     "hex_source": "swatch",
+     "hex": "#E0DBCD",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/e83449d6fe21f330d55c39ccefb93d17.img"
+    },
+    {
+     "name": "Linen",
+     "code": "DN201",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/02/1-FAB-01-DN201-2LINEN.jpg",
+     "hex_source": "swatch",
+     "hex": "#D6C4AB",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/6d97a1f6c3618078ec7d3c718c9b3ff3.img"
+    },
+    {
+     "name": "White Pearl",
+     "code": "DN034",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/02/1-FAB-01-DN034-2WPEARL.jpg",
+     "hex_source": "swatch",
+     "hex": "#C6C6C5",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/739948c72663a5d9783f5f689e454b54.img"
+    }
+   ],
+   "pick": 2,
+   "slug": "roller-shade-semi-privacy-screen-1",
+   "image_url": "/images/catalog/styles/roller-shade-semi-privacy-screen-1.jpg"
+  },
+  {
+   "type": "Roller Shade",
+   "opacity": "Semi Privacy",
+   "style": "Eco Screen",
+   "supplier": "Loman Distributors",
+   "sp_name": "Eco Screen 1%, 3% y 5%",
+   "code": "ND001, ND002, ND003, FAB01, FAB03, FAB05, FABROL",
+   "url": "http://lomandistributors.com/roller-shades/eco-screen-fabric/?lang=en",
+   "desc": "An eco-conscious screen range offered in 1%, 3% and 5% openness, in luminous whites and pearls.",
+   "colours": [
+    {
+     "name": "Ice White",
+     "code": "ND001",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2019/12/FAB03-ND001.jpg",
+     "hex_source": "swatch",
+     "hex": "#E9E8E6",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/05363f159055869ed3339ed10f0e14b8.img"
+    },
+    {
+     "name": "White Linen",
+     "code": "ND002",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2019/12/FAB03-ND002.jpg",
+     "hex_source": "swatch",
+     "hex": "#D7CEC0",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/5347b5ad831480dd8de62528733d71a8.img"
+    },
+    {
+     "name": "White Pearl",
+     "code": "ND003",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2019/12/FAB03-ND003.jpg",
+     "hex_source": "swatch",
+     "hex": "#BBB9B7",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/b1cbb12de3b4b3f23f62d75160a8eab3.img"
+    }
+   ],
+   "pick": 1,
+   "slug": "roller-shade-semi-privacy-eco-screen",
+   "image_url": "/images/catalog/styles/roller-shade-semi-privacy-eco-screen.jpg"
+  },
+  {
+   "type": "Roller Shade",
+   "opacity": "Full Privacy",
+   "style": "Natural View",
+   "supplier": "Loman Distributors",
+   "sp_name": "Natural View",
+   "code": "NAT01, NAT02, NAT03, NAT04, NAT05, NAT06",
+   "url": "http://lomandistributors.com/roller-shades/screen-fabric-natural-view/?lang=en",
+   "desc": "A softly textured light-filtering weave that glows with natural daylight while fully screening the room from view.",
+   "colours": [
+    {
+     "name": "Linen",
+     "code": "NAT01",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/02/NAT01-LINEN.jpg",
+     "hex_source": "swatch",
+     "hex": "#DDD2C8",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/c11aeb91872aaf7ae9e67f8795a318a2.img"
+    },
+    {
+     "name": "White",
+     "code": "NAT02",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/02/NAT02-WHITE.jpg",
+     "hex_source": "swatch",
+     "hex": "#E7E3E3",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/fc4721c87bb9c7bc8db7ef5e3a38f760.img"
+    },
+    {
+     "name": "Ivory",
+     "code": "NAT03",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/02/NAT03-IVORY.jpg",
+     "hex_source": "swatch",
+     "hex": "#E0D8CD",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/9685bdc9496f91dc255464dfc3b88f03.img"
+    },
+    {
+     "name": "Capuchino",
+     "code": "NAT04",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/02/NAT04-CAPUCHINO.jpg",
+     "hex_source": "swatch",
+     "hex": "#B39F8E",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/6516db5867c580b6844e7a3f3bdf6cb4.img"
+    },
+    {
+     "name": "Chocolate",
+     "code": "NAT05",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/02/NAT05-CHOCOLATE.jpg",
+     "hex_source": "swatch",
+     "hex": "#645A59",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/9514387b59dec8b6aa99517c0fb1e75b.img"
+    },
+    {
+     "name": "Black",
+     "code": "NAT06",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/02/NAT06-BLACK.jpg",
+     "hex_source": "swatch",
+     "hex": "#585758",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/698fee0328849c64dc771ca99f59c9f1.img"
+    }
+   ],
+   "pick": 3,
+   "slug": "roller-shade-full-privacy-natural-view",
+   "image_url": "/images/catalog/styles/roller-shade-full-privacy-natural-view.jpg"
+  },
+  {
+   "type": "Roller Shade",
+   "opacity": "Full Privacy",
+   "style": "Carolina",
+   "supplier": "Loman Distributors",
+   "sp_name": "Carolina",
+   "code": "C1W, C2B, C3SD, C4S, C70",
+   "url": "http://lomandistributors.com/roller-shades/tejido-carolina/?lang=en",
+   "desc": "A crisp, lightweight translucent plain that diffuses daylight evenly \u2014 simple, clean and endlessly versatile.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "C1W",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-ROLL-C1W-WHITE.jpg",
+     "hex_source": "swatch",
+     "hex": "#EFEDEE",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/359bbb4691144dfbace5864602bffb3e.img"
+    },
+    {
+     "name": "Beige",
+     "code": "C2B",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-ROLL-C2B-BEIGE.jpg",
+     "hex_source": "swatch",
+     "hex": "#EEEBDA",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/090b2a54f35b25c9dcea09834622dc0b.img"
+    },
+    {
+     "name": "Sand",
+     "code": "C3SD",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-ROLL-C3SD-SAND.jpg",
+     "hex_source": "swatch",
+     "hex": "#C3BAA3",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/0d0ae2e7d7ffc7a24c380f3c58c02d09.img"
+    },
+    {
+     "name": "Steel",
+     "code": "C4S",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-ROLL-C4S-STEEL.jpg",
+     "hex_source": "swatch",
+     "hex": "#ABB0AD",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/70e4b05e06ab4437ef06e3f5ea1ed13b.img"
+    },
+    {
+     "name": "Oliver",
+     "code": "C70",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-ROLL-C70-OLIVER.jpg",
+     "hex_source": "swatch",
+     "hex": "#9C978A",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/4314b60d1fe202763bffccff249c3649.img"
+    }
+   ],
+   "pick": 2,
+   "slug": "roller-shade-full-privacy-carolina",
+   "image_url": "/images/catalog/styles/roller-shade-full-privacy-carolina.jpg"
+  },
+  {
+   "type": "Roller Shade",
+   "opacity": "Full Privacy",
+   "style": "Jupiter",
+   "supplier": "Loman Distributors",
+   "sp_name": "Jupiter",
+   "code": "J301, J303, J318, J012",
+   "url": "http://lomandistributors.com/roller-shades/tejido-jupiter/?lang=en",
+   "desc": "A substantial translucent weave with a rich, tailored hand feel, in warm neutral tones.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "J301",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/J301-WHITE618X900.jpg",
+     "hex_source": "swatch",
+     "hex": "#D8D8D6",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/91d1de882c4e793a602937fde4ecf7e4.img"
+    },
+    {
+     "name": "Ivory",
+     "code": "J303",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/02/J303-IVORY-02202.jpg",
+     "hex_source": "swatch",
+     "hex": "#E2DCD3",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/e7d67302894c6c1426e8148f6c3b5c63.img"
+    },
+    {
+     "name": "Chocolate",
+     "code": "J318",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/J318-CHOCOLATE.jpg",
+     "hex_source": "swatch",
+     "hex": "#3A3234",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/d0d13d5d9c324e3d62d9ab83e7dff9cf.img"
+    },
+    {
+     "name": "Light Grey",
+     "code": "J012",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/J012-LIGHT-GREY.jpg",
+     "hex_source": "swatch",
+     "hex": "#99989D",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/dded2c82d340dc02e69436a1f7473aa6.img"
+    }
+   ],
+   "pick": 1,
+   "slug": "roller-shade-full-privacy-jupiter",
+   "image_url": "/images/catalog/styles/roller-shade-full-privacy-jupiter.jpg"
+  },
+  {
+   "type": "Roller Shade",
+   "opacity": "Full Privacy",
+   "style": "Madrid",
+   "supplier": "Loman Distributors",
+   "sp_name": "Madrid Translucent",
+   "code": "MADRID-TR01, MADRID-TR02, MADRID-TR03, MADRID-TR04",
+   "url": "http://lomandistributors.com/roller-shades/madrid-translucent/?lang=en",
+   "desc": "Our newest translucent plain in a generous 118-inch width \u2014 seamless coverage for wide windows.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "MADRID-TR01",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/07/WHITE-MADRID-TR01.jpg",
+     "hex_source": "swatch",
+     "hex": "#F1F0EF",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/63569860c08265a9f86552c2fde1ffd1.img"
+    },
+    {
+     "name": "Ivory",
+     "code": "MADRID-TR02",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/07/IVORY-MADRID-TR02.jpg",
+     "hex_source": "swatch",
+     "hex": "#F1EBD1",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/518baf8dceb03c76002555182b688f6d.img"
+    },
+    {
+     "name": "Grey",
+     "code": "MADRID-TR03",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/07/GREY-MADRID-TR03.jpg",
+     "hex_source": "swatch",
+     "hex": "#525152",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/4c885f9e758c4b9e022566228fe1dfe7.img"
+    },
+    {
+     "name": "Coffee",
+     "code": "MADRID-TR04",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/07/COFFEE-MADRID-TR04.jpg",
+     "hex_source": "swatch",
+     "hex": "#453B38",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/73141bd716ad8cefff36b394aa7daf08.img"
+    }
+   ],
+   "pick": 1,
+   "slug": "roller-shade-full-privacy-madrid",
+   "image_url": "/images/catalog/styles/roller-shade-full-privacy-madrid.jpg"
+  },
+  {
+   "type": "Roller Shade",
+   "opacity": "Full Privacy",
+   "style": "Snowflake",
+   "supplier": "Loman Distributors",
+   "sp_name": "Snowflake Translucent",
+   "code": "SNOWFLAKE-TR01, SNOWFLAKE-TR02, SNOWFLAKE-TR03, SNOWFLAKE-TR04",
+   "url": "http://lomandistributors.com/roller-shades/snowflake-translucid/?lang=en",
+   "desc": "A softly mottled translucent texture that reads like natural stone \u2014 quietly decorative.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "SNOWFLAKE-TR01",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/12/WHITE-SNOWFLAKE-TR01.jpg",
+     "hex_source": "swatch",
+     "hex": "#F6F6F5",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/a55aaa6b6dc0d71029ce4a12cb622eda.img"
+    },
+    {
+     "name": "Khaki",
+     "code": "SNOWFLAKE-TR02",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/12/KHALI-SNOWFLAKE-TR02.jpg",
+     "hex_source": "swatch",
+     "hex": "#CFCAC4",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/19640b1f58cd1aa595363ce02220de40.img"
+    },
+    {
+     "name": "Stone",
+     "code": "SNOWFLAKE-TR03",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/12/STONE-SNOWFLAKE-TR03.jpg",
+     "hex_source": "swatch",
+     "hex": "#D2C9BF",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/804073342e7c1506a00b8ac3cafa55be.img"
+    },
+    {
+     "name": "Grey",
+     "code": "SNOWFLAKE-TR04",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/12/GREY-SNOWFLAKE-TR04.jpg",
+     "hex_source": "swatch",
+     "hex": "#BBBBBC",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/2f64dd262803ef6113d314fd635c139b.img"
+    }
+   ],
+   "pick": 2,
+   "slug": "roller-shade-full-privacy-snowflake",
+   "image_url": "/images/catalog/styles/roller-shade-full-privacy-snowflake.jpg"
+  },
+  {
+   "type": "Roller Shade",
+   "opacity": "Full Privacy",
+   "style": "Wood Look",
+   "supplier": "Loman Distributors",
+   "sp_name": "Inspiration Wood Look Roller Shades",
+   "code": "RWL-01ICWL, RWL-0001L, RWL-0100L, RWL-0200L, RWL-0300L, RWL-0400L, RWL-0500L, RWL-0900L",
+   "url": "http://lomandistributors.com/roller-shades/tejido-inspiration-wood-look/?lang=en",
+   "desc": "Wood-grain texture in a rolling shade \u2014 the warmth of timber with the practicality of fabric.",
+   "colours": [
+    {
+     "name": "Ice White",
+     "code": "RWL-01ICWL",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/RWL-01ICWL-ICEWHITE-50PCT.jpg",
+     "hex_source": "swatch",
+     "hex": "#E8E6EC",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/8cb2f4a863833853c981e217edb5e872.img"
+    },
+    {
+     "name": "White",
+     "code": "RWL-0001L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/RWL-01ICWL-ICEWHITE-50PCT.jpg",
+     "hex_source": "swatch",
+     "hex": "#E8E6EC",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/8cb2f4a863833853c981e217edb5e872.img"
+    },
+    {
+     "name": "Mushroom",
+     "code": "RWL-0100L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/RWL-0100L-MUSHROOM-50PCT.jpg",
+     "hex_source": "swatch",
+     "hex": "#CEB899",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/a420ce956ad890fe74b0763e01860227.img"
+    },
+    {
+     "name": "Khaki",
+     "code": "RWL-0200L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/RWL-0200L-KHAKI-50PCT.jpg",
+     "hex_source": "swatch",
+     "hex": "#8A755A",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/521b6085a8f5a09abdb78f5d6bf4e594.img"
+    },
+    {
+     "name": "Cherry",
+     "code": "RWL-0300L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/02/RWL-0300-CHERRY-50PCT2.jpg",
+     "hex_source": "swatch",
+     "hex": "#8C6650",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/aba5f013791589d3cdbcd0f405a7724d.img"
+    },
+    {
+     "name": "Brown",
+     "code": "RWL-0400L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/RWL-0400L-BROWN-50PCT.jpg",
+     "hex_source": "swatch",
+     "hex": "#6F513F",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/8ffbe984672692ba445d2f3c946aa6f7.img"
+    },
+    {
+     "name": "Chocolate",
+     "code": "RWL-0500L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/RWL-0500L-CHOCOLATE-50PCT.jpg",
+     "hex_source": "swatch",
+     "hex": "#493C36",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/67bdde4d1b7e8f25bdc006aa58b440c9.img"
+    },
+    {
+     "name": "Grey",
+     "code": "RWL-0900L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/02/RWL-0900-GREY-50PCT2.jpg",
+     "hex_source": "swatch",
+     "hex": "#99989B",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/f6252a70bc01f840bc9625de982db261.img"
+    }
+   ],
+   "pick": 4,
+   "slug": "roller-shade-full-privacy-wood-look",
+   "image_url": "/images/catalog/styles/roller-shade-full-privacy-wood-look.jpg"
+  },
+  {
+   "type": "Roller Shade",
+   "opacity": "Full Privacy",
+   "style": "Stucco",
+   "supplier": "Vertilux",
+   "sp_name": "Stucco Decorative",
+   "code": "0-002-32-XXXXX",
+   "url": "https://partner.vertilux.com/en/products/stucco-decorative",
+   "desc": "A finely textured decorative plain with an acrylic-coated finish. Certified low-emission and flame retardant, with a five-year warranty.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "0-002-32-01110",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00023201110.jpg",
+     "hex_source": "swatch",
+     "hex": "#FAF7EE",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/9bb7992b65173bb09bd699876d489f1b.img"
+    },
+    {
+     "name": "Off White",
+     "code": "0-002-32-02110",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00023202110.jpg",
+     "hex_source": "swatch",
+     "hex": "#FAF7E5",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/b31c709bb175db8860e49e7b8fbf4f88.img"
+    },
+    {
+     "name": "Linen",
+     "code": "0-002-32-03110",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00023203110.jpg",
+     "hex_source": "swatch",
+     "hex": "#F5EED9",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/5823e02a414d545f838ba884a44a88d5.img"
+    },
+    {
+     "name": "Sand",
+     "code": "0-002-32-04110",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00023204110.jpg",
+     "hex_source": "swatch",
+     "hex": "#E9DDC1",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/badf1e986903d8e39c33c83f91e5ff6d.img"
+    },
+    {
+     "name": "Mocha",
+     "code": "0-002-32-05110",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00023205110.jpg",
+     "hex_source": "swatch",
+     "hex": "#D1C5B5",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/ff30da9d4a70dd3826fab18555849f23.img"
+    },
+    {
+     "name": "Stone",
+     "code": "0-002-32-06110",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00023206110.jpg",
+     "hex_source": "swatch",
+     "hex": "#808780",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/d807c3cdcdf66c03cf4fe30471495246.img"
+    }
+   ],
+   "pick": 3,
+   "slug": "roller-shade-full-privacy-stucco",
+   "image_url": "/images/catalog/styles/roller-shade-full-privacy-stucco.jpg"
+  },
+  {
+   "type": "Roller Shade",
+   "opacity": "Blackout",
+   "style": "Advantage",
+   "supplier": "Loman Distributors",
+   "sp_name": "Advantage Black Out",
+   "code": "AD01L, AD02L, AD03L, AD04L, AD05L, AD06L, AD07L, AD08L",
+   "url": "http://lomandistributors.com/roller-shades/tejido-advantage/?lang=en",
+   "desc": "Our workhorse blackout \u2014 a heavyweight coated fabric for total darkness, in eight tones from crisp white to black.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "AD01L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD01L-WHITE.jpg",
+     "hex_source": "swatch",
+     "hex": "#EDEFF0",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/94e3a09edd37eb1bccf0cd8b0bb51978.img"
+    },
+    {
+     "name": "Ivory",
+     "code": "AD02L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD02L-IVORY.jpg",
+     "hex_source": "swatch",
+     "hex": "#E5E4DC",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/046536abdbb8bdc1243c0f912b5d30c4.img"
+    },
+    {
+     "name": "Samba",
+     "code": "AD03L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD03L-SAMBA.jpg",
+     "hex_source": "swatch",
+     "hex": "#C0B5A7",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/593882ff748cec4479bddc048ff97590.img"
+    },
+    {
+     "name": "Latte",
+     "code": "AD04L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD04L-LATTE.jpg",
+     "hex_source": "swatch",
+     "hex": "#999084",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/fc6e172caf79402fd4f3b78b22d767bf.img"
+    },
+    {
+     "name": "Coffee",
+     "code": "AD05L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD05L-COFFEE.jpg",
+     "hex_source": "swatch",
+     "hex": "#5F5352",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/1a891aab184865081f7e126a618b76b1.img"
+    },
+    {
+     "name": "Light Grey",
+     "code": "AD06L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD06L-LIGHT-GREY.jpg",
+     "hex_source": "swatch",
+     "hex": "#BFC0C2",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/5de0b54ab79e789818c17039b4abc014.img"
+    },
+    {
+     "name": "Grey",
+     "code": "AD07L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD07L-GREY.jpg",
+     "hex_source": "swatch",
+     "hex": "#7E828B",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/d79115c38e39b0bc45b848d355fa70a3.img"
+    },
+    {
+     "name": "Black",
+     "code": "AD08L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD08L-BLACK.jpg",
+     "hex_source": "swatch",
+     "hex": "#403F43",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/d393c3d68b52f599fa8fb129652d3334.img"
+    }
+   ],
+   "pick": 3,
+   "slug": "roller-shade-blackout-advantage",
+   "image_url": "/images/catalog/styles/roller-shade-blackout-advantage.jpg"
+  },
+  {
+   "type": "Roller Shade",
+   "opacity": "Blackout",
+   "style": "Paris",
+   "supplier": "Loman Distributors",
+   "sp_name": "Paris Black Out",
+   "code": "PARIS-BK01, PARIS-BK02, PARIS-BK03, PARIS-BK04, PARIS-BK05, PARIS-BK06",
+   "url": "http://lomandistributors.com/roller-shades/paris-blackout/?lang=en",
+   "desc": "A refined mid-weight blackout in soft neutrals, engineered for wide windows without seams.",
+   "colours": [
+    {
+     "name": "Snow White",
+     "code": "PARIS-BK01",
+     "image_url": null,
+     "hex_source": "name-approx",
+     "hex": "#F8F8F5",
+     "local": null
+    },
+    {
+     "name": "Ivory",
+     "code": "PARIS-BK02",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD02L-IVORY.jpg",
+     "hex_source": "swatch",
+     "hex": "#E5E4DC",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/046536abdbb8bdc1243c0f912b5d30c4.img"
+    },
+    {
+     "name": "Latte",
+     "code": "PARIS-BK03",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD04L-LATTE.jpg",
+     "hex_source": "swatch",
+     "hex": "#999084",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/fc6e172caf79402fd4f3b78b22d767bf.img"
+    },
+    {
+     "name": "Coffee",
+     "code": "PARIS-BK04",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD05L-COFFEE.jpg",
+     "hex_source": "swatch",
+     "hex": "#5F5352",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/1a891aab184865081f7e126a618b76b1.img"
+    },
+    {
+     "name": "Light Grey",
+     "code": "PARIS-BK05",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD06L-LIGHT-GREY.jpg",
+     "hex_source": "swatch",
+     "hex": "#BFC0C2",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/5de0b54ab79e789818c17039b4abc014.img"
+    },
+    {
+     "name": "Grey",
+     "code": "PARIS-BK06",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD06L-LIGHT-GREY.jpg",
+     "hex_source": "swatch",
+     "hex": "#BFC0C2",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/5de0b54ab79e789818c17039b4abc014.img"
+    }
+   ],
+   "pick": 2,
+   "slug": "roller-shade-blackout-paris",
+   "image_url": "/images/catalog/styles/roller-shade-blackout-paris.jpg"
+  },
+  {
+   "type": "Roller Shade",
+   "opacity": "Blackout",
+   "style": "Rome",
+   "supplier": "Loman Distributors",
+   "sp_name": "Rome Black Out",
+   "code": "ROME-BK01, ROME-BK02, ROME-BK03, ROME-BK04, ROME-BK05, ROME-BK06",
+   "url": "http://lomandistributors.com/roller-shades/rome-blackout/?lang=en",
+   "desc": "A luxuriously thick blackout with a soft fabric face \u2014 deep light block with an upholstered look.",
+   "colours": [
+    {
+     "name": "Snow",
+     "code": "ROME-BK01",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/12/SNOW-ROME-BK01.jpg",
+     "hex_source": "swatch",
+     "hex": "#EFEEF0",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/232f66c4dcc650b39f73d047f7df3368.img"
+    },
+    {
+     "name": "Cream",
+     "code": "ROME-BK02",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/12/CREAM-ROME-BK02.jpg",
+     "hex_source": "swatch",
+     "hex": "#F0ECE3",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/453a3be87bd7b9d67cabe719dc848f45.img"
+    },
+    {
+     "name": "Beige",
+     "code": "ROME-BK03",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/12/BEIGE-ROME-BK03.jpg",
+     "hex_source": "swatch",
+     "hex": "#C9C1BC",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/c91c3e0672ce3a176a958a38b5ef605b.img"
+    },
+    {
+     "name": "Light Grey",
+     "code": "ROME-BK04",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/12/LIGHT-GREY-ROME-BK04.jpg",
+     "hex_source": "swatch",
+     "hex": "#B1AFB2",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/9cd5fca1878f4050b27135aefc74305d.img"
+    },
+    {
+     "name": "Grey",
+     "code": "ROME-BK05",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/12/LIGHT-GREY-ROME-BK04.jpg",
+     "hex_source": "swatch",
+     "hex": "#B1AFB2",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/9cd5fca1878f4050b27135aefc74305d.img"
+    },
+    {
+     "name": "Coffee",
+     "code": "ROME-BK06",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/12/COFFEE-ROME-BK06.jpg",
+     "hex_source": "swatch",
+     "hex": "#5D4E4D",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/85ad9f7125f6d1b466fc27156436a9d1.img"
+    }
+   ],
+   "pick": 2,
+   "slug": "roller-shade-blackout-rome",
+   "image_url": "/images/catalog/styles/roller-shade-blackout-rome.jpg"
+  },
+  {
+   "type": "Roller Shade",
+   "opacity": "Blackout",
+   "style": "Madrid",
+   "supplier": "Loman Distributors",
+   "sp_name": "Madrid Black Out",
+   "code": "MADRID-BK01, MADRID-BK02, MADRID-BK03, MADRID-BK04",
+   "url": "http://lomandistributors.com/roller-shades/madrid-blackout/?lang=en",
+   "desc": "The blackout sister of our Madrid translucent \u2014 match tones across rooms for a coordinated scheme.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "MADRID-BK01",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/07/WHITE-MADRID-BK01.jpg",
+     "hex_source": "swatch",
+     "hex": "#DBDFE1",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/615bca8ca70fc9407681ccb9abd18bc5.img"
+    },
+    {
+     "name": "Ivory",
+     "code": "MADRID-BK02",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/07/IVORY-MADRID-BK02.jpg",
+     "hex_source": "swatch",
+     "hex": "#DCDDD4",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/709ceca41cf81e0c1ac84e1a205802c9.img"
+    },
+    {
+     "name": "Grey",
+     "code": "MADRID-BK03",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/07/GREY-MADRID-BK03.jpg",
+     "hex_source": "swatch",
+     "hex": "#6D6C6D",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/ca547a6e5967560611d45a33d0f9b4a7.img"
+    },
+    {
+     "name": "Coffee",
+     "code": "MADRID-BK04",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/07/COFFEE-MADRID-BK04.jpg",
+     "hex_source": "swatch",
+     "hex": "#433936",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/d59ddb21c447c367736ee5ad000746a2.img"
+    }
+   ],
+   "pick": 1,
+   "slug": "roller-shade-blackout-madrid",
+   "image_url": "/images/catalog/styles/roller-shade-blackout-madrid.jpg"
+  },
+  {
+   "type": "Roller Shade",
+   "opacity": "Blackout",
+   "style": "Luxury",
+   "supplier": "Loman Distributors",
+   "sp_name": "Luxury Black Out",
+   "code": "01PW, 02CT, 05RK, 06LF, 07MK, 08MA",
+   "url": "http://lomandistributors.com/fabrics-screen/luxury-blackout/?lang=en",
+   "desc": "A twill-woven blackout with a designer palette from Pure White to Marine, finished with an acrylic light-block coating.",
+   "colours": [
+    {
+     "name": "Pure White",
+     "code": "01PW",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/04/PURE-WHITE-LUXURY-01PW.jpg",
+     "hex_source": "swatch",
+     "hex": "#ECEBEB",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/ac305fc047a8b75cf08ac1c4b94acf11.img"
+    },
+    {
+     "name": "Cotton",
+     "code": "02CT",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/04/COTTON-LUXURY-02CT.jpg",
+     "hex_source": "swatch",
+     "hex": "#E4E1D8",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/4f6bfc908fc046a1ca461d4cbfaa54e0.img"
+    },
+    {
+     "name": "Rock",
+     "code": "05RK",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/04/ROCK-LUXURY-05RK.jpg",
+     "hex_source": "swatch",
+     "hex": "#807875",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/5b948dabc0d19879114a030f4ae6e206.img"
+    },
+    {
+     "name": "Leaf",
+     "code": "06LF",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/04/LEAF-LUXURY-06LF.jpg",
+     "hex_source": "swatch",
+     "hex": "#787873",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/afeeaa2f3f9efaebcddfe3416231b706.img"
+    },
+    {
+     "name": "Mocha",
+     "code": "07MK",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/04/MOCHA-LUXURY-07MK.jpg",
+     "hex_source": "swatch",
+     "hex": "#513E40",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/e3ad5b08fd0bdeace199cb51645caadf.img"
+    },
+    {
+     "name": "Marine",
+     "code": "08MA",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/04/MARINE-LUXURY-08MA.jpg",
+     "hex_source": "swatch",
+     "hex": "#464347",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/465b40fd97d3d0a790e3a347d8022b0f.img"
+    }
+   ],
+   "pick": 4,
+   "slug": "roller-shade-blackout-luxury",
+   "image_url": "/images/catalog/styles/roller-shade-blackout-luxury.jpg"
+  },
+  {
+   "type": "Roller Shade",
+   "opacity": "Blackout",
+   "style": "Linen",
+   "supplier": "Loman Distributors",
+   "sp_name": "Linen Black Out",
+   "code": "506IL, 5062L, 5063L",
+   "url": "http://lomandistributors.com/fabrics-screen/linen-blackout/?lang=en",
+   "desc": "A 100% linen face with full blackout backing \u2014 natural texture, total darkness.",
+   "colours": [
+    {
+     "name": "Natural",
+     "code": "506IL",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/04/NATURAL-ROLL-506IL.jpg",
+     "hex_source": "swatch",
+     "hex": "#D8D1CC",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/db5df2bad8dc8b6993593aabb5140ca2.img"
+    },
+    {
+     "name": "Custard",
+     "code": "5062L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/04/CUSTARD-ROLL-5062L.jpg",
+     "hex_source": "swatch",
+     "hex": "#D6CABC",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/b350e4c4d2d2687b7a6176e85986b667.img"
+    },
+    {
+     "name": "Red",
+     "code": "5063L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/04/RED-SAND-5063L.jpg",
+     "hex_source": "swatch",
+     "hex": "#D4BEA7",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/0dbaeb55673a93b3d7d42925a75f3dea.img"
+    }
+   ],
+   "pick": 0,
+   "slug": "roller-shade-blackout-linen",
+   "image_url": "/images/catalog/styles/roller-shade-blackout-linen.jpg"
+  },
+  {
+   "type": "Neolux Shade",
+   "opacity": "Non Dim out",
+   "style": "Premium",
+   "supplier": "Loman Distributors",
+   "sp_name": "Premium Sheer Elegance",
+   "code": "C401L, C402L, C403L, C404L, C406L, C416L, C418L, C419L, C78L, C65L",
+   "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/sheer-elegance-premium/?lang=en",
+   "desc": "Alternating sheer and solid bands in thirteen colours \u2014 glide between open view and soft privacy with a turn of the bands.",
+   "colours": [
+    {
+     "name": "Ice White",
+     "code": "C401L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/C401-ICE-WHITE.jpg",
+     "hex_source": "swatch",
+     "hex": "#F2F0F1",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/0c3f2f876f56cf31cb0be6c333fe2e4b.img"
+    },
+    {
+     "name": "White",
+     "code": "C402L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/C401-ICE-WHITE.jpg",
+     "hex_source": "swatch",
+     "hex": "#F2F0F1",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/0c3f2f876f56cf31cb0be6c333fe2e4b.img"
+    },
+    {
+     "name": "Ivory",
+     "code": "C403L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/C403L-IVORY.jpg",
+     "hex_source": "swatch",
+     "hex": "#E9E5D5",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/13dab4db03025ab894e18fe7d3c5ae63.img"
+    },
+    {
+     "name": "Oyster",
+     "code": "C404L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/C404L-OYSTER.jpg",
+     "hex_source": "swatch",
+     "hex": "#E8DFCF",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/6bfd76100a50b9c630be34b579db9cbb.img"
+    },
+    {
+     "name": "Peach",
+     "code": "C406L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/C406L-WHITE.jpg",
+     "hex_source": "swatch",
+     "hex": "#ECE9E8",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/1b650f18d85ed8f52604491ac3706313.img"
+    },
+    {
+     "name": "Taupe",
+     "code": "A410",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/A410-TAUPE.jpg",
+     "hex_source": "swatch",
+     "hex": "#746559",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/60a0eb41cde65c7f5de8aea139bc25be.img"
+    },
+    {
+     "name": "Mustard",
+     "code": "A407",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/A407-MUSTARD.jpg",
+     "hex_source": "swatch",
+     "hex": "#D69C5D",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/5a5c620a44439d84fcc6195099101f2e.img"
+    },
+    {
+     "name": "Grey",
+     "code": "C416L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/C416L-GREY.jpg",
+     "hex_source": "swatch",
+     "hex": "#B6B0AF",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/6545146748ad25f39ea2eed39df3efaf.img"
+    },
+    {
+     "name": "Chocolate",
+     "code": "C418L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/C418L-CHOCOLATE.jpg",
+     "hex_source": "swatch",
+     "hex": "#4F433E",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/cf42a2cec7f67b28a168abff6fea4c07.img"
+    },
+    {
+     "name": "Charcoal",
+     "code": "C419L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/C419L-CHARCOAL.jpg",
+     "hex_source": "swatch",
+     "hex": "#39383B",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/cbbc3291aa46ebab0b386df27cbe3cde.img"
+    },
+    {
+     "name": "Red",
+     "code": "C78L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/C78L-RED.jpg",
+     "hex_source": "swatch",
+     "hex": "#E33F44",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/9cb03c6e1b2c802e99761c583ef3103b.img"
+    },
+    {
+     "name": "Sky Blue",
+     "code": "C65L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/C65L-SKY-BLUE.jpg",
+     "hex_source": "swatch",
+     "hex": "#ACC9DE",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/0a180ef910e8f07ff83606c42ff02cf1.img"
+    },
+    {
+     "name": "Pink",
+     "code": "C04L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/C04L-PINK.jpg",
+     "hex_source": "swatch",
+     "hex": "#E5ADBE",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/ebcc52a37ef967dd8d36caa5a6b1a4ff.img"
+    }
+   ],
+   "pick": 3,
+   "slug": "neolux-shade-non-dim-out-premium",
+   "image_url": "/images/catalog/styles/neolux-shade-non-dim-out-premium.jpg"
+  },
+  {
+   "type": "Neolux Shade",
+   "opacity": "Non Dim out",
+   "style": "Bora Bora",
+   "supplier": "Loman Distributors",
+   "sp_name": "Bora Bora",
+   "code": "BORA01, BORA02, BORA03, BORA04",
+   "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/bora-bora/?lang=en",
+   "desc": "A relaxed banded shade with wide solids in coastal neutrals.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "BORA01",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2020/06/BORA01-WHITE.jpg",
+     "hex_source": "swatch",
+     "hex": "#EAE9EE",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/e2a617d89898d46dc94048bf81cfd262.img"
+    },
+    {
+     "name": "Cream",
+     "code": "BORA02",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2020/06/BORA02-CREAM.jpg",
+     "hex_source": "swatch",
+     "hex": "#D9CFB8",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/6bce2858310cf67db014670e8e4c2871.img"
+    },
+    {
+     "name": "Beige",
+     "code": "BORA03",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2020/06/BORA03-BEIGE.jpg",
+     "hex_source": "swatch",
+     "hex": "#B79E89",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/18caeb81e1b8d5122d92a97615ff5464.img"
+    },
+    {
+     "name": "Pearl",
+     "code": "BORA04",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2020/06/BORA04-PEARL.jpg",
+     "hex_source": "swatch",
+     "hex": "#767575",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/6ff0654e9a237e96519bf74a30e46136.img"
+    }
+   ],
+   "pick": 2,
+   "slug": "neolux-shade-non-dim-out-bora-bora",
+   "image_url": "/images/catalog/styles/neolux-shade-non-dim-out-bora-bora.jpg"
+  },
+  {
+   "type": "Neolux Shade",
+   "opacity": "Non Dim out",
+   "style": "Dolce",
+   "supplier": "Loman Distributors",
+   "sp_name": "Dolce",
+   "code": "DOL-01, DOL-02, DOL-03",
+   "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/sheer-elegance-dolce/?lang=en",
+   "desc": "Generous solid bands paired with a delicate sheer \u2014 an understated modern classic.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "DOL-01",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2024/03/DOL-01-WHITE.jpg",
+     "hex_source": "swatch",
+     "hex": "#F9F9FB",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/2e0b190c177bb7a10b39f433e9007c04.img"
+    },
+    {
+     "name": "Beige",
+     "code": "DOL-02",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2024/03/DOL-02-BEIGE.jpg",
+     "hex_source": "swatch",
+     "hex": "#DFB9A3",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/d38fb9c53041ebb51e3a34a3981cc157.img"
+    },
+    {
+     "name": "Pearl Grey",
+     "code": "DOL-03",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2024/03/DOL-03-PEARL-GREY.jpg",
+     "hex_source": "swatch",
+     "hex": "#81817F",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/8cebe3d757105cf3b69971236a6f752c.img"
+    }
+   ],
+   "pick": 1,
+   "slug": "neolux-shade-non-dim-out-dolce",
+   "image_url": "/images/catalog/styles/neolux-shade-non-dim-out-dolce.jpg"
+  },
+  {
+   "type": "Neolux Shade",
+   "opacity": "Non Dim out",
+   "style": "Marbella",
+   "supplier": "Loman Distributors",
+   "sp_name": "Marbella Sheer Elegance",
+   "code": "MA01, MA02, MA03, MA04",
+   "url": "http://lomandistributors.com/roller-shades/tejido-marbella/?lang=en",
+   "desc": "A substantial banded weave including silver and wood-tone finishes.",
+   "colours": [
+    {
+     "name": "Ice White",
+     "code": "MA01",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/MA01-ICE-WHITE.jpg",
+     "hex_source": "swatch",
+     "hex": "#EDEBEC",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/ca761319465237e7f3942f7cee8bb446.img"
+    },
+    {
+     "name": "Off White",
+     "code": "MA02",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/MA02-OFF-WHITE.jpg",
+     "hex_source": "swatch",
+     "hex": "#E2DDC5",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/efa6ecd95830fada87b22ff4b04568e5.img"
+    },
+    {
+     "name": "Silver",
+     "code": "MA03",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/MA03-SILVER.jpg",
+     "hex_source": "swatch",
+     "hex": "#848386",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/d12b30478c070b27ca41a63a8e83b7e0.img"
+    },
+    {
+     "name": "Wood",
+     "code": "MA04",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/MA04-WOOD.jpg",
+     "hex_source": "swatch",
+     "hex": "#7A634F",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/56703096b0472c7f326fd2b4df2ef52f.img"
+    }
+   ],
+   "pick": 3,
+   "slug": "neolux-shade-non-dim-out-marbella",
+   "image_url": "/images/catalog/styles/neolux-shade-non-dim-out-marbella.jpg"
+  },
+  {
+   "type": "Neolux Shade",
+   "opacity": "Non Dim out",
+   "style": "Zebra Screen",
+   "supplier": "Loman Distributors",
+   "sp_name": "Zebra Screen",
+   "code": "ZEBRA-DN001, ZEBRA-DN002, ZEBRA-DN003, ZEBRA-DN914",
+   "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/zebra-screen/",
+   "desc": "The banded style in a technical screen weave \u2014 flame rated and hard-wearing, ideal for sunny rooms and offices.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "ZEBRA-DN001",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/04/DN001-WHITE.jpg",
+     "hex_source": "swatch",
+     "hex": "#F3F2EE",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/c43561bc84e40912bb72082748d41461.img"
+    },
+    {
+     "name": "White Linen",
+     "code": "ZEBRA-DN002",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/04/DN002-WHITE-LINEN.jpg",
+     "hex_source": "swatch",
+     "hex": "#E7DBCA",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/bf2c0893538b4ccbf96081b9b6d66c07.img"
+    },
+    {
+     "name": "White Grey",
+     "code": "ZEBRA-DN003",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/04/DN003-WHITE-GREY.jpg",
+     "hex_source": "swatch",
+     "hex": "#A3A3A3",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/f989f4e0ca742fbbe2a3c65c4f803d31.img"
+    },
+    {
+     "name": "Black",
+     "code": "ZEBRA-DN914",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/04/DN914-BLACK.jpg",
+     "hex_source": "swatch",
+     "hex": "#1F1E20",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/b7c689a2177d1435157148704f273ca7.img"
+    }
+   ],
+   "pick": 0,
+   "slug": "neolux-shade-non-dim-out-zebra-screen",
+   "image_url": "/images/catalog/styles/neolux-shade-non-dim-out-zebra-screen.jpg"
+  },
+  {
+   "type": "Neolux Shade",
+   "opacity": "Dim out",
+   "style": "Venezia",
+   "supplier": "Loman Distributors",
+   "sp_name": "Venezia Dim-Out",
+   "code": "VEN-01, VEN-02, VEN-03",
+   "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/sheer-elegance-venezia-dim-out/?lang=en",
+   "desc": "Dim-out banded shade \u2014 the solid bands block light for deeper privacy, day and night.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "VEN-01",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2024/03/VEN-01-WHITE.jpg",
+     "hex_source": "swatch",
+     "hex": "#DCE4ED",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/ddc90ee83b5014af7de6e86e555d741a.img"
+    },
+    {
+     "name": "Ivory",
+     "code": "VEN-02",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2024/03/VEN-02-IVORY.jpg",
+     "hex_source": "swatch",
+     "hex": "#CAC6BF",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/4cd271ffb95e9fbb47470b493eabca74.img"
+    },
+    {
+     "name": "Light Grey",
+     "code": "VEN-03",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2024/03/VEN-03-LIGHT-GREY.jpg",
+     "hex_source": "swatch",
+     "hex": "#6B696E",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/46a80b4ef5d45c5a42ba3bfc9643c88d.img"
+    }
+   ],
+   "pick": 1,
+   "slug": "neolux-shade-dim-out-venezia",
+   "image_url": "/images/catalog/styles/neolux-shade-dim-out-venezia.jpg"
+  },
+  {
+   "type": "Neolux Shade",
+   "opacity": "Dim out",
+   "style": "Lush",
+   "supplier": "Loman Distributors",
+   "sp_name": "Lush Dimout",
+   "code": "LUS01, LUS02, LUS03",
+   "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/sheer-elegance-lush-dimout/?lang=en",
+   "desc": "A soft dim-out banded shade in warm ivories and beiges.",
+   "colours": [
+    {
+     "name": "Ice White",
+     "code": "LUS01",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2020/03/LUSHDO-ICEWHITE.jpg",
+     "hex_source": "swatch",
+     "hex": "#EBECED",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/07d91b71317caba8795ff566d8676225.img"
+    },
+    {
+     "name": "Ivory",
+     "code": "LUS02",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2020/03/LUSHDO-IVORY.jpg",
+     "hex_source": "swatch",
+     "hex": "#BDA994",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/3d29c3573985748b9c5bcf85565067d8.img"
+    },
+    {
+     "name": "Beige",
+     "code": "LUS03",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2020/03/LUSHDO-BEIGE.jpg",
+     "hex_source": "swatch",
+     "hex": "#A39788",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/c9d2617e55f7d6937e28c5611870fb9f.img"
+    }
+   ],
+   "pick": 1,
+   "slug": "neolux-shade-dim-out-lush",
+   "image_url": "/images/catalog/styles/neolux-shade-dim-out-lush.jpg"
+  },
+  {
+   "type": "Neolux Shade",
+   "opacity": "Dim out",
+   "style": "Milano",
+   "supplier": "Loman Distributors",
+   "sp_name": "Milano Sheer Elegance",
+   "code": "MI01, MI02, MI03, MI04, MI05",
+   "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/sheer-elegance-milano/?lang=en",
+   "desc": "Block-out bands for the deepest light control in the banded family.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "MI01",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/06/MI01-WHITE.jpg",
+     "hex_source": "swatch",
+     "hex": "#CECCD2",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/9d06e9783ab47f93373c213543145455.img"
+    },
+    {
+     "name": "Ivory",
+     "code": "MI02",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/06/MI02-IVORY.jpg",
+     "hex_source": "swatch",
+     "hex": "#C8C5C5",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/fcb6e105c88af0103aaecf1d8f093a45.img"
+    },
+    {
+     "name": "Grey",
+     "code": "MI03",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/06/MI03-GREY.jpg",
+     "hex_source": "swatch",
+     "hex": "#989497",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/a3b16ea23370b09434cdce0b3c2749e5.img"
+    },
+    {
+     "name": "Beige",
+     "code": "MI04",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/06/MI04-BEIGE.jpg",
+     "hex_source": "swatch",
+     "hex": "#BBB3A9",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/f025b3c665e6b7ca587f189bed4ab0ab.img"
+    },
+    {
+     "name": "Chocolate",
+     "code": "MI05",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/06/MI05-CHOCOLATE.jpg",
+     "hex_source": "swatch",
+     "hex": "#544946",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/f96bb60aef8a378cd07c4c4b1fb0c34e.img"
+    }
+   ],
+   "pick": 3,
+   "slug": "neolux-shade-dim-out-milano",
+   "image_url": "/images/catalog/styles/neolux-shade-dim-out-milano.jpg"
+  },
+  {
+   "type": "Neolux Shade",
+   "opacity": "Dim out",
+   "style": "Toscana",
+   "supplier": "Loman Distributors",
+   "sp_name": "Toscana Sheer Elegance",
+   "code": "T01, T02, T03, T04, T05",
+   "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/sheer-elegance-toscana/?lang=en",
+   "desc": "Block-out bands in bold tones from white to black \u2014 graphic and practical.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "T01",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/06/T01-WHITE2.jpg",
+     "hex_source": "swatch",
+     "hex": "#D4D3D8",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/2b5c14a559cf825804b2853dfbca86ff.img"
+    },
+    {
+     "name": "Mushroom",
+     "code": "T02",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/02/T02-MUSHROOM.jpg",
+     "hex_source": "swatch",
+     "hex": "#BAB1A7",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/839aeb8dfebe7a0f286168b87732fe9a.img"
+    },
+    {
+     "name": "Chocolate",
+     "code": "T03",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/06/T03-CHOCOLATE2.jpg",
+     "hex_source": "swatch",
+     "hex": "#605352",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/0b4fe5979e5c897d74d5b15389524fe7.img"
+    },
+    {
+     "name": "Grey",
+     "code": "T04",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/06/T04-GREY2.jpg",
+     "hex_source": "swatch",
+     "hex": "#797579",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/e31ef962d28b64b85555a5d12548631c.img"
+    },
+    {
+     "name": "Black",
+     "code": "T05",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/06/T05-BLACK2.jpg",
+     "hex_source": "swatch",
+     "hex": "#353437",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/f1abaa3494529c30727cc1ff8789cd62.img"
+    }
+   ],
+   "pick": 1,
+   "slug": "neolux-shade-dim-out-toscana",
+   "image_url": "/images/catalog/styles/neolux-shade-dim-out-toscana.jpg"
+  },
+  {
+   "type": "Sliding Panel",
+   "opacity": "Sheer",
+   "style": "Screen 5%",
+   "supplier": "Loman Distributors",
+   "sp_name": "Screen 5% - 3000 Series",
+   "code": "3000-01, 3000-002, 3000-034, 3000-210, 3000-3435, 3000-910, 3000-914, 3000-916",
+   "url": "http://lomandistributors.com/roller-shades/tejido-series-3000-screen-5/?lang=en",
+   "desc": "Panel-track screen fabric at 5% openness \u2014 view-through shading for glass walls and sliding doors.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "3000-01",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-5-3000-01-WHITE.jpg",
+     "hex_source": "swatch",
+     "hex": "#EFEDEB",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/b4a6d85fced64867712d8523f234baff.img"
+    },
+    {
+     "name": "White Linen",
+     "code": "3000-002",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-5-3000-002-WHITE-LINEN.jpg",
+     "hex_source": "swatch",
+     "hex": "#D8CEBE",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/485ce829349d42d6b2f66b43f7d0b33b.img"
+    },
+    {
+     "name": "White Pearl",
+     "code": "3000-034",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-5-3000-034-WHITE-PEARL.jpg",
+     "hex_source": "swatch",
+     "hex": "#C4C3C0",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/6863fc4403ba4a76fe4b102c650363cd.img"
+    },
+    {
+     "name": "Linen",
+     "code": "3000-210",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-5-3000-002-WHITE-LINEN.jpg",
+     "hex_source": "swatch",
+     "hex": "#D8CEBE",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/485ce829349d42d6b2f66b43f7d0b33b.img"
+    },
+    {
+     "name": "Pearl Linen",
+     "code": "3000-3435",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-5-3000-3435-PEARL-LINEN.jpg",
+     "hex_source": "swatch",
+     "hex": "#B8B4AC",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/df02536b419ef67c8f2bce711242fbb6.img"
+    },
+    {
+     "name": "Bronze",
+     "code": "3000-910",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-5-3000-910-BRONZE.jpg",
+     "hex_source": "swatch",
+     "hex": "#403C39",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/78d0e9ec506cdbf014a98d2e1d1eb23b.img"
+    },
+    {
+     "name": "Black",
+     "code": "3000-914",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-5-3000-916-BLACK-PEARL.jpg",
+     "hex_source": "swatch",
+     "hex": "#616061",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/0b7db900beef33ec6ec99c0dc4c17431.img"
+    },
+    {
+     "name": "Black Pearl",
+     "code": "3000-916",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-5-3000-916-BLACK-PEARL.jpg",
+     "hex_source": "swatch",
+     "hex": "#616061",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/0b7db900beef33ec6ec99c0dc4c17431.img"
+    }
+   ],
+   "pick": 3,
+   "slug": "sliding-panel-sheer-screen-5",
+   "image_url": "/images/catalog/styles/sliding-panel-sheer-screen-5.jpg"
+  },
+  {
+   "type": "Sliding Panel",
+   "opacity": "Semi Privacy",
+   "style": "Screen 3%",
+   "supplier": "Loman Distributors",
+   "sp_name": "Screen 3%",
+   "code": "03-DN001, 03-DN002, 03-DN003, 03-DN034, 03-DN201, 03-DN910, 03-DN914, 03-DN915",
+   "url": "http://lomandistributors.com/roller-shades/screen-3/?lang=en",
+   "desc": "3% openness screen panels for big glass with daytime privacy and glare control.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "03-DN001",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-03-DN001-WHITE.jpg",
+     "hex_source": "swatch",
+     "hex": "#EBEAE7",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/ddfb4deaf5ba5d6d84671f9bfc501565.img"
+    },
+    {
+     "name": "White Linen",
+     "code": "03-DN002",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-03-DN002-WHITE-LINEN.jpg",
+     "hex_source": "swatch",
+     "hex": "#DFD8C8",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/a53f4e293872877b0eb22884cdb3fe0d.img"
+    },
+    {
+     "name": "White Grey",
+     "code": "03-DN003",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-03-DN003-WHITE-GREY.jpg",
+     "hex_source": "swatch",
+     "hex": "#AAAAAC",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/93de4f872dd3b872933f70a01ca3154a.img"
+    },
+    {
+     "name": "White Pearl",
+     "code": "03-DN034",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-03-DN034-WHITE-PEARL.jpg",
+     "hex_source": "swatch",
+     "hex": "#BDBEBC",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/853dcb358bbe2e6e3d8d5c1473c4447c.img"
+    },
+    {
+     "name": "Linen",
+     "code": "03-DN201",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-03-DN002-WHITE-LINEN.jpg",
+     "hex_source": "swatch",
+     "hex": "#DFD8C8",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/a53f4e293872877b0eb22884cdb3fe0d.img"
+    },
+    {
+     "name": "Dark Bronze",
+     "code": "03-DN910",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-03-DN910-DARK-BRONZE.jpg",
+     "hex_source": "swatch",
+     "hex": "#362E2E",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/608b248b0d713c5c4ed5bcdd3f6b392b.img"
+    },
+    {
+     "name": "Black",
+     "code": "03-DN914",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-03-DN914-BLACK.jpg",
+     "hex_source": "swatch",
+     "hex": "#2E2D30",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/1e422f44df0b6d3b6a47f26bf44fc9b2.img"
+    },
+    {
+     "name": "Black Bronze",
+     "code": "03-DN915",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-03-DN915-BRONZE.jpg",
+     "hex_source": "swatch",
+     "hex": "#46403A",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/df9760329a836856b62149d33a969dc9.img"
+    }
+   ],
+   "pick": 4,
+   "slug": "sliding-panel-semi-privacy-screen-3",
+   "image_url": "/images/catalog/styles/sliding-panel-semi-privacy-screen-3.jpg"
+  },
+  {
+   "type": "Sliding Panel",
+   "opacity": "Full Privacy",
+   "style": "Natural View",
+   "supplier": "Loman Distributors",
+   "sp_name": "Natural View",
+   "code": "NAT01, NAT02, NAT03, NAT04, NAT05, NAT06",
+   "url": "http://lomandistributors.com/roller-shades/screen-fabric-natural-view/?lang=en",
+   "desc": "Softly textured light-filtering panels that glide across wide openings and double as room dividers.",
+   "colours": [
+    {
+     "name": "Linen",
+     "code": "NAT01",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/02/NAT01-LINEN.jpg",
+     "hex_source": "swatch",
+     "hex": "#DDD2C8",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/c11aeb91872aaf7ae9e67f8795a318a2.img"
+    },
+    {
+     "name": "White",
+     "code": "NAT02",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/02/NAT02-WHITE.jpg",
+     "hex_source": "swatch",
+     "hex": "#E7E3E3",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/fc4721c87bb9c7bc8db7ef5e3a38f760.img"
+    },
+    {
+     "name": "Ivory",
+     "code": "NAT03",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/02/NAT03-IVORY.jpg",
+     "hex_source": "swatch",
+     "hex": "#E0D8CD",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/9685bdc9496f91dc255464dfc3b88f03.img"
+    },
+    {
+     "name": "Capuchino",
+     "code": "NAT04",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/02/NAT04-CAPUCHINO.jpg",
+     "hex_source": "swatch",
+     "hex": "#B39F8E",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/6516db5867c580b6844e7a3f3bdf6cb4.img"
+    },
+    {
+     "name": "Chocolate",
+     "code": "NAT05",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/02/NAT05-CHOCOLATE.jpg",
+     "hex_source": "swatch",
+     "hex": "#645A59",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/9514387b59dec8b6aa99517c0fb1e75b.img"
+    },
+    {
+     "name": "Black",
+     "code": "NAT06",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/02/NAT06-BLACK.jpg",
+     "hex_source": "swatch",
+     "hex": "#585758",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/698fee0328849c64dc771ca99f59c9f1.img"
+    }
+   ],
+   "pick": 3,
+   "slug": "sliding-panel-full-privacy-natural-view",
+   "image_url": "/images/catalog/styles/sliding-panel-full-privacy-natural-view.jpg"
+  },
+  {
+   "type": "Sliding Panel",
+   "opacity": "Full Privacy",
+   "style": "Madrid",
+   "supplier": "Loman Distributors",
+   "sp_name": "Madrid Translucent",
+   "code": "MADRID-TR01, MADRID-TR02, MADRID-TR03, MADRID-TR04",
+   "url": "http://lomandistributors.com/roller-shades/madrid-translucent/?lang=en",
+   "desc": "Wide-width translucent panels for seamless large-format coverage.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "MADRID-TR01",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/07/WHITE-MADRID-TR01.jpg",
+     "hex_source": "swatch",
+     "hex": "#F1F0EF",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/63569860c08265a9f86552c2fde1ffd1.img"
+    },
+    {
+     "name": "Ivory",
+     "code": "MADRID-TR02",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/07/IVORY-MADRID-TR02.jpg",
+     "hex_source": "swatch",
+     "hex": "#F1EBD1",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/518baf8dceb03c76002555182b688f6d.img"
+    },
+    {
+     "name": "Grey",
+     "code": "MADRID-TR03",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/07/GREY-MADRID-TR03.jpg",
+     "hex_source": "swatch",
+     "hex": "#525152",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/4c885f9e758c4b9e022566228fe1dfe7.img"
+    },
+    {
+     "name": "Coffee",
+     "code": "MADRID-TR04",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/07/COFFEE-MADRID-TR04.jpg",
+     "hex_source": "swatch",
+     "hex": "#453B38",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/73141bd716ad8cefff36b394aa7daf08.img"
+    }
+   ],
+   "pick": 1,
+   "slug": "sliding-panel-full-privacy-madrid",
+   "image_url": "/images/catalog/styles/sliding-panel-full-privacy-madrid.jpg"
+  },
+  {
+   "type": "Sliding Panel",
+   "opacity": "Blackout",
+   "style": "Advantage",
+   "supplier": "Loman Distributors",
+   "sp_name": "Advantage Black Out",
+   "code": "AD01L, AD02L, AD03L, AD04L, AD05L, AD06L, AD07L, AD08L",
+   "url": "http://lomandistributors.com/roller-shades/tejido-advantage/?lang=en",
+   "desc": "Heavyweight blackout panels for media walls and bedrooms with sliding doors.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "AD01L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD01L-WHITE.jpg",
+     "hex_source": "swatch",
+     "hex": "#EDEFF0",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/94e3a09edd37eb1bccf0cd8b0bb51978.img"
+    },
+    {
+     "name": "Ivory",
+     "code": "AD02L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD02L-IVORY.jpg",
+     "hex_source": "swatch",
+     "hex": "#E5E4DC",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/046536abdbb8bdc1243c0f912b5d30c4.img"
+    },
+    {
+     "name": "Samba",
+     "code": "AD03L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD03L-SAMBA.jpg",
+     "hex_source": "swatch",
+     "hex": "#C0B5A7",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/593882ff748cec4479bddc048ff97590.img"
+    },
+    {
+     "name": "Latte",
+     "code": "AD04L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD04L-LATTE.jpg",
+     "hex_source": "swatch",
+     "hex": "#999084",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/fc6e172caf79402fd4f3b78b22d767bf.img"
+    },
+    {
+     "name": "Coffee",
+     "code": "AD05L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD05L-COFFEE.jpg",
+     "hex_source": "swatch",
+     "hex": "#5F5352",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/1a891aab184865081f7e126a618b76b1.img"
+    },
+    {
+     "name": "Light Grey",
+     "code": "AD06L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD06L-LIGHT-GREY.jpg",
+     "hex_source": "swatch",
+     "hex": "#BFC0C2",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/5de0b54ab79e789818c17039b4abc014.img"
+    },
+    {
+     "name": "Grey",
+     "code": "AD07L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD07L-GREY.jpg",
+     "hex_source": "swatch",
+     "hex": "#7E828B",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/d79115c38e39b0bc45b848d355fa70a3.img"
+    },
+    {
+     "name": "Black",
+     "code": "AD08L",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD08L-BLACK.jpg",
+     "hex_source": "swatch",
+     "hex": "#403F43",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/d393c3d68b52f599fa8fb129652d3334.img"
+    }
+   ],
+   "pick": 3,
+   "slug": "sliding-panel-blackout-advantage",
+   "image_url": "/images/catalog/styles/sliding-panel-blackout-advantage.jpg"
+  },
+  {
+   "type": "Sliding Panel",
+   "opacity": "Blackout",
+   "style": "Madrid",
+   "supplier": "Loman Distributors",
+   "sp_name": "Madrid Black Out",
+   "code": "MADRID-BK01, MADRID-BK02, MADRID-BK03, MADRID-BK04",
+   "url": "http://lomandistributors.com/roller-shades/madrid-blackout/?lang=en",
+   "desc": "Blackout panel fabric matching the Madrid range for a coordinated scheme.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "MADRID-BK01",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/07/WHITE-MADRID-BK01.jpg",
+     "hex_source": "swatch",
+     "hex": "#DBDFE1",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/615bca8ca70fc9407681ccb9abd18bc5.img"
+    },
+    {
+     "name": "Ivory",
+     "code": "MADRID-BK02",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/07/IVORY-MADRID-BK02.jpg",
+     "hex_source": "swatch",
+     "hex": "#DCDDD4",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/709ceca41cf81e0c1ac84e1a205802c9.img"
+    },
+    {
+     "name": "Grey",
+     "code": "MADRID-BK03",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/07/GREY-MADRID-BK03.jpg",
+     "hex_source": "swatch",
+     "hex": "#6D6C6D",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/ca547a6e5967560611d45a33d0f9b4a7.img"
+    },
+    {
+     "name": "Coffee",
+     "code": "MADRID-BK04",
+     "image_url": "http://lomandistributors.com/wp-content/uploads/2018/07/COFFEE-MADRID-BK04.jpg",
+     "hex_source": "swatch",
+     "hex": "#433936",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/d59ddb21c447c367736ee5ad000746a2.img"
+    }
+   ],
+   "pick": 1,
+   "slug": "sliding-panel-blackout-madrid",
+   "image_url": "/images/catalog/styles/sliding-panel-blackout-madrid.jpg"
+  },
+  {
+   "type": "Dune",
+   "opacity": "Full Privacy",
+   "style": "Aurora",
+   "supplier": "Vertilux",
+   "sp_name": "Dunes Aurora",
+   "code": "0-000-98-0X000",
+   "url": "https://partner.vertilux.com/en/products/dunes-aurora",
+   "desc": "A soft two-layer drapery shade: solid vanes faced with sheer \u2014 fluid like a curtain, precise like a blind.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "0-000-98-01000",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00009801000.jpg",
+     "hex_source": "swatch",
+     "hex": "#F6F6F6",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/ba18d25f05048e79c6d0e8bc3bcfc227.img"
+    },
+    {
+     "name": "Ivory",
+     "code": "0-000-98-02000",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00009802000.jpg",
+     "hex_source": "swatch",
+     "hex": "#F8F9F4",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/31d86726f9626bbd5145dd18a4ea4754.img"
+    },
+    {
+     "name": "Beige",
+     "code": "0-000-98-03000",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00009803000.jpg",
+     "hex_source": "swatch",
+     "hex": "#E8E4DB",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/326e6d2553e3078d2a4a9d0b8c8ca2d4.img"
+    },
+    {
+     "name": "Biscuit",
+     "code": "0-000-98-04000",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00009804000.jpg",
+     "hex_source": "swatch",
+     "hex": "#DFD6C9",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/4af9d0ffd11e49815d6276660a1579bc.img"
+    },
+    {
+     "name": "Smoke",
+     "code": "0-000-98-07000",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00009807000.jpg",
+     "hex_source": "swatch",
+     "hex": "#B6BABE",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/7312c70d057a3c961f4707de5b23cb97.img"
+    }
+   ],
+   "pick": 2,
+   "slug": "dune-full-privacy-aurora",
+   "image_url": "/images/catalog/styles/dune-full-privacy-aurora.jpg"
+  },
+  {
+   "type": "Dune",
+   "opacity": "Full Privacy",
+   "style": "Luna",
+   "supplier": "Vertilux",
+   "sp_name": "Dunes Luna Dim Out",
+   "code": "0-000-A4-XXXXX",
+   "url": "https://partner.vertilux.com/en/products/dunes-luna-dim-out",
+   "desc": "The deepest member of the Dune family \u2014 fuller vanes for richer privacy and light control.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "0-000-A4-00100",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/0000A400100.jpg",
+     "hex_source": "swatch",
+     "hex": "#FEFEFE",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/5e8615d12ac61187b24c32ec3716fd2e.img"
+    },
+    {
+     "name": "Ivory",
+     "code": "0-000-A4-00200",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/0000A400200.jpg",
+     "hex_source": "swatch",
+     "hex": "#FDFDFD",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/e0702880338f6689c430dce787415972.img"
+    },
+    {
+     "name": "Beige",
+     "code": "0-000-A4-00300",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/0000A400300.jpg",
+     "hex_source": "swatch",
+     "hex": "#EFEEE6",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/4b49f22ae6544806761d2c1ad5fc918b.img"
+    },
+    {
+     "name": "Smoke",
+     "code": "0-000-A4-00600",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/0000A400600.jpg",
+     "hex_source": "swatch",
+     "hex": "#B2B2B6",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/c664796e249b7dd69a29c03b15e11839.img"
+    },
+    {
+     "name": "Slate",
+     "code": "0-000-A4-00700",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/0000A400700.jpg",
+     "hex_source": "swatch",
+     "hex": "#A4A4A4",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/6e5c8575dd2ddf6ea3174d5bc79ef950.img"
+    }
+   ],
+   "pick": 2,
+   "slug": "dune-full-privacy-luna",
+   "image_url": "/images/catalog/styles/dune-full-privacy-luna.jpg"
+  },
+  {
+   "type": "Dune",
+   "opacity": "Full Privacy",
+   "style": "Nova",
+   "supplier": "Vertilux",
+   "sp_name": "Dunes Nova",
+   "code": "0-000-99-00X00",
+   "url": "https://partner.vertilux.com/en/products/dunes-nova",
+   "desc": "A textured weave with gentle body and a relaxed drape.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "0-000-99-00100",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00009900100.jpg",
+     "hex_source": "swatch",
+     "hex": "#F8F8F8",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/685fa577dd0218f40ffa107f102ce887.img"
+    },
+    {
+     "name": "Pearl",
+     "code": "0-000-99-00200",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00009900200.jpg",
+     "hex_source": "swatch",
+     "hex": "#E8E3D9",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/39b8d92a69b4e2aa12b8edceac6f4944.img"
+    },
+    {
+     "name": "Sand",
+     "code": "0-000-99-00400",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00009900400.jpg",
+     "hex_source": "swatch",
+     "hex": "#CFCAC0",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/de39348caee2a745e23e2c58d3eba1dc.img"
+    },
+    {
+     "name": "Stone",
+     "code": "0-000-99-00600",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00009900600.jpg",
+     "hex_source": "swatch",
+     "hex": "#8C8D88",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/2e3abde0cca593e3c42806191c54ef4a.img"
+    },
+    {
+     "name": "Smoke",
+     "code": "0-000-99-00700",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00009900700.jpg",
+     "hex_source": "swatch",
+     "hex": "#272727",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/c5f63ab7586e4741cf062437d6bd2940.img"
+    }
+   ],
+   "pick": 2,
+   "slug": "dune-full-privacy-nova",
+   "image_url": "/images/catalog/styles/dune-full-privacy-nova.jpg"
+  },
+  {
+   "type": "Dune",
+   "opacity": "Full Privacy",
+   "style": "Star",
+   "supplier": "Vertilux",
+   "sp_name": "Dunes Star",
+   "code": "0-000-A3-XXXXX",
+   "url": "https://partner.vertilux.com/en/products/dunes-star",
+   "desc": "A fine, lightweight weave that filters daylight into a soft glow.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "0-000-A3-00100",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/0000A300100.jpg",
+     "hex_source": "swatch",
+     "hex": "#F1F1F3",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/22af0d2d7c5389737e3e17b0ff08c1d9.img"
+    },
+    {
+     "name": "Ivory",
+     "code": "0-000-A3-00200",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/0000A300200.jpg",
+     "hex_source": "swatch",
+     "hex": "#F1F1F2",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/5b221d636f9f18e5bfba1e04f94f27b4.img"
+    },
+    {
+     "name": "Beige",
+     "code": "0-000-A3-00400",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/0000A300400.jpg",
+     "hex_source": "swatch",
+     "hex": "#EFEEEF",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/f858b32e97da5b02b1825714ea12a78c.img"
+    },
+    {
+     "name": "Smoke",
+     "code": "0-000-A3-01300",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/0000A301300.jpg",
+     "hex_source": "swatch",
+     "hex": "#E2E1E4",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/7895b71a139aa7e0891f3f0621e58fce.img"
+    },
+    {
+     "name": "Slate",
+     "code": "0-000-A3-01600",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/0000A301600.jpg",
+     "hex_source": "swatch",
+     "hex": "#D9D9DB",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/bf61b4b88d9c76981429105aecea160d.img"
+    }
+   ],
+   "pick": 2,
+   "slug": "dune-full-privacy-star",
+   "image_url": "/images/catalog/styles/dune-full-privacy-star.jpg"
+  },
+  {
+   "type": "Cellular",
+   "opacity": "Sheer",
+   "style": "Solis",
+   "supplier": "Vertilux",
+   "sp_name": "Solis",
+   "code": "0-001-84-10X00",
+   "url": "https://partner.vertilux.com/en/products/solis",
+   "desc": "A sheer cellular that softens light while insulating \u2014 honeycomb efficiency at its airiest.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "0-001-84-10100",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018410100.jpg",
+     "hex_source": "swatch",
+     "hex": "#DCDFDC",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/6629314c19b95bee1a1c0e67b8d80117.img"
+    },
+    {
+     "name": "Cream",
+     "code": "0-001-84-10200",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018410200.jpg",
+     "hex_source": "swatch",
+     "hex": "#E0DAC8",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/406d6fdf2f8b13db72ed4dd8bc426394.img"
+    }
+   ],
+   "pick": 1,
+   "slug": "cellular-sheer-solis",
+   "image_url": "/images/catalog/styles/cellular-sheer-solis.jpg"
+  },
+  {
+   "type": "Cellular",
+   "opacity": "Full Privacy",
+   "style": "Bolero",
+   "supplier": "Vertilux",
+   "sp_name": "Bolero Translucent",
+   "code": "0-001-82-1XXXX",
+   "url": "https://partner.vertilux.com/en/products/bolero",
+   "desc": "A translucent honeycomb in seven tones \u2014 daylight through, view blocked, heat kept out.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "0-001-82-10100",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018210100.jpg",
+     "hex_source": "swatch",
+     "hex": "#F4F3F0",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/fe0e470773365541727fa012c6ff2321.img"
+    },
+    {
+     "name": "Ivory",
+     "code": "0-001-82-10200",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018210200.jpg",
+     "hex_source": "swatch",
+     "hex": "#E4E1CC",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/e33d99cc260331d92638410fe1dbaa2e.img"
+    },
+    {
+     "name": "Beige",
+     "code": "0-001-82-10300",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018210300.jpg",
+     "hex_source": "swatch",
+     "hex": "#D0C7AA",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/ed37a2cbc6bf645ac1ba225e115fa75a.img"
+    },
+    {
+     "name": "Sand",
+     "code": "0-001-82-10400",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018210400.jpg",
+     "hex_source": "swatch",
+     "hex": "#B3AA97",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/64ccec5837178fbc68a1a21603d2ef24.img"
+    },
+    {
+     "name": "Chocolate",
+     "code": "0-001-82-10500",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018210500.jpg",
+     "hex_source": "swatch",
+     "hex": "#978D80",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/b6dc4623af22ddc37bbe90906a1b6f92.img"
+    },
+    {
+     "name": "Navy",
+     "code": "0-001-82-10600",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018210600.jpg",
+     "hex_source": "swatch",
+     "hex": "#717576",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/84e727d43b873302b282203f8e405e8a.img"
+    },
+    {
+     "name": "Grey",
+     "code": "0-001-82-10700",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018210700.jpg",
+     "hex_source": "swatch",
+     "hex": "#929590",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/d2e763be0af7a133c0239e8aa0228ebe.img"
+    }
+   ],
+   "pick": 1,
+   "slug": "cellular-full-privacy-bolero",
+   "image_url": "/images/catalog/styles/cellular-full-privacy-bolero.jpg"
+  },
+  {
+   "type": "Cellular",
+   "opacity": "Full Privacy",
+   "style": "Romance",
+   "supplier": "Vertilux",
+   "sp_name": "Romance Translucent",
+   "code": "0-001-83-1XXXX",
+   "url": "https://partner.vertilux.com/en/products/romance",
+   "desc": "A softly translucent cellular weave with a warm, gentle glow.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "0-001-83-10100",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018310100.jpg",
+     "hex_source": "swatch",
+     "hex": "#EBECEE",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/2302d0384acec7081d45f0f81e3941f8.img"
+    },
+    {
+     "name": "Ivory",
+     "code": "0-001-83-10200",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018310200.jpg",
+     "hex_source": "swatch",
+     "hex": "#E2E0D2",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/d1553b517f738f70e92440dbad00ab06.img"
+    },
+    {
+     "name": "Beige",
+     "code": "0-001-83-10300",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018310300.jpg",
+     "hex_source": "swatch",
+     "hex": "#E6DBB7",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/9e6444ea84e0fb756af392451ca5a669.img"
+    },
+    {
+     "name": "Sand",
+     "code": "0-001-83-10400",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018310400.jpg",
+     "hex_source": "swatch",
+     "hex": "#BDB294",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/61d90302b7a01c7a6671df43cb7741be.img"
+    },
+    {
+     "name": "Grey",
+     "code": "0-001-83-10700",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018310700.jpg",
+     "hex_source": "swatch",
+     "hex": "#868782",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/bed5eb5bef468473ad439af313071038.img"
+    }
+   ],
+   "pick": 1,
+   "slug": "cellular-full-privacy-romance",
+   "image_url": "/images/catalog/styles/cellular-full-privacy-romance.jpg"
+  },
+  {
+   "type": "Cellular",
+   "opacity": "Blackout",
+   "style": "Noite",
+   "supplier": "Vertilux",
+   "sp_name": "Noite Blackout",
+   "code": "0-001-83-2XXXX",
+   "url": "https://partner.vertilux.com/en/products/noite",
+   "desc": "A blackout honeycomb: total darkness plus the best insulation of any shade type.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "0-001-83-20100",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018320100.jpg",
+     "hex_source": "swatch",
+     "hex": "#93999F",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/705ed99e20ace3b4308c948d4fa16a66.img"
+    },
+    {
+     "name": "Ivory",
+     "code": "0-001-83-20200",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018320200.jpg",
+     "hex_source": "swatch",
+     "hex": "#908B70",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/842782e382d9ce069cdbea50da8053b7.img"
+    },
+    {
+     "name": "Beige",
+     "code": "0-001-83-20300",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018320300.jpg",
+     "hex_source": "swatch",
+     "hex": "#90835E",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/b85553e7fe0236ffee5ac46d1533c634.img"
+    },
+    {
+     "name": "Sand",
+     "code": "0-001-83-20400",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018320400.jpg",
+     "hex_source": "swatch",
+     "hex": "#70674D",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/e6e2f32c0d0bcd069922e8ee5da5cd64.img"
+    },
+    {
+     "name": "Grey",
+     "code": "0-001-83-20700",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018320700.jpg",
+     "hex_source": "swatch",
+     "hex": "#595A51",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/3e16eeee213343dee6003ec8cea398c7.img"
+    }
+   ],
+   "pick": 1,
+   "slug": "cellular-blackout-noite",
+   "image_url": "/images/catalog/styles/cellular-blackout-noite.jpg"
+  },
+  {
+   "type": "Cellular",
+   "opacity": "Blackout",
+   "style": "Privee",
+   "supplier": "Vertilux",
+   "sp_name": "Privee Blackout",
+   "code": "0-001-82-2XXXX",
+   "url": "https://partner.vertilux.com/en/products/privee",
+   "desc": "A blackout cellular in five easy neutrals \u2014 quiet, dark and energy-smart.",
+   "colours": [
+    {
+     "name": "White",
+     "code": "0-001-82-20100",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018220100.jpg",
+     "hex_source": "swatch",
+     "hex": "#9BA1A2",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/4803d484ca765ce6b7006d46c1df0bc3.img"
+    },
+    {
+     "name": "Ivory",
+     "code": "0-001-82-20200",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018220200.jpg",
+     "hex_source": "swatch",
+     "hex": "#9B9A86",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/70dd237cb5a59d9e536f63f42a9dc8d9.img"
+    },
+    {
+     "name": "Beige",
+     "code": "0-001-82-20300",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018220300.jpg",
+     "hex_source": "swatch",
+     "hex": "#908A75",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/e55025e91f5efc6d6b366b0ec54dacb9.img"
+    },
+    {
+     "name": "Sand",
+     "code": "0-001-82-20400",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018220400.jpg",
+     "hex_source": "swatch",
+     "hex": "#807864",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/b8b57917f6f3c102e21b9aa9ad206836.img"
+    },
+    {
+     "name": "Grey",
+     "code": "0-001-82-20700",
+     "image_url": "http://vertilux-website.s3.amazonaws.com/public/original/00018220700.jpg",
+     "hex_source": "swatch",
+     "hex": "#676762",
+     "local": "/sessions/dazzling-tender-galileo/mnt/outputs/swatches/7f3fe12457372341727f329749dd6c1b.img"
+    }
+   ],
+   "pick": 1,
+   "slug": "cellular-blackout-privee",
+   "image_url": "/images/catalog/styles/cellular-blackout-privee.jpg"
+  },
+  {
+   "type": "Horizontal",
+   "opacity": "Full Privacy",
+   "style": "Real wood",
+   "supplier": "Vertilux",
+   "sp_name": "2\" Basswood Slats",
+   "code": "",
+   "url": "https://partner.vertilux.com/en/collections/basswood",
+   "desc": "2-inch basswood slats in natural and stained finishes \u2014 durable, dimensionally stable and naturally warm.",
+   "colours": [
+    {
+     "name": "Cherry",
+     "code": null,
+     "image_url": null,
+     "hex_source": "name-approx",
+     "hex": "#6B2E20",
+     "local": null
+    },
+    {
+     "name": "Oak",
+     "code": null,
+     "image_url": null,
+     "hex_source": "name-approx",
+     "hex": "#B68955",
+     "local": null
+    },
+    {
+     "name": "Maple",
+     "code": null,
+     "image_url": null,
+     "hex_source": "name-approx",
+     "hex": "#C9A66B",
+     "local": null
+    }
+   ],
+   "pick": null,
+   "slug": "horizontal-full-privacy-real-wood",
+   "image_url": "/images/catalog/styles/horizontal-full-privacy-real-wood.jpg"
+  },
+  {
+   "type": "Horizontal",
+   "opacity": "Full Privacy",
+   "style": "Faux wood",
+   "supplier": "Loman Distributors",
+   "sp_name": "Wood and Foam Wood Slats",
+   "code": "",
+   "url": "http://lomandistributors.com/wood-blinds/?lang=en",
+   "desc": "Wood-effect slats that shrug off humidity \u2014 the timber look for kitchens and bathrooms.",
+   "colours": [],
+   "pick": null,
+   "slug": "horizontal-full-privacy-faux-wood",
+   "image_url": null
+  },
+  {
+   "type": "Horizontal",
+   "opacity": "Full Privacy",
+   "style": "PVC",
+   "supplier": null,
+   "sp_name": null,
+   "code": "",
+   "url": "",
+   "desc": "Practical, easy-care PVC slats for high-moisture areas.",
+   "colours": [],
+   "pick": null,
+   "slug": "horizontal-full-privacy-pvc",
+   "image_url": null
+  }
+ ],
+ "types": {
+  "Roller Shade": {
+   "description": "Roller shades give living spaces adaptable comfort \u2014 large windows, small openings, multi-functional rooms \u2014 with a clean, cutting-edge look. Our fabric programme spans decorative plains, sheers, technical solar screens and total blackouts, in practical widths that avoid joins and seams.",
+   "image_url": "/images/catalog/types/roller-shade.jpg"
+  },
+  "Neolux Shade": {
+   "description": "A contemporary dual-banded shade: alternating sheer and solid bands glide past each other so you decide exactly how much light and privacy you want, from open view to dim-out.",
+   "image_url": "/images/catalog/types/neolux-shade.jpg"
+  },
+  "Sliding Panel": {
+   "description": "Designed to cover large glass surfaces and to separate areas in multipurpose spaces. The panel system works with 2 to 5 channels and cord, wand or motor operation, hiding the mechanism for a uniform look with almost no light gap.",
+   "image_url": "/images/catalog/types/sliding-panel.jpg"
+  },
+  "Cellular": {
+   "description": "Honeycomb cells trap air for the best insulation of any shade \u2014 and stack to almost nothing when raised. From airy sheers to full blackout.",
+   "image_url": "/images/catalog/types/cellular.jpg"
+  },
+  "Dune": {
+   "description": "The evolution of traditional draperies: soft, lightweight two-layer fabric with the fluid look of a curtain and the precise control of a blind. Cord, wand or motorised operation.",
+   "image_url": "/images/catalog/types/dune.jpg"
+  },
+  "Horizontal": {
+   "description": "2-inch wood and wood-effect slats bring distinguished character to any space, with light control by tilt and finishes that pair with any furnishing.",
+   "image_url": "/images/catalog/types/horizontal.jpg"
+  }
+ },
+ "banners": [
+  {
+   "slug": "roller",
+   "image": "/images/catalog/banners/roller.jpg",
+   "title": "Roller Shades",
+   "line": "Clean lines, total light control \u2014 from airy screens to full blackout."
+  },
+  {
+   "slug": "neolux",
+   "image": "/images/catalog/banners/neolux.jpg",
+   "title": "Neolux Dual Shades",
+   "line": "Privacy at a turn \u2014 banded shades that shift from view to seclusion."
+  },
+  {
+   "slug": "dunes",
+   "image": "/images/catalog/banners/dunes.jpg",
+   "title": "Dune Shades",
+   "line": "The evolution of drapery \u2014 soft, fluid, precise."
+  },
+  {
+   "slug": "sliding",
+   "image": "/images/catalog/banners/sliding.jpg",
+   "title": "Sliding Panels",
+   "line": "Big glass, covered \u2014 panels that glide across walls of light."
+  },
+  {
+   "slug": "exterior",
+   "image": "/images/catalog/banners/exterior.jpg",
+   "title": "Exterior Awnings",
+   "line": "Outdoor living, covered \u2014 cassette awnings and screens built for the sun."
+  }
+ ],
+ "awning_categories": [
+  {
+   "name": "Window Awnings",
+   "description": "Made-to-measure exterior awnings for individual windows \u2014 tensioned, sliding or drop-arm \u2014 that stop heat at the glass.",
+   "image_url": "/images/catalog/awnings/window-awnings.jpg"
+  },
+  {
+   "name": "Exterior Screens",
+   "description": "Discreet vertical screens that filter light, block prying eyes and keep insects out \u2014 guided cable, rail or zip-box systems.",
+   "image_url": "/images/catalog/awnings/exterior-screens.jpg"
+  },
+  {
+   "name": "Drop-Arm & Guided Blinds",
+   "description": "Adjustable drop-arm and guided exterior blinds for windows, doors and bay windows \u2014 soft light when you want it, shade when you need it.",
+   "image_url": null
+  },
+  {
+   "name": "Cassette Awnings",
+   "description": "Compact cassette awnings protect the fabric inside a sleek aluminium box \u2014 discreet on the facade, generous over the patio.",
+   "image_url": "/images/catalog/awnings/cassette-awnings.jpg"
+  },
+  {
+   "name": "Traditional Awnings",
+   "description": "The proven classic \u2014 economical, reliable sun protection for every facade, wall or ceiling mounted.",
+   "image_url": "/images/catalog/awnings/traditional-awnings.jpg"
+  }
+ ],
+ "awning_products": [
+  {
+   "category": "Cassette Awnings",
+   "model": "Cassette 235",
+   "code": "C235",
+   "depth": 138,
+   "colours": [
+    "white",
+    "anthracite"
+   ],
+   "desc": "Integral box awning up to 6 m wide with 3.5 m projection, optional LED lighting in the cassette. Manual or motorised.",
+   "image_url": "/images/catalog/awnings/p-cassette-235.jpg"
+  },
+  {
+   "category": "Cassette Awnings",
+   "model": "Cassette 135",
+   "code": "C125-C135",
+   "depth": 138,
+   "colours": [
+    "white",
+    "anthracite"
+   ],
+   "desc": "Our best-selling self-supporting cassette awning \u2014 up to 5.98 m wide, 3.5 m projection, motorised with quick-release fasteners.",
+   "image_url": "/images/catalog/awnings/p-cassette-135.jpg"
+  },
+  {
+   "category": "Cassette Awnings",
+   "model": "Cassette 260",
+   "code": "C260",
+   "depth": 138,
+   "colours": [
+    "white",
+    "anthracite"
+   ],
+   "desc": "Large cassette awning to 6 m wide and 3.5 m projection with 3\u201330 degree tilt adjustment.",
+   "image_url": "/images/catalog/awnings/p-cassette-260.jpg"
+  },
+  {
+   "category": "Cassette Awnings",
+   "model": "Cassette 262",
+   "code": "C262",
+   "depth": 138,
+   "colours": [
+    "white",
+    "anthracite"
+   ],
+   "desc": "Motorised aluminium cassette awning up to 7.15 m wide with obstacle-detection drive options.",
+   "image_url": "/images/catalog/awnings/p-cassette-262.jpg"
+  },
+  {
+   "category": "Cassette Awnings",
+   "model": "Cassette 220",
+   "code": "C220",
+   "depth": 138,
+   "colours": [
+    "white",
+    "anthracite"
+   ],
+   "desc": "A perfectly square 22 x 22 cm cassette \u2014 modern, minimal, motorised, with optional integrated LED.",
+   "image_url": "/images/catalog/awnings/p-cassette-220.jpg"
+  },
+  {
+   "category": "Cassette Awnings",
+   "model": "Suspension 250/275",
+   "code": "C250/C275",
+   "depth": 118,
+   "colours": [
+    "white",
+    "anthracite"
+   ],
+   "desc": "Cassette awnings engineered for timber-frame walls \u2014 up to 6 m wide with 3 m projection.",
+   "image_url": "/images/catalog/awnings/p-suspension-250-275.jpg"
+  },
+  {
+   "category": "Traditional Awnings",
+   "model": "Loggia 112",
+   "code": "L112",
+   "depth": 118,
+   "colours": [
+    "white"
+   ],
+   "desc": "Traditional awning in cast aluminium \u2014 up to 4.8 m wide, 3 m projection, 0\u201390 degree tilt.",
+   "image_url": "/images/catalog/awnings/p-loggia-112.jpg"
+  },
+  {
+   "category": "Cassette Awnings",
+   "model": "Loggia 125",
+   "code": "L125",
+   "depth": 118,
+   "colours": [
+    "white",
+    "anthracite"
+   ],
+   "desc": "Compact half-cassette awning to 4.8 m wide and 3 m projection; vertical drop configurations possible.",
+   "image_url": "/images/catalog/awnings/p-loggia-125.jpg"
+  },
+  {
+   "category": "Window Awnings",
+   "model": "Projection Window Awning",
+   "code": "ES150/SU16",
+   "depth": 59,
+   "colours": [
+    "white"
+   ],
+   "desc": "Spring-loaded projection awning for windows \u2014 up to 4.8 m wide, 1.5 m projection, tilts to 160 degrees.",
+   "image_url": "/images/catalog/awnings/p-projection-window-awning.jpg"
+  },
+  {
+   "category": "Exterior Screens",
+   "model": "Zip Box Screen",
+   "code": "105/115",
+   "depth": 98,
+   "colours": [
+    "white",
+    "anthracite"
+   ],
+   "desc": "Vertical box screen with zip-guided fabric \u2014 wind-stable shading and insect-free ventilation for large openings.",
+   "image_url": "/images/catalog/awnings/p-zip-box-screen.jpg"
+  }
+ ]
+}

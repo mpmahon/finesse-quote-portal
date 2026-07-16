@@ -1,0 +1,1453 @@
+{
+  "supplier": "Loman Distributors",
+  "scraped_date": "2026-07-16",
+  "supplier_contact": {
+    "address": "2740 NW 112 Ave. Doral, FL 33172",
+    "telephone": "(305) 513-8377 / (305) 513-8378",
+    "fax": "(305) 513-8379",
+    "email": "info@lomandistributors.com"
+  },
+  "categories": [
+    {
+      "name": "Roller Shades",
+      "url": "http://lomandistributors.com/roller-shades/?lang=en",
+      "description": "We have the best decorative, translucent, and technical fabrics, and the best black-out materials to manufacture a better shades that provide the darkest possible for any room. We also work with the most practical widths to avoid joints and seams.",
+      "image_urls": [
+        "http://lomandistributors.com/wp-content/uploads/2015/12/Roller-Shades-01.jpg",
+        "http://lomandistributors.com/wp-content/uploads/2015/12/Roller-Shades-03.jpg",
+        "http://lomandistributors.com/wp-content/uploads/2015/12/Roller-Shades-07.jpg"
+      ],
+      "products": [
+        {
+          "name": "Natural View",
+          "url": "http://lomandistributors.com/roller-shades/screen-fabric-natural-view/?lang=en",
+          "codes": ["NAT01", "NAT02", "NAT03", "NAT04", "NAT05", "NAT06"],
+          "opacity": "translucent",
+          "specs": "Recommended Use: Roller Shades, Roman Shades, & Sliding Panels. Composition: 100% Polyester. Fabric Width: 98\" (250cm) *Only Natural View Linen comes in 78.74\" (200cm). Fabric Thickness: 0.38 +/- 0.02mm. Fabric Weight: 144 +/- 20gr/sqm. Packing: Average 38yd / 35m.",
+          "colours": [
+            {"name": "LINEN", "code": "NAT01"},
+            {"name": "WHITE", "code": "NAT02"},
+            {"name": "IVORY", "code": "NAT03"},
+            {"name": "CAPUCHINO", "code": "NAT04"},
+            {"name": "CHOCOLATE", "code": "NAT05"},
+            {"name": "BLACK", "code": "NAT06"}
+          ],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2018/02/NAT02-WHITE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/02/NAT04-CAPUCHINO.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/02/NAT03-IVORY.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/02/NAT05-CHOCOLATE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/02/NAT01-LINEN.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/02/NAT06-BLACK.jpg"
+          ],
+          "description": "We have the best in translucent, decorative and technical materials, even the best blackouts on the market, to achieve maximum levels of darkness. In addition, we handle the most practical widths to avoid ties and seams. Colors may slightly vary from samples. All Variations are within Industry Standards. Cleaning Instructions: Dust with a dry cloth or wipe damp cloth. The Blind maybe vacuum cleaned.",
+          "detail_page_scraped": true
+        },
+        {
+          "name": "Inspiration Wood Look Roller Shades",
+          "url": "http://lomandistributors.com/roller-shades/tejido-inspiration-wood-look/?lang=en",
+          "codes": ["RWL-01ICWL", "RWL-0001L", "RWL-0100L", "RWL-0200L", "RWL-0300L", "RWL-0400L", "RWL-0500L", "RWL-0900L"],
+          "opacity": "translucent",
+          "specs": "Recommended Use: Roller Shades, Roman Shades, & Sliding Panel. Composition: Polyester 100%. Fabric Width: 110.24\" (280cm). Fabric Weight: 195g/m2 (+/-5%). Fabric Thickness: 0.48mm | 0.019\". Fabric Light Fastness: Above 4. Packing: 33yd (30m).",
+          "colours": [
+            {"name": "ICE WHITE", "code": "RWL-01ICWL"},
+            {"name": "WHITE", "code": "RWL-0001L"},
+            {"name": "MUSHROOM", "code": "RWL-0100L"},
+            {"name": "KHAKI", "code": "RWL-0200L"},
+            {"name": "CHERRY", "code": "RWL-0300L"},
+            {"name": "BROWN", "code": "RWL-0400L"},
+            {"name": "CHOCOLATE", "code": "RWL-0500L"},
+            {"name": "GREY", "code": "RWL-0900L"}
+          ],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2018/01/RWL-01ICWL-ICEWHITE-50PCT.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/RWL-0200L-KHAKI-50PCT.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/RWL-0500L-CHOCOLATE-50PCT.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/RWL-0001L-WHITE-50PCT.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/02/RWL-0300-CHERRY-50PCT2.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/02/RWL-0900-GREY-50PCT2.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/RWL-0100L-MUSHROOM-50PCT.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/RWL-0400L-BROWN-50PCT.jpg"
+          ],
+          "description": "We have the best in translucent, decorative and technical materials, even the best blackouts on the market, to achieve maximum levels of darkness. In addition, we handle the most practical widths to avoid ties and seams.",
+          "detail_page_scraped": true
+        },
+        {
+          "name": "Carolina",
+          "url": "http://lomandistributors.com/roller-shades/tejido-carolina/?lang=en",
+          "codes": ["C1W", "C2B", "C3SD", "C4S", "C70"],
+          "opacity": "translucent",
+          "specs": "Recommended Use: Roller Shades, Roman Shades, and Sliding Panel. Composition: Polyester 100%. Fabric Width: 98.4\" (250cm). Fabric Weight: 117g/m2 (+/-5%). Fabric Thickness: 0.34mm +/- 0.03mm. Packing: 33yd to 38yd (30m to 35m).",
+          "colours": [
+            {"name": "WHITE", "code": "C1W"},
+            {"name": "BEIGE", "code": "C2B"},
+            {"name": "SAND", "code": "C3SD"},
+            {"name": "STEEL", "code": "C4S"},
+            {"name": "OLIVER", "code": "C70"}
+          ],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-ROLL-C1W-WHITE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-ROLL-C70-OLIVER.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-ROLL-C2B-BEIGE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-ROLL-C4S-STEEL.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-ROLL-C3SD-SAND.jpg"
+          ],
+          "description": "We have the best in translucent, decorative and technical materials, even the best blackouts on the market, to achieve maximum levels of darkness. In addition, we handle the most practical widths to avoid ties and seams.",
+          "detail_page_scraped": true
+        },
+        {
+          "name": "Jupiter",
+          "url": "http://lomandistributors.com/roller-shades/tejido-jupiter/?lang=en",
+          "codes": ["J301", "J303", "J318", "J012"],
+          "opacity": "translucent",
+          "specs": "Recommended Use: Roller Shades, Roman Shades, & Sliding Panels. Composition: 100% Polyester. Fabric Width: 90.55\" (230cm). Fabric Weight: 228gr +/-10gr/sqm. Fabric Thickness: 0.42mm +/- 0.02mm.",
+          "colours": [
+            {"name": "WHITE", "code": "J301"},
+            {"name": "IVORY", "code": "J303"},
+            {"name": "CHOCOLATE", "code": "J318"},
+            {"name": "LIGHT GREY", "code": "J012"}
+          ],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2018/01/J301-WHITE618X900.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/J318-CHOCOLATE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/02/J303-IVORY-02202.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/J012-LIGHT-GREY.jpg"
+          ],
+          "description": "We have the best in translucent, decorative and technical materials, even the best blackouts on the market, to achieve maximum levels of darkness. In addition, we handle the most practical widths to avoid ties and seams.",
+          "detail_page_scraped": true
+        },
+        {
+          "name": "Madrid Translucent",
+          "url": "http://lomandistributors.com/roller-shades/madrid-translucent/?lang=en",
+          "codes": ["MADRID-TR01", "MADRID-TR02", "MADRID-TR03", "MADRID-TR04"],
+          "opacity": "translucent",
+          "specs": "Recommended Use: Roller Shades, Roman Shades, & Sliding Panel. Composition: 100% Polyester. Fabric Width: 118\" (300cm). Fabric Thickness: 0.43mm +/-5%. Fabric Weight: 170g sqm +/-5%. Packing: 44yd (40m).",
+          "colours": [
+            {"name": "WHITE", "code": "MADRID-TR01"},
+            {"name": "IVORY", "code": "MADRID-TR02"},
+            {"name": "GREY", "code": "MADRID-TR03"},
+            {"name": "COFFEE", "code": "MADRID-TR04"}
+          ],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2018/07/WHITE-MADRID-TR01.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/07/COFFEE-MADRID-TR04.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/07/IVORY-MADRID-TR02.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/07/GREY-MADRID-TR03.jpg"
+          ],
+          "description": "We have the best in translucent, decorative and technical materials, even the best blackouts on the market, to achieve maximum levels of darkness. In addition, we handle the most practical widths to avoid ties and seams.",
+          "detail_page_scraped": true
+        },
+        {
+          "name": "Snowflake Translucent",
+          "url": "http://lomandistributors.com/roller-shades/snowflake-translucid/?lang=en",
+          "codes": ["SNOWFLAKE-TR01", "SNOWFLAKE-TR02", "SNOWFLAKE-TR03", "SNOWFLAKE-TR04"],
+          "opacity": "translucent",
+          "specs": "Recommended Use: Roller Shades, Roman Shades, & Sliding Panel. Composition: 100% Polyester. Fabric Width: 118\" (300cm). Fabric Thickness: 0.40mm +/-5%. Fabric Weight: 200 sqm +/-5%. Packing: 33yd (30m).",
+          "colours": [
+            {"name": "WHITE", "code": "SNOWFLAKE-TR01"},
+            {"name": "KHAKI", "code": "SNOWFLAKE-TR02"},
+            {"name": "STONE", "code": "SNOWFLAKE-TR03"},
+            {"name": "GREY", "code": "SNOWFLAKE-TR04"}
+          ],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2018/12/WHITE-SNOWFLAKE-TR01.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/12/GREY-SNOWFLAKE-TR04.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/12/KHALI-SNOWFLAKE-TR02.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/12/STONE-SNOWFLAKE-TR03.jpg"
+          ],
+          "description": "We have the best in translucent, decorative and technical materials, even the best blackouts on the market, to achieve maximum levels of darkness. In addition, we handle the most practical widths to avoid ties and seams.",
+          "detail_page_scraped": true
+        },
+        {
+          "name": "Spring Sheer",
+          "url": "http://lomandistributors.com/fabrics-screen/spring-sheer/?lang=en",
+          "codes": [],
+          "opacity": "translucent (listed under TRANSLUCID)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Sunet Sheer",
+          "url": "http://lomandistributors.com/fabrics-screen/sunet-sheer/?lang=en",
+          "codes": [],
+          "opacity": "translucent (listed under TRANSLUCID)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Soft Vision",
+          "url": "http://lomandistributors.com/fabrics-screen/soft-vision/?lang=en",
+          "codes": [],
+          "opacity": "translucent (listed under TRANSLUCID)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "New York & New York Metalized",
+          "url": "http://lomandistributors.com/fabrics-screen/new-york-new-york-metalized/?lang=en",
+          "codes": [],
+          "opacity": "translucent (listed under TRANSLUCID)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Nancy",
+          "url": "http://lomandistributors.com/roller-shades/tejido-nancy/?lang=en",
+          "codes": [],
+          "opacity": "translucent (listed under TRANSLUCID)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Genova",
+          "url": "http://lomandistributors.com/roller-shades/tejido-genova/?lang=en",
+          "codes": [],
+          "opacity": "translucent (listed under TRANSLUCID)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Linen (Translucent)",
+          "url": "http://lomandistributors.com/fabrics-screen/linen-translucent/?lang=en",
+          "codes": [],
+          "opacity": "translucent (listed under TRANSLUCID)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Advantage Black Out",
+          "url": "http://lomandistributors.com/roller-shades/tejido-advantage/?lang=en",
+          "codes": ["AD01L", "AD02L", "AD03L", "AD04L", "AD05L", "AD06L", "AD07L", "AD08L"],
+          "opacity": "blackout",
+          "specs": "Recommended Use: Roller Shades, Roman Shades, & Sliding Panel. Composition: 100% Polyester. Fabric Width: 118\" (300cm) & 98\" (250cm) White and Ivory only. Fabric Thickness: 0.53mm +/- 0.05mm. Fabric Weight: 380 to 400g sqm. Packing: 27yd to 32yd (25m to 30m).",
+          "colours": [
+            {"name": "WHITE", "code": "AD01L"},
+            {"name": "IVORY", "code": "AD02L"},
+            {"name": "SAMBA", "code": "AD03L"},
+            {"name": "LATTE", "code": "AD04L"},
+            {"name": "COFFEE", "code": "AD05L"},
+            {"name": "LIGHT GREY", "code": "AD06L"},
+            {"name": "GREY", "code": "AD07L"},
+            {"name": "BLACK", "code": "AD08L"}
+          ],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD01L-WHITE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD04L-LATTE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD07L-GREY.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD02L-IVORY.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD05L-COFFEE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD08L-BLACK.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD03L-SAMBA.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD06L-LIGHT-GREY.jpg"
+          ],
+          "description": "We have the best in translucent, decorative and technical materials, even the best blackouts on the market, to achieve maximum levels of darkness. In addition, we handle the most practical widths to avoid ties and seams.",
+          "detail_page_scraped": true
+        },
+        {
+          "name": "Paris Black Out",
+          "url": "http://lomandistributors.com/roller-shades/paris-blackout/?lang=en",
+          "codes": ["PARIS-BK01", "PARIS-BK02", "PARIS-BK03", "PARIS-BK04", "PARIS-BK05", "PARIS-BK06"],
+          "opacity": "blackout",
+          "specs": "Recommended Use: Roller Shades, Roman Shades, & Sliding Panel. Composition: 100% Polyester. Fabric Width: 110\" (280cm). Fabric Thickness: 0.45mm +/-0.05. Fabric Weight: 285g sqm +/-5%. Packing: Average 33yd / 30m.",
+          "colours": [
+            {"name": "SNOW WHITE", "code": "PARIS-BK01"},
+            {"name": "IVORY", "code": "PARIS-BK02"},
+            {"name": "LATTE", "code": "PARIS-BK03"},
+            {"name": "COFFEE", "code": "PARIS-BK04"},
+            {"name": "LIGHT GREY", "code": "PARIS-BK05"},
+            {"name": "GREY", "code": "PARIS-BK06"}
+          ],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD01L-WHITE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD05L-COFFEE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD02L-IVORY.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD06L-LIGHT-GREY.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD04L-LATTE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-ROLL-AD07L-GREY.jpg"
+          ],
+          "description": "We have the best in translucent, decorative and technical materials, even the best blackouts on the market, to achieve maximum levels of darkness. In addition, we handle the most practical widths to avoid ties and seams. Note: swatch images on this page reuse the Advantage (AD) swatch image files.",
+          "detail_page_scraped": true
+        },
+        {
+          "name": "Rome Black Out",
+          "url": "http://lomandistributors.com/roller-shades/rome-blackout/?lang=en",
+          "codes": ["ROME-BK01", "ROME-BK02", "ROME-BK03", "ROME-BK04", "ROME-BK05", "ROME-BK06"],
+          "opacity": "blackout",
+          "specs": "Recommended Use: Roller Shades, Roman Shades, & Sliding Panel. Composition: 100% Polyester. Fabric Width: 118\" (300cm). Fabric Thickness: 0.78mm +/-5%. Fabric Weight: 480g sqm +/-5%. Packing: 33yd (30m).",
+          "colours": [
+            {"name": "SNOW", "code": "ROME-BK01"},
+            {"name": "CREAM", "code": "ROME-BK02"},
+            {"name": "BEIGE", "code": "ROME-BK03"},
+            {"name": "LIGHT GREY", "code": "ROME-BK04"},
+            {"name": "GREY", "code": "ROME-BK05"},
+            {"name": "COFFEE", "code": "ROME-BK06"}
+          ],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2018/12/SNOW-ROME-BK01.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/12/LIGHT-GREY-ROME-BK04.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/12/CREAM-ROME-BK02.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/12/GREY-ROME-BK05.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/12/BEIGE-ROME-BK03.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/12/COFFEE-ROME-BK06.jpg"
+          ],
+          "description": "We have the best in translucent, decorative and technical materials, even the best blackouts on the market, to achieve maximum levels of darkness. In addition, we handle the most practical widths to avoid ties and seams.",
+          "detail_page_scraped": true
+        },
+        {
+          "name": "Impress Black Out",
+          "url": "http://lomandistributors.com/roller-shades/impress-blackout/?lang=en",
+          "codes": [],
+          "opacity": "blackout",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Snowflake Black Out",
+          "url": "http://lomandistributors.com/roller-shades/snowflake-blackout/?lang=en",
+          "codes": [],
+          "opacity": "blackout",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Luxury Black Out",
+          "url": "http://lomandistributors.com/fabrics-screen/luxury-blackout/?lang=en",
+          "codes": ["01PW", "02CT", "05RK", "06LF", "07MK", "08MA"],
+          "opacity": "blackout (Openness Factor: None)",
+          "specs": "Recommended Use: Roller Shades, Roman Shades & Sliding Panels. Composition: 100% Polyester. Fabric Width: 110\" (280cm). Fabric Thickness: 0.48mm. Fabric Weight: 325g (+/- 10%). Openness Factor: None. Type of Fabrics: Woven Fabric. Fabric Construction: Twill. Grade of Elaboration: 4-5 degree (color fastness). Finish: Acrylic blackout coating. Packing: 38.276 yd (35m).",
+          "colours": [
+            {"name": "PURE WHITE", "code": "01PW"},
+            {"name": "COTTON", "code": "02CT"},
+            {"name": "ROCK", "code": "05RK"},
+            {"name": "LEAF", "code": "06LF"},
+            {"name": "MOCHA", "code": "07MK"},
+            {"name": "MARINE", "code": "08MA"}
+          ],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2018/04/PURE-WHITE-LUXURY-01PW.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/04/LEAF-LUXURY-06LF.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/04/COTTON-LUXURY-02CT.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/04/MOCHA-LUXURY-07MK.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/04/ROCK-LUXURY-05RK.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/04/MARINE-LUXURY-08MA.jpg"
+          ],
+          "description": "We have the best in translucent, decorative and technical materials, even the best blackouts on the market, to achieve maximum levels of darkness. In addition, we handle the most practical widths to avoid ties and seams.",
+          "detail_page_scraped": true
+        },
+        {
+          "name": "Linen Black Out",
+          "url": "http://lomandistributors.com/fabrics-screen/linen-blackout/?lang=en",
+          "codes": ["506IL", "5062L", "5063L"],
+          "opacity": "blackout",
+          "specs": "Recommended Use: Roller Shades, Roman Shades, & Sliding Panels. Composition: 100% Linen. Fabric Width: 98.40\" (250cm). Fabric Thickness: 0.68mm (+/- 0.02mm). Fabric Weight: 348g (+/- 5% sqm). Packing: 35 to 38 yd (32 to 35m).",
+          "colours": [
+            {"name": "NATURAL", "code": "506IL"},
+            {"name": "CUSTARD", "code": "5062L"},
+            {"name": "RED", "code": "5063L"}
+          ],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2018/04/NATURAL-ROLL-506IL.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/04/CUSTARD-ROLL-5062L.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/04/RED-SAND-5063L.jpg"
+          ],
+          "description": "We have the best in translucent, decorative and technical materials, even the best blackouts on the market, to achieve maximum levels of darkness. In addition, we handle the most practical widths to avoid ties and seams.",
+          "detail_page_scraped": true
+        },
+        {
+          "name": "Platinum Black Out",
+          "url": null,
+          "codes": [],
+          "opacity": "blackout",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": "Listed on category page with no detail link.",
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Fiber Glass Black Out (Panta Flex)",
+          "url": "http://lomandistributors.com/fabrics-screen/panta-flex/?lang=en",
+          "codes": [],
+          "opacity": "blackout",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Black Out Moire & Boucle",
+          "url": "http://lomandistributors.com/fabrics-screen/moire-boucle-black-out/?lang=en",
+          "codes": [],
+          "opacity": "blackout",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Madrid Black Out",
+          "url": "http://lomandistributors.com/roller-shades/madrid-blackout/?lang=en",
+          "codes": ["MADRID-BK01", "MADRID-BK02", "MADRID-BK03", "MADRID-BK04"],
+          "opacity": "blackout",
+          "specs": "Recommended Use: Roller Shades, Roman Shades, & Sliding Panel. Composition: 100% Polyester. Fabric Width: 118\" (300cm). Fabric Thickness: 0.49mm +/-5%. Fabric Weight: 310g sqm +/-5%. Packing: 33yd (30m).",
+          "colours": [
+            {"name": "WHITE", "code": "MADRID-BK01"},
+            {"name": "IVORY", "code": "MADRID-BK02"},
+            {"name": "GREY", "code": "MADRID-BK03"},
+            {"name": "COFFEE", "code": "MADRID-BK04"}
+          ],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2018/07/WHITE-MADRID-BK01.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/07/COFFEE-MADRID-BK04.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/07/IVORY-MADRID-BK02.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/07/GREY-MADRID-BK03.jpg"
+          ],
+          "description": "We have the best in translucent, decorative and technical materials, even the best blackouts on the market, to achieve maximum levels of darkness. In addition, we handle the most practical widths to avoid ties and seams.",
+          "detail_page_scraped": true
+        },
+        {
+          "name": "Eco Screen 1%, 3% y 5%",
+          "url": "http://lomandistributors.com/roller-shades/eco-screen-fabric/?lang=en",
+          "codes": ["ND001", "ND002", "ND003", "FAB01", "FAB03", "FAB05", "FABROL"],
+          "opacity": "screen - openness 1%, 3%, 5% and 40 Series 5% variants",
+          "specs": "Screen 1%: Composition 30% Polyester / 70% PVC; Width 98\" (250cm) & 118\" (300cm); Thickness 0.64mm (+/-5%); Weight 490 g/m2 (+/-5%); Openness Average 1%; Light Fastness Grade 7; Flammability NFPA701; Warranty 5 years; Packing 33yd (30m). Screen 3%: Thickness 0.6mm; Weight 470 g/m2; Openness Average 3% (same composition/width/warranty). Screen 5%: Thickness 0.58mm; Weight 420 g/m2; Openness Average 5%. Screen 5% - 40 Series: Thickness 0.75mm; Weight 520 g/m2; Openness Average 5%. Recommended Use (all): Roller Shades, Roman Shades, Sliding Panels, & Awnings.",
+          "colours": [
+            {"name": "ICE WHITE", "code": "ND001"},
+            {"name": "WHITE LINEN", "code": "ND002"},
+            {"name": "WHITE PEARL", "code": "ND003"}
+          ],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2019/12/FAB01-ND001.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2019/12/FAB03-ND001.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2019/12/FAB05-ND001.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2019/12/FABROL-ND001.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2019/12/FAB01-ND002.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2019/12/FAB03-ND002.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2019/12/FAB05-ND002.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2019/12/FABROL-ND002.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2019/12/FAB01-ND003.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2019/12/FAB03-ND003.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2019/12/FAB05-ND003.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2019/12/FABROL-ND003.jpg"
+          ],
+          "description": "We have the best in translucent, decorative and technical materials, even the best blackouts on the market, to achieve maximum levels of darkness. In addition, we handle the most practical widths to avoid ties and seams.",
+          "detail_page_scraped": true
+        },
+        {
+          "name": "Screen 1%",
+          "url": "http://lomandistributors.com/roller-shades/screen-fabric-1pct/?lang=en",
+          "codes": ["DN001", "DN002", "DN201", "DN034"],
+          "opacity": "screen - openness average 1%",
+          "specs": "Recommended Use: Roller Shades, Roman Shades, & Sliding Panels. Composition: 25% Polyester / 75% PVC. Fabric Width: 98.40\" (250cm) 118\" (300cm). Fabric Thickness: 0.70mm. Fabric Weight: 540g (+/- 5% sqm). Fabric Count: Warp 54\" / Weft 48\". Openness Factor: Average 1%. Light Fastness: Grade 7. Flammability: NFPA701:2004 Method 1. Warranty: 5 years. Packing: 33 yd / 90 sq yd (30m / 75sqm).",
+          "colours": [
+            {"name": "WHITE", "code": "DN001"},
+            {"name": "WHITE LINEN", "code": "DN002"},
+            {"name": "LINEN", "code": "DN201"},
+            {"name": "WHITE PEARL", "code": "DN034"}
+          ],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2018/02/1-FAB-01-DN001-2WHITE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/02/1-FAB-01-DN201-2LINEN.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/02/1-FAB-01-DN002-2WLINEN.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/02/1-FAB-01-DN034-2WPEARL.jpg"
+          ],
+          "description": "We have the best in translucent, decorative and technical materials, even the best blackouts on the market, to achieve maximum levels of darkness. In addition, we handle the most practical widths to avoid ties and seams.",
+          "detail_page_scraped": true
+        },
+        {
+          "name": "Screen 3%",
+          "url": "http://lomandistributors.com/roller-shades/screen-3/?lang=en",
+          "codes": ["03-DN001", "03-DN002", "03-DN003", "03-DN034", "03-DN201", "03-DN910", "03-DN914", "03-DN915"],
+          "opacity": "screen - openness average 3%",
+          "specs": "Recommended Use: Roller Shades, Roman Shades, & Panel. Composition: 25% Polyester / 75% PVC. Fabric Width: 98.40\" (250cm) 118\" (300cm). Fabric Thickness: 0.66mm. Fabric Weight: 510g (+/-5% sqm). Fabric Count: Warp 48\" / Weft 48\". Openness Factor: Average 3%. Light Fastness: Grade 7. Flammability: NFPA701:2004 Method 1. Warranty: 5 years. Packing: 32.80 yd / 90 sq yd (30m / 75sqm).",
+          "colours": [
+            {"name": "WHITE", "code": "03-DN001"},
+            {"name": "WHITE LINEN", "code": "03-DN002"},
+            {"name": "WHITE GREY", "code": "03-DN003"},
+            {"name": "WHITE PEARL", "code": "03-DN034"},
+            {"name": "LINEN", "code": "03-DN201"},
+            {"name": "DARK BRONZE", "code": "03-DN910"},
+            {"name": "BLACK", "code": "03-DN914"},
+            {"name": "BLACK BRONZE", "code": "03-DN915"}
+          ],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-03-DN001-WHITE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-03-DN003-WHITE-GREY.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-03-DN910-DARK-BRONZE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-03-DN002-WHITE-LINEN.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-03-DN034-WHITE-PEARL.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-03-DN914-BLACK.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-03-DN201-LINEN.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/1-FAB-03-DN915-BRONZE.jpg"
+          ],
+          "description": "We have the best in translucent, decorative and technical materials, even the best blackouts on the market, to achieve maximum levels of darkness. In addition, we handle the most practical widths to avoid ties and seams.",
+          "detail_page_scraped": true
+        },
+        {
+          "name": "Screen 5% - 3000 Series",
+          "url": "http://lomandistributors.com/roller-shades/tejido-series-3000-screen-5/?lang=en",
+          "codes": ["3000-01", "3000-002", "3000-034", "3000-210", "3000-3435", "3000-910", "3000-914", "3000-916"],
+          "opacity": "screen - openness average 5%",
+          "specs": "Recommended Use: Roller Shades, Roman Shades, & Sliding Panel. Composition: 22% Polyester / 78% PVC. Fabric Width: 98.40\" (250cm) 118\" (300cm) & 126\" (320cm). Fabric Thickness: 0.58mm (+/-5%). Fabric Weight: 420g (+/-5%/sqm). Fabric Count: warp 48\" / Welf 45\". Openness Factor: Average 5%. Light Fastness: Grade 6-7 (ISO 105-B02-2014 Xenon Arc Lamp). Warranty: 5 years. Flammability: NFPA 701-2014. Packing: 33yd / 90 Sqyd (30m / 75 Sqm).",
+          "colours": [
+            {"name": "WHITE", "code": "3000-01"},
+            {"name": "WHITE LINEN", "code": "3000-002"},
+            {"name": "WHITE PEARL", "code": "3000-034"},
+            {"name": "LINEN", "code": "3000-210"},
+            {"name": "PEARL LINEN", "code": "3000-3435"},
+            {"name": "BRONZE", "code": "3000-910"},
+            {"name": "BLACK", "code": "3000-914"},
+            {"name": "BLACK PEARL", "code": "3000-916"}
+          ],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-5-3000-01-WHITE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-5-3000-034-WHITE-PEARL.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-5-3000-916-BLACK-PEARL.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-5-3000-002-WHITE-LINEN.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-5-3000-3435-PEARL-LINEN.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-5-3000-914-BLACK.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-5-3000-210-LINEN.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/FAB-5-3000-910-BRONZE.jpg"
+          ],
+          "description": "We have the best in translucent, decorative and technical materials, even the best blackouts on the market, to achieve maximum levels of darkness. In addition, we handle the most practical widths to avoid ties and seams.",
+          "detail_page_scraped": true
+        },
+        {
+          "name": "Screen 5% - 40 Series",
+          "url": "http://lomandistributors.com/roller-shades/40-series-screen-5/?lang=en",
+          "codes": [],
+          "opacity": "screen - openness 5%",
+          "specs": "Per Eco Screen page 40-Series block: Composition 30% Polyester / 70% PVC; Width 98\" (250cm) & 118\" (300cm); Thickness 0.75mm (+/-5%); Weight 520 g/m2 (+/-5%); Openness Average 5%; Flammability NFPA701; Warranty 5 years; Packing 33yd (30m). [Spec sourced from eco-screen-fabric page; dedicated detail page not fetched]",
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Screen Crystalline 5%",
+          "url": "http://lomandistributors.com/roller-shades/screen-crystalline-5pct/?lang=en",
+          "codes": [],
+          "opacity": "screen - openness 5%",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Spectrum Aluminized Screen 5%",
+          "url": "http://lomandistributors.com/roller-shades/spectrum-5-aluminized-screen/?lang=en",
+          "codes": [],
+          "opacity": "screen - openness 5%",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Screen Miami 5% (Export Only)",
+          "url": "http://lomandistributors.com/fabrics-screen/miami-collection-openness-5pct/?lang=en",
+          "codes": [],
+          "opacity": "screen - openness 5%",
+          "specs": "Marked 'Export Only' on category page.",
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Canaveral Screen",
+          "url": "http://lomandistributors.com/roller-shades/tejido-canaveral-openness-6/?lang=en",
+          "codes": [],
+          "opacity": "screen - openness 6% (per URL slug)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Rustic 6%",
+          "url": "http://lomandistributors.com/roller-shades/screen-rustic-openness-6/?lang=en",
+          "codes": [],
+          "opacity": "screen - openness 6%",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Rain Screen 6%",
+          "url": "http://lomandistributors.com/roller-shades/screen-fabric-rain/?lang=en",
+          "codes": [],
+          "opacity": "screen - openness 6%",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Screen 10%",
+          "url": "http://lomandistributors.com/roller-shades/screen-fabric-30-series-10/?lang=en",
+          "codes": [],
+          "opacity": "screen - openness 10%",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Screen 16% View Series",
+          "url": "http://lomandistributors.com/roller-shades/screen-fabric-30-series-16/?lang=en",
+          "codes": [],
+          "opacity": "screen - openness 16%",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Screen Blackout",
+          "url": "http://lomandistributors.com/roller-shades/screen-blackout/?lang=en",
+          "codes": [],
+          "opacity": "screen blackout",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Outdoor Screen",
+          "url": null,
+          "codes": [],
+          "opacity": "screen",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": "Listed on category page with no detail link.",
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Pescreen 1%",
+          "url": "http://lomandistributors.com/roller-shades/tejido-florist-pescreen-1/?lang=en",
+          "codes": [],
+          "opacity": "screen - openness 1%",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Pescreen 3%",
+          "url": "http://lomandistributors.com/roller-shades/screen-florist-pescreen-3/?lang=en",
+          "codes": [],
+          "opacity": "screen - openness 3%",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        }
+      ]
+    },
+    {
+      "name": "Sheer Elegance / Zebra Shades",
+      "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/?lang=en",
+      "description": "We offer the widest range of styles in dust-repellent finishes, allowing an excellent sunlight control for all types of environment and decorations.",
+      "image_urls": [
+        "http://lomandistributors.com/wp-content/uploads/2015/12/Zebra-Shades-01.jpg",
+        "http://lomandistributors.com/wp-content/uploads/2015/12/Zebra-Shades-02.jpg",
+        "http://lomandistributors.com/wp-content/uploads/2015/12/Zebra-Shades-03.jpg"
+      ],
+      "products": [
+        {
+          "name": "Premium Sheer Elegance",
+          "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/sheer-elegance-premium/?lang=en",
+          "codes": ["C401L", "C402L", "C403L", "C404L", "C406L", "C416L", "C418L", "C419L", "C78L", "C65L", "C04L", "A410", "A407"],
+          "opacity": "translucent (sheer/solid zebra stripe)",
+          "specs": "Composition: Polyester 100%. Fabric Width: 110.24\" (280cm). Fabric Thickness: 0.31mm | 0.012\". Fabric Weight: 115g/sqm (+/-5%). Light Fastness: Above 4. Stripe Size: Solid 2.95\" (7.50cm) & Sheer 1.97\" (5.00cm) [site prints '197\"']. Packing: 55yd (50m).",
+          "colours": [
+            {"name": "ICE WHITE", "code": "C401L"},
+            {"name": "WHITE", "code": "C402L"},
+            {"name": "IVORY", "code": "C403L"},
+            {"name": "OYSTER", "code": "C404L"},
+            {"name": "PEACH", "code": "C406L"},
+            {"name": "TAUPE", "code": "A410"},
+            {"name": "MUSTARD", "code": "A407"},
+            {"name": "GREY", "code": "C416L"},
+            {"name": "CHOCOLATE", "code": "C418L"},
+            {"name": "CHARCOAL", "code": "C419L"},
+            {"name": "RED", "code": "C78L"},
+            {"name": "SKY BLUE", "code": "C65L"},
+            {"name": "PINK", "code": "C04L"}
+          ],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2018/01/C401-ICE-WHITE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/C404L-OYSTER.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/A410-TAUPE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/C419L-CHARCOAL.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/C78L-RED.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/C406L-WHITE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/C406L-PEACH.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/C418L-CHOCOLATE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/C65L-SKY-BLUE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/C403L-IVORY.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/A407-MUSTARD.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/C416L-GREY.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/C04L-PINK.jpg"
+          ],
+          "description": "We have the best in translucent, decorative and technical materials, even the best blackouts on the market, to achieve maximum levels of darkness. In addition, we handle the most practical widths to avoid ties and seams.",
+          "detail_page_scraped": true
+        },
+        {
+          "name": "Bora Bora",
+          "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/bora-bora/?lang=en",
+          "codes": ["BORA01", "BORA02", "BORA03", "BORA04"],
+          "opacity": "translucent (sheer/solid zebra stripe)",
+          "specs": "Composition: 100% Polyester. Fabric Width: 110.24\" (280cm). Fabric Thickness: 0.42mm | 0.0165\". Fabric Weight: 155g/sqm (+/-5%). Light Fastness: Above 4. Strip Size: Solid 2.95\" (10cm) & Sheer 1.95\" (5.00cm). Packing: 55yd (50m).",
+          "colours": [
+            {"name": "WHITE", "code": "BORA01"},
+            {"name": "CREAM", "code": "BORA02"},
+            {"name": "BEIGE", "code": "BORA03"},
+            {"name": "PEARL", "code": "BORA04"}
+          ],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2020/06/BORA01-WHITE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2020/06/BORA04-PEARL.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2020/06/BORA02-CREAM.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2020/06/BORA03-BEIGE.jpg"
+          ],
+          "description": "We have the best in translucent, decorative and technical materials, even the best blackouts on the market, to achieve maximum levels of darkness. In addition, we handle the most practical widths to avoid ties and seams.",
+          "detail_page_scraped": true
+        },
+        {
+          "name": "Dolce",
+          "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/sheer-elegance-dolce/?lang=en",
+          "codes": ["DOL-01", "DOL-02", "DOL-03"],
+          "opacity": "translucent (sheer/solid zebra stripe)",
+          "specs": "Composition: Polyester 100%. Fabric Width: 110.24\" (280cm). Fabric Thickness: 0.42mm (+/-5%) | 0.0165\". Fabric Weight: 155g/sqm (+/-5%). Light Fastness: Above 4 Xenotest Grade. Stripe Size: Solid 3.94\" (10.0cm) & Sheer 2.76\" (7.0cm). Packing: 55yd (50m).",
+          "colours": [
+            {"name": "WHITE", "code": "DOL-01"},
+            {"name": "BEIGE", "code": "DOL-02"},
+            {"name": "PEARL GREY", "code": "DOL-03"}
+          ],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2024/03/DOL-01-WHITE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2024/03/DOL-02-BEIGE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2024/03/DOL-03-PEARL-GREY.jpg"
+          ],
+          "description": "We have the best in translucent, decorative and technical materials, even the best blackouts on the market, to achieve maximum levels of darkness. In addition, we handle the most practical widths to avoid ties and seams.",
+          "detail_page_scraped": true
+        },
+        {
+          "name": "Marbella Sheer Elegance",
+          "url": "http://lomandistributors.com/roller-shades/tejido-marbella/?lang=en",
+          "codes": ["MA01", "MA02", "MA03", "MA04"],
+          "opacity": "translucent (sheer/solid zebra stripe)",
+          "specs": "Composition: 100% Polyester. Fabric Width: 110.24\" (280cm). Fabric Thickness: 0.60mm | 0.024\". Fabric Weight: 200g/sqm (+/-5%). Light Fastness: Above 4. Stripe Size: Solid 2.95\" (7.50cm) & Sheer 1.97\" (5.00cm) [site prints '197\"']. Packing: 33yd (30m).",
+          "colours": [
+            {"name": "ICE WHITE", "code": "MA01"},
+            {"name": "OFF WHITE", "code": "MA02"},
+            {"name": "SILVER", "code": "MA03"},
+            {"name": "WOOD", "code": "MA04"}
+          ],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2018/01/MA01-ICE-WHITE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/MA03-SILVER.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/MA02-OFF-WHITE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/01/MA04-WOOD.jpg"
+          ],
+          "description": "We have the best in translucent, decorative and technical materials, even the best blackouts on the market, to achieve maximum levels of darkness. In addition, we handle the most practical widths to avoid ties and seams.",
+          "detail_page_scraped": true
+        },
+        {
+          "name": "Venezia Dim-Out",
+          "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/sheer-elegance-venezia-dim-out/?lang=en",
+          "codes": ["VEN-01", "VEN-02", "VEN-03"],
+          "opacity": "dim-out (listed under TRANSLUCID)",
+          "specs": "Composition: Polyester 100%. Fabric Width: 110.24\" (280cm). Fabric Thickness: 0.56mm (+/-5%) | 0.022\". Fabric Weight: 212g/sqm (+/-5%). Light Fastness: Above 4 Xenotest Grade. Stripe Size: Solid 3.94\" (10.00cm) & Sheer 2.75\" (7.00cm). Packing: 55yd (50m).",
+          "colours": [
+            {"name": "WHITE", "code": "VEN-01"},
+            {"name": "IVORY", "code": "VEN-02"},
+            {"name": "LIGHT GREY", "code": "VEN-03"}
+          ],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2024/03/VEN-01-WHITE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2024/03/VEN-02-IVORY.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2024/03/VEN-03-LIGHT-GREY.jpg"
+          ],
+          "description": "We have the best in translucent, decorative and technical materials, even the best blackouts on the market, to achieve maximum levels of darkness. In addition, we handle the most practical widths to avoid ties and seams.",
+          "detail_page_scraped": true
+        },
+        {
+          "name": "Lush Dimout",
+          "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/sheer-elegance-lush-dimout/?lang=en",
+          "codes": ["LUS01", "LUS02", "LUS03"],
+          "opacity": "dim-out (listed under BLOCK OUT)",
+          "specs": "Composition: 100% Polyester. Fabric Width: 110.24\" (280cm). Fabric Thickness: 0.51mm (+/-5%). Fabric Weight: 185 g/sqm (+/-5%). Strip Size: Solid 3.94\" (10.00cm) & Sheer 2.76\" (7.00cm). Packing: 55yd (50m).",
+          "colours": [
+            {"name": "ICE WHITE", "code": "LUS01"},
+            {"name": "IVORY", "code": "LUS02"},
+            {"name": "BEIGE", "code": "LUS03"}
+          ],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2020/03/LUSHDO-ICEWHITE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2020/03/LUSHDO-IVORY.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2020/03/LUSHDO-BEIGE.jpg"
+          ],
+          "description": "English page renders the Spanish intro: 'Poseemos lo mejor en materiales traslucidos, decorativos y tecnicos, hasta los mejores blackouts del mercado, para lograr los maximos niveles de oscuridad. Ademas, manejamos los anchos mas practicos para evitar empates y costuras.'",
+          "detail_page_scraped": true
+        },
+        {
+          "name": "Milano Sheer Elegance",
+          "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/sheer-elegance-milano/?lang=en",
+          "codes": ["MI01", "MI02", "MI03", "MI04", "MI05"],
+          "opacity": "block out (listed under BLOCK OUT)",
+          "specs": "Composition: 100% Polyester. Fabric Width: 110.24\" (280cm). Fabric Thickness: 0.46mm | 0.018\". Fabric Weight: 208g/sqm (+/-5%). Light Fastness: Above 4. Stripe Size: Solid 3.94\" (10.00cm) & Sheer 2.76\" (7.00cm). Packing: 55yd (50m).",
+          "colours": [
+            {"name": "WHITE", "code": "MI01"},
+            {"name": "IVORY", "code": "MI02"},
+            {"name": "GREY", "code": "MI03"},
+            {"name": "BEIGE", "code": "MI04"},
+            {"name": "CHOCOLATE", "code": "MI05"}
+          ],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2018/06/MI01-WHITE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/06/MI04-BEIGE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/06/MI02-IVORY.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/06/MI05-CHOCOLATE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/06/MI03-GREY.jpg"
+          ],
+          "description": "We have the best in translucent, decorative and technical materials, even the best blackouts on the market, to achieve maximum levels of darkness. In addition, we handle the most practical widths to avoid ties and seams.",
+          "detail_page_scraped": true
+        },
+        {
+          "name": "Toscana Sheer Elegance",
+          "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/sheer-elegance-toscana/?lang=en",
+          "codes": ["T01", "T02", "T03", "T04", "T05"],
+          "opacity": "block out (listed under BLOCK OUT)",
+          "specs": "Composition: 100% Polyester. Fabric Width: 110.24\" (280cm). Fabric Thickness: 0.45mm | 0.018\". Fabric Weight: 154g/sqm (+/-5%). Light Fastness: Above 4. Stripe Size: Solid 3.94\" (7.50cm) & Sheer 2.76\" (7.00cm). Packing: 55yd (50m).",
+          "colours": [
+            {"name": "WHITE", "code": "T01"},
+            {"name": "MUSHROOM", "code": "T02"},
+            {"name": "CHOCOLATE", "code": "T03"},
+            {"name": "GREY", "code": "T04"},
+            {"name": "BLACK", "code": "T05"}
+          ],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2018/06/T01-WHITE2.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/06/T04-GREY2.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/02/T02-MUSHROOM.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/06/T05-BLACK2.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/06/T03-CHOCOLATE2.jpg"
+          ],
+          "description": "We have the best in translucent, decorative and technical materials, even the best blackouts on the market, to achieve maximum levels of darkness. In addition, we handle the most practical widths to avoid ties and seams.",
+          "detail_page_scraped": true
+        },
+        {
+          "name": "Zebra Screen",
+          "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/zebra-screen/",
+          "codes": ["ZEBRA-DN001", "ZEBRA-DN002", "ZEBRA-DN003", "ZEBRA-DN914"],
+          "opacity": "zebra screen (PVC screen zebra stripe)",
+          "specs": "Composition: 25% Polyester | 75% PVC. Fabric Width: 98.40\" (250cm). Fabric Thickness: 0.55mm (+/-5%). Fabric Weight: 288g/sqm (+/-5%). Light Fastness: Grade 7. Flammability: NFPA 701-2004 Method 1. Warranty: 5 years. Strip Size: Solid 2.95\" (7.5cm) & Sheer 1.97\" (5.00cm). Packing: 33yd (30m).",
+          "colours": [
+            {"name": "WHITE", "code": "ZEBRA-DN001"},
+            {"name": "WHITE LINEN", "code": "ZEBRA-DN002"},
+            {"name": "WHITE GREY", "code": "ZEBRA-DN003"},
+            {"name": "BLACK", "code": "ZEBRA-DN914"}
+          ],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2018/04/DN001-WHITE.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/04/DN914-BLACK.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/04/DN002-WHITE-LINEN.jpg",
+            "http://lomandistributors.com/wp-content/uploads/2018/04/DN003-WHITE-GREY.jpg"
+          ],
+          "description": "Page served in Spanish (no ?lang=en variant linked from EN category page): 'Poseemos lo mejor en materiales traslucidos, decorativos y tecnicos, hasta los mejores blackouts del mercado, para lograr los maximos niveles de oscuridad.'",
+          "detail_page_scraped": true
+        },
+        {
+          "name": "Cobra",
+          "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/sheer-elegance-cobra/?lang=en",
+          "codes": [],
+          "opacity": "translucent (listed under TRANSLUCID)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Emerald",
+          "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/sheer-elegance-emerald/?lang=en",
+          "codes": [],
+          "opacity": "translucent (listed under TRANSLUCID)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Bentenly Dim-Out",
+          "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/sheer-elegance-bentenly-dim-out/?lang=en",
+          "codes": [],
+          "opacity": "dim-out",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Firence Dim-Out",
+          "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/sheer-elegance-firence-dim-out/?lang=en",
+          "codes": [],
+          "opacity": "dim-out",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Brilliance Sheer Elegance",
+          "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/sheer-elegance-brilliance/?lang=en",
+          "codes": [],
+          "opacity": "translucent (listed under TRANSLUCID)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Covent Sheer Elegance",
+          "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/sheer-elegance-covent/?lang=en",
+          "codes": [],
+          "opacity": "translucent (listed under TRANSLUCID)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Reve Sheer Elegance",
+          "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/sheer-elegance-reve/?lang=en",
+          "codes": [],
+          "opacity": "translucent (listed under TRANSLUCID)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Montblanc Pearl Sheer Elegance",
+          "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/sheer-elegance-montblanc-pearl/?lang=en",
+          "codes": [],
+          "opacity": "translucent (listed under TRANSLUCID)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Accordian Sheer Elegance",
+          "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/accordian/?lang=en",
+          "codes": [],
+          "opacity": "translucent (listed under TRANSLUCID)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Linen Sheer Elegance",
+          "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/linen/?lang=en",
+          "codes": [],
+          "opacity": "translucent (listed under TRANSLUCID)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Florencia Sheer Elegance",
+          "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/florencia/?lang=en",
+          "codes": [],
+          "opacity": "translucent (listed under TRANSLUCID)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Peacok Sheer Elegance",
+          "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/peacock/?lang=en",
+          "codes": [],
+          "opacity": "translucent (listed under TRANSLUCID)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Budapest Sheer Elegance",
+          "url": null,
+          "codes": [],
+          "opacity": "translucent (listed under TRANSLUCID)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": "Listed on category page with no detail link.",
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Berlin Sheer Elegance",
+          "url": null,
+          "codes": [],
+          "opacity": "translucent (listed under TRANSLUCID)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": "Listed on category page with no detail link.",
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Barcelona Shear Elegance",
+          "url": null,
+          "codes": [],
+          "opacity": "translucent (listed under TRANSLUCID)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": "Listed on category page with no detail link.",
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Bangkok Sheer Elegance",
+          "url": null,
+          "codes": [],
+          "opacity": "translucent (listed under TRANSLUCID)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": "Listed on category page with no detail link.",
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Inspiration Sheer Elegance Wood Look",
+          "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/inspiration-wood-look/?lang=en",
+          "codes": [],
+          "opacity": "translucent (listed under TRANSLUCID)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Venus",
+          "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/venus/?lang=en",
+          "codes": [],
+          "opacity": "translucent (listed under TRANSLUCID)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Prime Dim Out",
+          "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/sheer-elegance-prime-dimout/?lang=en",
+          "codes": [],
+          "opacity": "dim-out (listed under BLOCK OUT)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Valentino Dim Out",
+          "url": "http://lomandistributors.com/sheer-elegance-zebra-shades/sheer-elegance-valentino/?lang=en",
+          "codes": [],
+          "opacity": "dim-out (listed under BLOCK OUT)",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Eco Block Out Sheer Elegance Wood Look",
+          "url": null,
+          "codes": [],
+          "opacity": "block out",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": "Listed on category page with no detail link.",
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Sun Shutdown Sheer Elegance Block Out",
+          "url": null,
+          "codes": [],
+          "opacity": "block out",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": "Listed on category page with no detail link.",
+          "detail_page_scraped": false
+        }
+      ]
+    },
+    {
+      "name": "Roman Shades",
+      "url": "http://lomandistributors.com/roman-shades-2/?lang=en",
+      "description": "Soft-touch fabrics available in very modern and warm tones, with the finest coatings on most options. Ideal for decorating and control sunlight at home.",
+      "image_urls": [
+        "http://lomandistributors.com/wp-content/uploads/2015/12/Roman-Shades-01.jpg",
+        "http://lomandistributors.com/wp-content/uploads/2015/12/Roman-Shades-03.jpg",
+        "http://lomandistributors.com/wp-content/uploads/2015/12/Roman-Shades-02.jpg"
+      ],
+      "products": [
+        {
+          "name": "Shared fabric range (see Roller Shades category for scraped detail)",
+          "url": "http://lomandistributors.com/roman-shades-2/?lang=en",
+          "codes": [],
+          "opacity": "translucent / blackout / screen (same three groups as Roller Shades)",
+          "specs": "Fabric lineup is identical to the Roller Shades category and links to the same detail pages: TRANSLUCID - Natural View, Inspiration Wood Look, Spring Sheer, Carolina, Sunet Sheer, Soft Vision, New York & New York Metalized, Jupiter, Nancy, Genova, Linen. BLACK OUT - Advantage, Luxury, Linen Black Out, Platinum, Fiber Glass (Panta Flex), Moire & Boucle. SCREEN - Pescreen 1%, Pescreen 3%, Screen 1%, Screen 3%, Screen 5% 3000 Series, Screen 5% 40 Series, Screen Crystalline 5%, Spectrum Aluminized 5%, Screen Miami 5% (export only), Canaveral, Rustic 6%, Rain Screen 6%, Screen 10%, Screen 16% View Series, Screen Blackout, Outdoor Screen. Systems: Galaxy System, Generation No. 1, Generation No. 3, Roman Bar Slim & Regular.",
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        }
+      ]
+    },
+    {
+      "name": "Panel Tracks",
+      "url": "http://lomandistributors.com/panel-tracks-2/?lang=en",
+      "description": "We offer decorative fabrics with ideal properties for home and commercial uses. We have a myriad of colors and patterns to satisfy all your needs.",
+      "image_urls": [
+        "http://lomandistributors.com/wp-content/uploads/2015/12/Panel-Tracks-02.jpg",
+        "http://lomandistributors.com/wp-content/uploads/2015/12/Panel-Tracks-05.jpg",
+        "http://lomandistributors.com/wp-content/uploads/2015/12/Panel-Tracks-03.jpg"
+      ],
+      "products": [
+        {
+          "name": "Shared fabric range (see Roller Shades category for scraped detail)",
+          "url": "http://lomandistributors.com/panel-tracks-2/?lang=en",
+          "codes": [],
+          "opacity": "translucent / blackout / screen (same three groups as Roller Shades)",
+          "specs": "Fabric lineup links to the same detail pages as Roller Shades: TRANSLUCID - Natural View, Inspiration Wood Look, Spring Sheer, Carolina, Sunet Sheer, Soft Vision, New York & New York Metalized, Jupiter, Nancy, Genova, Linen. BLACK OUT - Advantage, Luxury, Linen Black Out, Platinum, Fiber Glass (Panta Flex), Moire & Boucle. SCREEN - Pescreen 1%, Pescreen 3%, Screen 1%, Screen 3%, Screen 5% 3000 Series, Screen 5% 40 Series, Screen Crystalline 5%, Spectrum Aluminized 5%, Screen Miami 5% (export only), Canaveral, Rustic 6%, Rain Screen 6%, Screen 10%, Screen 16% View Series, Screen Blackout, Outdoor Screen. All scraped fabric detail pages list 'Sliding Panel' as a recommended use. Systems: cord control and stick control.",
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        }
+      ]
+    },
+    {
+      "name": "Wood Blinds",
+      "url": "http://lomandistributors.com/wood-blinds/?lang=en",
+      "description": "LOMAN combines the beauty of natural wood (or imitation), with the versatile light control offered by our top wood and foam wood slats.",
+      "image_urls": [
+        "http://lomandistributors.com/wp-content/uploads/2015/12/Wood-Blinds-02.jpg"
+      ],
+      "products": [
+        {
+          "name": "Wood and Foam Wood Slats (Slat / Balance / Bottomrail)",
+          "url": "http://lomandistributors.com/wood-blinds/?lang=en",
+          "codes": [],
+          "opacity": "not stated (slat product, light control by tilt)",
+          "specs": "Category lists SLAT, BALANCE, BOTTOMRAIL headings with no individual detail pages. Components catalog: COMPONENTS FOR HORIZONTAL BLINDS 50mm (PDF). Motorization: MOTOR COMPONENTS FOR HORIZONTAL BLINDS 50mm (PDF). Fabrics catalog marked 'in construction'.",
+          "colours": [],
+          "image_urls": [],
+          "description": "Head rails, components and mechanisms in impeccable finishes and construction, and easy to be operated. Motorization systems and remote controls of exclusive designs, all with our unique LOMAN's 5 Year Warranty.",
+          "detail_page_scraped": false
+        }
+      ]
+    },
+    {
+      "name": "Vertical Blinds",
+      "url": "http://lomandistributors.com/vertical-blinds-2/?lang=en",
+      "description": "We have the best fabrics and materials in a wide range of colors and designs to provide you the most modern decor standards.",
+      "image_urls": [
+        "http://lomandistributors.com/wp-content/uploads/2015/12/Vertical-Blinds-01.jpg"
+      ],
+      "products": [
+        {
+          "name": "Granada",
+          "url": "http://lomandistributors.com/wp-content/uploads/2016/03/GRANADA-COLLECTION-FOR-VERTIVAL-BLILNDS.pdf",
+          "codes": [],
+          "opacity": "not stated",
+          "specs": "Colour/spec detail only available via PDF catalog (GRANADA COLLECTION FOR VERTIVAL BLILNDS).",
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Montreal",
+          "url": "http://lomandistributors.com/wp-content/uploads/2016/03/MONTREAL-COLLECTION-FOR-VERTIVAL-BLILNDS.pdf",
+          "codes": [],
+          "opacity": "not stated",
+          "specs": "Colour/spec detail only available via PDF catalog (MONTREAL COLLECTION FOR VERTIVAL BLILNDS).",
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Crystalline Screen",
+          "url": "http://lomandistributors.com/wp-content/uploads/2016/03/SCREEN-CRYSTALLINE-FOR-VERTIVAL-BLILNDS.pdf",
+          "codes": [],
+          "opacity": "screen",
+          "specs": "Colour/spec detail only available via PDF catalog (SCREEN CRYSTALLINE FOR VERTIVAL BLILNDS).",
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        }
+      ]
+    },
+    {
+      "name": "Cellular Shades",
+      "url": "http://lomandistributors.com/cellular-shades/?lang=en",
+      "description": "Fabrics with a wide range of textures, colors and transparency levels. All provide great capacities of thermal and acoustic insulation, contributing to temperature conservation and sound absorption.",
+      "image_urls": [],
+      "products": [
+        {
+          "name": "Cellular",
+          "url": "http://lomandistributors.com/cellular-shades/?lang=en",
+          "codes": [],
+          "opacity": "range of transparency levels (not itemised)",
+          "specs": "No fabric detail pages; fabrics catalog marked 'in construction'. Systems: 25mm and 45mm components (SQUEMATIC 25mm / 45mm CELLULAR AND PLEATED SHADES PDFs).",
+          "colours": [],
+          "image_urls": [],
+          "description": "Drive systems of innovative designs that fit the needs of all users, providing flexibility and product quality.",
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Pleated",
+          "url": "http://lomandistributors.com/cellular-shades/?lang=en",
+          "codes": [],
+          "opacity": "range of transparency levels (not itemised)",
+          "specs": "No fabric detail pages; shares 25mm/45mm systems with Cellular.",
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        }
+      ]
+    },
+    {
+      "name": "Woven Wood Shades (Bamboo)",
+      "url": "http://lomandistributors.com/woven-wood-shades-bamboo/?lang=en",
+      "description": "We offer a great styles variety in dust repellent finishes, allowing an excellent lighting control for all types of environments and decorations.",
+      "image_urls": [
+        "http://lomandistributors.com/wp-content/uploads/2015/12/Woven-Wood-Shades-01.jpg"
+      ],
+      "products": [
+        {
+          "name": "Premium Collection",
+          "url": "http://lomandistributors.com/wp-content/uploads/2016/02/WOVEN-WOOD-PREMIUM-COLECTION.pdf",
+          "codes": [],
+          "opacity": "not stated (woven wood)",
+          "specs": "Detail only available via PDF catalog (WOVEN WOOD PREMIUM COLLECTION).",
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Magestic Collection",
+          "url": "http://lomandistributors.com/wp-content/uploads/2016/02/WOVEN-WOOD-MAJESTIC-COLECCTION-1.pdf",
+          "codes": [],
+          "opacity": "not stated (woven wood)",
+          "specs": "Detail only available via PDF catalog (WOVEN WOOD MAJESTIC COLLECTION).",
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        }
+      ]
+    },
+    {
+      "name": "Mini Blinds",
+      "url": "http://lomandistributors.com/mini-blinds/?lang=en",
+      "description": "We offer high resistance to deformation and high flexibility Aluminum.",
+      "image_urls": [
+        "http://lomandistributors.com/wp-content/uploads/2015/12/Mini-Blins-01.jpg"
+      ],
+      "products": [
+        {
+          "name": "Aluminum Coil - Solid",
+          "url": "http://lomandistributors.com/mini-blinds/?lang=en",
+          "codes": [],
+          "opacity": "solid aluminum slat",
+          "specs": "No detail page; aluminum coil catalog marked 'in construction'. Components: SQUEMATIC MINI BLINDS and MINI BLINDS COMPONENTS PDFs.",
+          "colours": [],
+          "image_urls": [],
+          "description": "High quality rails, components and mechanisms. We offer a wide variety of colors, finishes and control systems.",
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Aluminum Coil - Perforated",
+          "url": "http://lomandistributors.com/mini-blinds/?lang=en",
+          "codes": [],
+          "opacity": "perforated aluminum slat",
+          "specs": "No detail page; aluminum coil catalog marked 'in construction'.",
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        }
+      ]
+    },
+    {
+      "name": "Outdoor",
+      "url": "http://lomandistributors.com/outdoor/?lang=en",
+      "description": "(No marketing paragraph on page; sections are FABRICS, SYSTEMS AND COMPONENTS, MOTORIZATION.)",
+      "image_urls": [
+        "http://lomandistributors.com/wp-content/uploads/2016/02/Outdoor-01.jpg",
+        "http://lomandistributors.com/wp-content/uploads/2016/03/Outdoor-05.jpg",
+        "http://lomandistributors.com/wp-content/uploads/2016/03/Outdoor-03.jpg"
+      ],
+      "products": [
+        {
+          "name": "Windlux - Tejido Acrilico para Exteriores (Acrylic Outdoor Fabric)",
+          "url": "http://lomandistributors.com/wp-content/uploads/2018/02/Windlux-Fabrics-2-25pc.jpg",
+          "codes": [],
+          "opacity": "outdoor acrylic (not stated)",
+          "specs": "Detail only via image catalog 'WINDLUX FABRICS FOR OUTDOOR' (JPG).",
+          "colours": [],
+          "image_urls": [
+            "http://lomandistributors.com/wp-content/uploads/2018/02/Windlux-Fabrics-2-25pc.jpg"
+          ],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Screen 5% - 40 Series (Outdoor)",
+          "url": "http://lomandistributors.com/roller-shades-2/40-series-screen-5/",
+          "codes": [],
+          "opacity": "screen - openness 5%",
+          "specs": "Same 40 Series fabric as roller shades screen group; see Eco Screen page 40-Series technical block: 30% Polyester / 70% PVC, 0.75mm, 520 g/m2, NFPA701, 5-year warranty.",
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Outdoor systems (Pergolas, Bip Screen Roller Box, Complet Awning, Monobloc Awning, Microbox Arm, Exterior Roller Shade, Maxi Roller)",
+          "url": "http://lomandistributors.com/outdoor/?lang=en",
+          "codes": [],
+          "opacity": "n/a (hardware systems)",
+          "specs": "PDF catalogs: Pergolas, BIP SCREEN - ROLLER BOX SYSTEM, COMPLET AWNING SYSTEM, MONOBLOC AWNING SYSTEM, MICROBOX ARM SYSTEM, EXTERIOR ROLLER SHADE, MAXI ROLLER (MAXISCREEN), MOTORIZATION FOR OUTDOOR.",
+          "colours": [],
+          "image_urls": [],
+          "description": null,
+          "detail_page_scraped": false
+        }
+      ]
+    },
+    {
+      "name": "Elite & Capriccio",
+      "url": "http://lomandistributors.com/elite-capriccio/?lang=en",
+      "description": "(No marketing paragraph on page; fabrics and systems catalogs both marked 'in construction'.)",
+      "image_urls": [],
+      "products": [
+        {
+          "name": "Elite",
+          "url": null,
+          "codes": [],
+          "opacity": "not stated",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": "Listed under FABRICS with no detail link. Catalog 'in construction'.",
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Elite Privacy",
+          "url": null,
+          "codes": [],
+          "opacity": "not stated",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": "Listed under FABRICS with no detail link. Catalog 'in construction'.",
+          "detail_page_scraped": false
+        },
+        {
+          "name": "Capriccio",
+          "url": null,
+          "codes": [],
+          "opacity": "not stated",
+          "specs": null,
+          "colours": [],
+          "image_urls": [],
+          "description": "Listed under FABRICS with no detail link. Catalog 'in construction'.",
+          "detail_page_scraped": false
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "Fetch budget: 39 page fetches total (11 category pages including retries, 28 detail-page fetches including retries). Detail pages prioritised per instruction: Roller Shades, Sheer Elegance/Zebra, Panel Tracks, Wood Blinds, Cellular.",
+    "Transient fetch failures (empty response, succeeded on retry): roman-shades-2, tejido-natural-view, screen-3. No permanent fetch failures.",
+    "Products marked detail_page_scraped:false were listed on category pages but their detail pages were not fetched due to the ~40-fetch cap. Their URLs are captured for follow-up scraping. Unscraped roller detail pages: Spring Sheer, Sunet Sheer, Soft Vision, New York & New York Metalized, Nancy, Genova, Linen Translucent, Impress Blackout, Snowflake Blackout, Panta Flex (Fiber Glass), Moire & Boucle, Screen 5% 40 Series, Screen Crystalline 5%, Spectrum Aluminized 5%, Screen Miami 5%, Canaveral, Rustic 6%, Rain Screen 6%, Screen 10%, Screen 16% View, Screen Blackout, Pescreen 1%, Pescreen 3%. Unscraped zebra detail pages: Cobra, Emerald, Bentenly, Firence, Brilliance, Covent, Reve, Montblanc Pearl, Accordian, Linen SE, Florencia, Peacok, Inspiration SE Wood Look, Venus, Prime Dimout, Valentino.",
+    "Roman Shades and Panel Tracks link to the exact same fabric detail pages as Roller Shades; scraped fabric details are recorded once under Roller Shades. Every scraped fabric page lists recommended use as Roller Shades, Roman Shades & Sliding Panel(s).",
+    "Wood Blinds, Cellular Shades, Mini Blinds, Woven Wood, Vertical Blinds and Elite & Capriccio have no individual fabric/product HTML detail pages; their catalogues exist only as PDF downloads or are marked 'in construction' on the site.",
+    "Paris Blackout's swatch images reuse the Advantage (AD-series) image files even though the colour codes shown are PARIS-BK01 to BK06.",
+    "The Zebra Screen page is only linked without ?lang=en and serves partly in Spanish; technical data on it is in English.",
+    "Site displays fabric-catalog download sections as 'in construction' across most categories.",
+    "Fabric width/weight/thickness figures are verbatim from the site, including apparent typos (e.g. Premium Sheer Elegance stripe 'Sheer 197\"' likely means 1.97\"; Snowflake weight '200 sqm' likely 200g/sqm).",
+    "Category description for Roller Shades systems/motorization sections (verbatim): 'In LOMAN Distributors Inc. we offer you the most innovative systems on the market, and any kind of components (controls, supports, chains, tubes, connectors and caps) of the highest quality standards.' and 'Motorization systems and remote controls of exclusive designs, all with our unique LOMAN's 5 Year Warranty.'"
+  ]
+}

@@ -128,11 +128,72 @@ export interface AwningProduct {
   material_unit_price_usd: number
   fixed_cost_usd: number
   colours: string[]
-  /** Public URL of the product photo (product-images storage bucket). */
+  /** Public URL of the product photo (product-images storage bucket, or 00021 rehosted `/images/catalog/awnings/...`). */
   image_url: string | null
+  is_active: boolean
+  /** 00021: de-branded marketing copy. */
+  description: string | null
+  /** 00021: grouping under {@link AwningCategory} (nullable — legacy rows are uncategorised). */
+  category_id: string | null
+  created_at: string
+  updated_at: string
+}
+
+/**
+ * 00021: recommended NEW exterior structure (awnings had no structure yet —
+ * blinds hierarchy untouched per client directive 2026-07-16). Categories
+ * group `awning_products` for the gallery's Exterior section.
+ */
+export interface AwningCategory {
+  id: string
+  name: string
+  description: string | null
+  image_url: string | null
+  is_active: boolean
+  sort_order: number
+  created_at: string
+  updated_at: string
+}
+
+/**
+ * 00021 supplier layer (STAFF-ONLY via RLS — customers never see supplier
+ * identity). `suppliers` → `supplier_products` (catalogue lines with item
+ * codes) → `supplier_links` (which Finesse style/colour/awning a supplier
+ * item fulfils, with the supplier colour code for reordering).
+ */
+export interface Supplier {
+  id: string
+  name: string
+  website: string | null
+  contact: string | null
+  notes: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface SupplierProduct {
+  id: string
+  supplier_id: string
+  name: string
+  item_code: string | null
+  category: string | null
+  specs: string | null
+  source_url: string | null
+  notes: string | null
   is_active: boolean
   created_at: string
   updated_at: string
+}
+
+export interface SupplierLink {
+  id: string
+  supplier_product_id: string
+  blind_style_id: string | null
+  blind_colour_id: string | null
+  awning_product_id: string | null
+  supplier_colour_code: string | null
+  notes: string | null
+  created_at: string
 }
 
 export interface Component {
@@ -371,7 +432,12 @@ interface BlindHierarchyNode {
 }
 
 /** Root of the blind hierarchy (e.g. "Roller Shade", "Cellular"). Six seeded. */
-export type BlindType = BlindHierarchyNode
+export interface BlindType extends BlindHierarchyNode {
+  /** 00021: de-branded marketing copy for gallery/landing feature sections. */
+  description: string | null
+  /** 00021: rehosted, de-branded hero image (`/images/catalog/types/...`). */
+  image_url: string | null
+}
 
 /** Opacity level, scoped to a single {@link BlindType} (e.g. "Sheer", "Blackout"). */
 export interface BlindOpacity extends BlindHierarchyNode {
@@ -381,8 +447,10 @@ export interface BlindOpacity extends BlindHierarchyNode {
 /** Style level, scoped to a single {@link BlindOpacity} (e.g. "Faux wood", "Aurora"). This is the level that carries pricing — see {@link BlindStyleComponent} — and, since the removal of the separate Product Management feature, the style photo. */
 export interface BlindStyle extends BlindHierarchyNode {
   opacity_id: string
-  /** Public URL of the style photo (product-images storage bucket), shown in the Style Gallery and the admin editor. Null until an admin uploads one. */
+  /** Style photo: either an admin upload (product-images bucket) or a 00021 rehosted de-branded supplier swatch (`/images/catalog/styles/...`). */
   image_url: string | null
+  /** 00021: de-branded marketing copy shown on the gallery card. */
+  description: string | null
 }
 
 /**

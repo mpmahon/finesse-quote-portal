@@ -1,0 +1,403 @@
+{
+  "supplier": "Mitjavila",
+  "scrape_date": "2026-07-16",
+  "scope_note": "Window awnings and screens ranges only (dealer scope: blinds/awnings). Pergolas, carports, fences, photovoltaic and furniture excluded.",
+  "categories": [
+    {
+      "name": "Window Awnings",
+      "url": "https://www.mitjavila.com/our-products/window-awnings-and-screens/?lang=en",
+      "description": "A window shade offers effective sun protection to make the most of living areas or bedrooms in your home. Made to measure, window awnings are adaptable to be integrated to all types of windows. The simple interior black-out curtains do not protect from the heat. Having a retractable awning on the outside lowers the temperature of your home without denaturing it. Many colors of fabric are available to marry with your interior decoration or your exterior facade. The choice is yours to find the fabric that best suits you.",
+      "brochure": "https://www.mitjavila.com/wp-content/uploads/Telechargements/01-Stores_de_fenetre_et_screens/01-Store_bras_de_fenetre/System-SU26.pdf",
+      "products": [
+        {
+          "name": "Tensioner window blind",
+          "url": "https://www.mitjavila.com/our-products/window-awnings-and-screens/?lang=en",
+          "codes": ["SU26 (system brochure reference)"],
+          "specs": "Suitable for individual windows; compact aluminum structure; sleek vertical cable guidance; winch or motorized operation; ceiling, facade and reveal mounting.",
+          "fabrics": "Many fabric colours available (per category intro); not itemised on page.",
+          "image_urls": ["https://www.mitjavila.com/wp-content/uploads/Rendu-Store-Fenetre-a-bras-Tarif-copie.jpg"],
+          "description": "Suitable for individual windows. Compact aluminum structure. Sleek vertical cable guidance. Winch or motorized operation. Ceiling, facade, and reveal mounting."
+        },
+        {
+          "name": "Sliding window blind",
+          "url": "https://www.mitjavila.com/our-products/window-awnings-and-screens/?lang=en",
+          "codes": ["SU26 (system brochure reference)"],
+          "specs": "Suitable for individual windows; compact aluminum structure; vertical profile guidance; winch or motorized operation; ceiling, facade and reveal mounting.",
+          "fabrics": "Many fabric colours available (per category intro); not itemised on page.",
+          "image_urls": [],
+          "description": "Suitable for individual windows. Compact aluminum structure. Vertical profile guidance. Winch or motorized operation. Ceiling, facade, and reveal mounting."
+        },
+        {
+          "name": "Window arm blind",
+          "url": "https://www.mitjavila.com/our-products/window-awnings-and-screens/?lang=en",
+          "codes": ["SU26 (system brochure reference)"],
+          "specs": "Suitable for individual windows; compact aluminum structure; straight arm with spring; folds behind a traditional shutter; winch or motorized operation; ceiling, facade and reveal mounting.",
+          "fabrics": "Many fabric colours available (per category intro); not itemised on page.",
+          "image_urls": [],
+          "description": "Suitable for individual windows. Compact aluminum structure. Straight arm with spring. Folds behind a traditional shutter. Winch or motorized operation. Ceiling, facade, and reveal mounting."
+        },
+        {
+          "name": "Projection awning (spring-loaded single projection / Italian window awning)",
+          "url": "https://www.mitjavila.com/our-products/window-awnings-and-screens/projection-awning/?lang=en",
+          "codes": ["ES150 (arm support part)", "SU16 (support part, shared with guide awning)"],
+          "specs": "Projection up to 1.50 m; width up to 4.80 m; tilts up to 160 degrees; manual or motorised (two motorisations: mechanical limit switches with emergency operation, or electronic limit switches); optional wind operator (vibration sensor); Clever repairable aluminium arms with on-site tension adjustment via hexagonal key; facade, ceiling or recess (panel) installation with the same support part; frame colours RAL9010ST or RAL7016 Anthracite as standard; 100% aluminium.",
+          "fabrics": "Fabric pre-assembled on the roller tube; valance option referenced in customer quote; fabric range not itemised.",
+          "image_urls": [
+            "https://www.mitjavila.com/wp-content/uploads/Stores-bannes-traditionnels/storeaprojectionsimple-maison.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/stores-fenetres/es150-goupille.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/stores-fenetres/bras-clever-reglagetension.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/stores-fenetres/dimensions-store-projection-simple.jpg"
+          ],
+          "description": "The simple projection awning is based on the principle of the Italian window awning, which provides protection from the sun during the day. It is widely used in Spain in loggias, and is a common sight on building facades in warmer countries. With global warming, this is a product with a bright future for sun protection professionals. Its main advantage is that it can cover large areas. The MITJAVILA single spring projection awning tilts up to 160°. With a maximum tilt of 160°, you can offer your customers maximum sun protection and privacy. With a maximum dimension of almost 5 metres and an overhang of 1.5 metres, it is one of the largest on the market."
+        }
+      ]
+    },
+    {
+      "name": "Screens",
+      "url": "https://www.mitjavila.com/our-products/screens/?lang=en",
+      "description": "Discreet and effective solutions for vertical sun protection. Throughout the day we want to be protected from prying eyes, sun or mosquitoes. A vertical blind or screen can filter the light and offer the desired privacy. The different models of screens and vertical blinds from Mitjavila specifically meet these needs. Tailor-made screens perfectly fit the frame of your openings. There is a large choice of fabrics most suitable for your degree of privacy. From the most blackout to the most transparent, choose your fabric with the characteristics you need.",
+      "products": [
+        {
+          "name": "Screen 55mm - 65mm - 75mm",
+          "url": "https://www.mitjavila.com/our-products/screens/?lang=en",
+          "codes": ["55", "65", "75"],
+          "specs": "Cassette sizes 55/65/75 mm. No further specs listed on the index page (heading only, no bullet list published).",
+          "fabrics": "Large choice of fabrics from blackout to transparent (per category intro).",
+          "image_urls": [],
+          "description": "Listed on the Screens page as a model heading; no marketing bullets published for this size group on the English page."
+        },
+        {
+          "name": "Screen 85mm - 95mm",
+          "url": "https://www.mitjavila.com/our-products/screens/?lang=en",
+          "codes": ["85", "95"],
+          "specs": "Suitable for large windows; fabric fully protected in closed position; reduced overall dimension / compact; wall/recess and front/side fixing; operation by winch (gear box) or motor; box (cassette), guide rails and front bar made of aluminum extrusions; simplified assembly and disassembly (access to motor and fabric).",
+          "fabrics": "Large choice of fabrics from blackout to transparent (per category intro).",
+          "image_urls": [],
+          "description": "Suitable for large windows. Fully protected fabric in closed position. Reduced overall dimension. Aesthetics. Wall and recess mounting. Operation by winch or motor. Box, guide rails and front bar made of aluminum extrusions. Simplified assembly and disassembly (access motor and fabric)."
+        },
+        {
+          "name": "Screen 75P",
+          "url": "https://www.mitjavila.com/our-products/screens/?lang=en",
+          "codes": ["75P"],
+          "specs": "No specs listed on the index page (heading only).",
+          "fabrics": "Large choice of fabrics from blackout to transparent (per category intro).",
+          "image_urls": [],
+          "description": "Listed on the Screens page as a model heading; no marketing bullets published for 75P on the English page."
+        },
+        {
+          "name": "Screen 95mm with tensioning mechanism (Screen 95mm a tension)",
+          "url": "https://www.mitjavila.com/our-products/screens/?lang=en",
+          "codes": ["95"],
+          "specs": "Suitable for large windows; fabric fully protected when closed; springs in the load bar / front bar to tension the fabric; wall and recess (front and side) fixing; motorised operation only; cassette, guide rails and front bar in extruded aluminium profiles; easy installation and removal (access to motor and fabric).",
+          "fabrics": "Large choice of fabrics from blackout to transparent (per category intro).",
+          "image_urls": [],
+          "description": "Suitable for large windows. Fully protected fabric in closed position. Springs in the load bar that allow the fabric to be stretched. Wall and recess mounting. Motor operation only. Box, guide rails and front bar made of aluminum extrusions. Simplified assembly and disassembly (access motor and fabric)."
+        },
+        {
+          "name": "Vertical box screen / sliding cassette 105-115 (Screen ZIP)",
+          "url": "https://www.mitjavila.com/our-products/options-for-pergolas-and-enclosures/vertical-box-screen/?lang=en",
+          "codes": ["105", "115"],
+          "specs": "Cassette 105 mm or 115 mm depending on structure to be covered; square cassette profile only on 115 mm (105 available bevelled or square); torque-limiting motor tensions fabric via front-bar locking system; fabric guided in side channels (resists light winds, must be rolled up in gusts); RAL 7016ST Anthracite textured or RAL 9010ST textured standard; can be installed on pergolas, loggias, balconies and other openings; frames available alone or with fabric included (pro).",
+          "fabrics": "Acrylic or micro-perforated screen fabric; blackout achieved via lateral guidance; compare UV resistance, tear resistance and fire resistance between micro-perforated and acrylic; wide colour choice.",
+          "image_urls": [
+            "https://www.mitjavila.com/wp-content/uploads/habillages-pergolas/screen-zip/Rendu-H3-Coffre-Coulisse-1200px.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/habillages-pergolas/screen-cristal/dim-coffre-cristal.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/habillages-pergolas/screen-cristal/coffre-carre-115mm.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/habillages-pergolas/screen-cristal/coffre-biseau-105mm.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/habillages-pergolas/screen-cristal/coffre-carre-105mm-1.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/habillages-pergolas/screen-zip/c115-balcon-600x400.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/habillages-pergolas/screen-zip/coffre-screen-derooules.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/habillages-pergolas/screen-zip/detail-micro-perforee.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/habillages-pergolas/screen-zip/coffre-105mm-zip.jpg"
+          ],
+          "description": "Whether you want to cover your pergola or another opening, the vertical cassette awning is the ideal solution to protect you from the sun's rays, as well as light winds and drizzle. The added bonus? It also protects against mosquitoes, those unwelcome guests on a patio. With a cassette, 105 mm or 115 mm depending on the structure to be covered, you are guaranteed to increase everyone's relaxation time and comfort a hundredfold. Sliding outdoor awnings have a simple and proven system for easy fabric tensioning."
+        }
+      ]
+    },
+    {
+      "name": "Drop-Arm, Blinds with guides or guiderails",
+      "url": "https://www.mitjavila.com/our-products/stores-bras-droits-a-guides-et-a-coulisses/?lang=en",
+      "description": "Create a soft and intimate atmosphere by adjusting the light as you wish. The drop-arm awning is suitable for windows and doors as well as for bay windows. Very effective to protect from the sun, it is also practical to shield from prying eyes. This product is ideal when the awning is protected by soffit or other. If not, it would be preferable to choose the compact cassette awning. A vertical guide blind is naturally tensioned by the load bar. The extra little plus of this vertical sliding system is that it perfectly obscures the light since the fabric is tucked in the rails on both sides. Ideal for a room, the blackout blind does not let in any luminosity.",
+      "products": [
+        {
+          "name": "Chest 105 and 115 with slides (exterior roller blind boxes)",
+          "url": "https://www.mitjavila.com/our-products/stores-bras-droits-a-guides-et-a-coulisses/?lang=en",
+          "codes": ["105", "115"],
+          "specs": "Suitable for very large sizes; canopy fully protected when closed; ideal for bay windows and pergolas; winch or motor operation; load bar locking system for perfect canvas tension; available with bevelled or square edge; 105mm and 115mm boxes can be installed on Mitjavila horizontally-structured aluminium pergolas. Detail page: vertical-box-screen (see Screens category entry).",
+          "fabrics": "Not stated on index page (acrylic or micro-perforated per detail page).",
+          "image_urls": [],
+          "description": "Suitable for very large sizes. Canopy fully protected when closed. Ideal for bay windows and pergolas. Operated by winch or motor. Load bar locking system for perfect canvas tension. Aesthetics: Available with a beveled or square edge."
+        },
+        {
+          "name": "Balcony awning",
+          "url": "https://www.mitjavila.com/our-products/stores-bras-droits-a-guides-et-a-coulisses/?lang=en",
+          "codes": [],
+          "specs": "Suitable for large dimensions; facade, ceiling and doorway installation; arm folds along the load bar for variable positions; winch or motorized operation.",
+          "fabrics": "Not stated.",
+          "image_urls": [],
+          "description": "Suitable for large dimensions. Can be installed on facades, ceilings, and doorways. Arm folds along the load bar for variable positions. Winch or motorized operation."
+        },
+        {
+          "name": "Right arm blind (drop-arm / straight-arm blind)",
+          "url": "https://www.mitjavila.com/our-products/stores-bras-droits-a-guides-et-a-coulisses/?lang=en",
+          "codes": ["Clever arm"],
+          "specs": "Suitable for very large dimensions; facade, ceiling and reveal installation possible; new Clever arm for easier installation; winch or motorized operation. Learn-more links to the Projection awning detail page (see Window Awnings category).",
+          "fabrics": "Not stated.",
+          "image_urls": [],
+          "description": "Suitable for very large dimensions. Facade, ceiling, and reveal installation possible. New Clever arm for easier installation. Winch or motorized operation."
+        },
+        {
+          "name": "Chest 105 right arm",
+          "url": "https://www.mitjavila.com/our-products/stores-bras-droits-a-guides-et-a-coulisses/?lang=en",
+          "codes": ["105"],
+          "specs": "Suitable for large sizes; fully protected canvas in closed position; new Clever arm for easier installation; winch or motorized operation.",
+          "fabrics": "Not stated.",
+          "image_urls": [],
+          "description": "Suitable for large sizes. Fully protected canvas in the closed position. New clever arm for easier installation. Winch or motorized operation."
+        },
+        {
+          "name": "Guide blind",
+          "url": "https://www.mitjavila.com/our-products/stores-bras-droits-a-guides-et-a-coulisses/?lang=en",
+          "codes": [],
+          "specs": "Suitable for very large sizes; vertical blinds guided by aluminum rod; ceiling or doorway installation; winch or motorized operation.",
+          "fabrics": "Not stated.",
+          "image_urls": [],
+          "description": "Suitable for very large sizes. Vertical blinds. Guided by aluminum rod. Can be installed on the ceiling or doorway. Winch or motorized operation."
+        },
+        {
+          "name": "Reinforced blind with slides",
+          "url": "https://www.mitjavila.com/our-products/stores-bras-droits-a-guides-et-a-coulisses/?lang=en",
+          "codes": [],
+          "specs": "Suitable for very large sizes; fully protected fabric in closed position; ideal for bay windows and pergola; winch or motor operation; load bar locking system for perfect tension of the fabric; available in cut (bevelled) or square pan.",
+          "fabrics": "Not stated.",
+          "image_urls": [],
+          "description": "Suitable for very large sizes. Fully protected fabric in closed position. Ideal for bay windows and pergola. Operation by winch or motor. Load bar locking system for perfect tension of the fabric. Aesthetics: available in cut or square pan."
+        },
+        {
+          "name": "Reinforced chest with slides",
+          "url": "https://www.mitjavila.com/our-products/stores-bras-droits-a-guides-et-a-coulisses/?lang=en",
+          "codes": [],
+          "specs": "Suitable for very large sizes; canvas fully protected in closed position; vertical awning guided by aluminum profile; winch or motorized operation; load bar locking system for perfect canvas tension.",
+          "fabrics": "Not stated.",
+          "image_urls": [],
+          "description": "Suitable for very large sizes. Canvas fully protected in the closed position. Vertical awning guided by aluminum profile. Winch or motorized operation. Load bar locking system for perfect canvas tension."
+        }
+      ]
+    },
+    {
+      "name": "Cassette compacts (compact awnings and cassette boxes)",
+      "url": "https://www.mitjavila.com/our-products/cassette-compacts/?lang=en",
+      "description": "Cassette awnings: an essential sun protection solution, compact awnings will protect your patio from the sun and allow you to enjoy it when the weather is fine. These compact awnings are discreet on your facade and do not detract from its appearance. Today, most compact awnings are fully integrated cassette awnings. This means that the fabric and mechanism (the articulated arms, which can be adjusted) are protected. All our frames are made of extruded aluminium. All MITJAVILA compact awning and cassette models (except Loggia 95, Coffre 95, Coffre 600EX and M5000) are now equipped with the new CLEVER ARM - durable and, above all, repairable. For most of our awnings, we offer the option of adding a solar-powered motorised awning kit.",
+      "products": [
+        {
+          "name": "Cassette 235 (C235, integral box awning with LED)",
+          "url": "https://www.mitjavila.com/our-products/cassette-compacts/integral-box-awning-led/?lang=en",
+          "codes": ["C235"],
+          "specs": "Maximum width 6 m; projection 3.50 m max (3.00 m max with solar operator); pitch 5-20 degrees; overall cassette dimensions 155mm x 253mm; gear (manual) or motor drive with manual override; motor removable from the side without dismantling the awning; optional LED lighting kit under the cassette; 100% aluminium (extruded wall bracket, casing, load bar, arm support, roller tube; cast aluminium trim; drop-forged arm support; A2 stainless steel screws); independent arm supports; central support possible on larger models.",
+          "fabrics": "Generally made from UV-resistant acrylic fabric (solution-dyed acrylic), manufactured in-house.",
+          "image_urls": [
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/Rendu_C235-Nuit.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/encombre-coffre-inclinaison-1-300x270.png",
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/zoom-coffre235-enjoliveur-600x400.png",
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/store-coffre-integral-led_C235-600x400.png",
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/COFFRE235-vuelaterale-600x400.png",
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/COFFRE235_ouvert-1-600x400.png"
+          ],
+          "brochure": "https://www.mitjavila.com/wp-content/uploads/Telechargements/04-Bannes_et_coffres_compacts/19-Coffre_235/C235_FICHE_TECH_FR_MITJAVILA_LITE.pdf",
+          "description": "The 235 box is a store banne coffre integral led with a trendy rectangular design with a maximum width of 6 metres. It blends in perfectly with facades, offering a perspective worthy of luxury sun protection. To add atmosphere, the optional LED lighting fits neatly under the cassette, so it can be used in the same way when the terrace awning is open or closed. This is a 100% aluminium awning with powder-coated parts and profiles for a structure that will stand the test of time."
+        },
+        {
+          "name": "Cassette 95 (C95, small awning)",
+          "url": "https://www.mitjavila.com/our-products/cassette-compacts/?lang=en",
+          "codes": ["C95"],
+          "specs": "Small-dimension cassette awning. Not equipped with Clever Arm (exception noted on category page). Detail page only available in French (les-produits-mitjavila/bannes-et-coffres-compacts/store-banne-coffre-petite-dimension-c95).",
+          "fabrics": "Not stated on English page.",
+          "image_urls": [],
+          "brochure": "https://www.mitjavila.com/wp-content/uploads/Telechargements/99-Docs-divers/gamme95-135/Brochure_Coffre95-135_MITJAVILA_EN.pdf",
+          "description": "Cassette 95 - Small awning (listed on the Cassette compacts index; English detail page not available)."
+        },
+        {
+          "name": "Loggia 125 (L125)",
+          "url": "https://www.mitjavila.com/our-products/cassette-compacts/loggia-125-awning/?lang=en",
+          "codes": ["L125", "BMF / BMFYY arms"],
+          "specs": "Maximum width 4.80 m; maximum projection 3.00 m; inclination up to 60 degrees (ceiling installation angle 15-90 degrees, vertical awning possible); facade or ceiling installation; can be motorised; option: traditional front bar; optional side panel to hide screws (2022 redesign); pole/structure colour White RAL9010 or grey RAL7016 as standard; 100% aluminium; BMFYY arms with tension springs, removable and repairable.",
+          "fabrics": "Designed to showcase the awning fabric; specific fabric range not itemised.",
+          "image_urls": [
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/L125-rendu-mitj-2.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/encombrel125-300x194.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/rendu-l125-300x149.jpg"
+          ],
+          "brochure": "https://www.mitjavila.com/wp-content/uploads/Telechargements/99-Docs-divers/gamme95-135/Brochura_Coffre95-135_MITJAVILA_EN.pdf",
+          "description": "The Loggia 125 awning has been around for over twenty years. Its advantage? Its simplicity. To install a Loggia awning, simply attach the mounting plates to a wall or ceiling. Both types of installation are possible. The awning's light weight makes it easy to install. Our Loggia 125 awning was redesigned in 2022. The standard colour is powder-coated white. It remains the most economical solution for shading your balcony or terrace while showcasing the awning fabric."
+        },
+        {
+          "name": "Cassettes 125 - 135 (C135 motorised awning, best seller)",
+          "url": "https://www.mitjavila.com/our-products/cassette-compacts/c135-motorised-awning/?lang=en",
+          "codes": ["C125", "C135"],
+          "specs": "Maximum width 5.98 m; projection 3.50 m; motorised operation; self-supporting cassette awning with quick-release fasteners; ceiling or facade installation; variable fastener aligning front bar with cassette and guide block; LED option integrated into the cassette; structure colour standard RAL 9010 satin gloss (other finishes optional); extruded aluminium profiles and cast parts; aluminium roller tube.",
+          "fabrics": "Closed cassette protects the fabric; customer example uses Tibelly Collection fabrics; range not itemised.",
+          "image_urls": [
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/c135-mitjavila.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/c135-plafond-encombre.png",
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/c135-murale-encombre.png",
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/c135-piscine-600x400.jpg"
+          ],
+          "brochure": "https://www.mitjavila.com/wp-content/uploads/Telechargements/04-Bannes_et_coffres_compacts/08-Coffre_135/Coffre135V2_Multi2018.pdf",
+          "instructions": "https://www.mitjavila.com/wp-content/uploads/Telechargements/04-Bannes_et_coffres_compacts/08-Coffre_135/NOT_SC125-135_MITJ.pdf",
+          "description": "The C135 awning is a large projection awning but also suitable for smaller dimensions. It offers a wide range of sizes. Its design was redefined in 2015 and is still relevant today. Like all our motorised awnings, the C135 is a timeless structure with extruded aluminium profiles and cast parts manufactured in our factories."
+        },
+        {
+          "name": "Cassettes 250 and 275 - Suspension series (wood frame house)",
+          "url": "https://www.mitjavila.com/our-products/cassette-compacts/box-awnings-250-and-275-suspension-series/?lang=en",
+          "codes": ["C250", "C275"],
+          "specs": "Width up to 6 m; extension (projection) 3 m max; pitch 0-20 degrees; gear or motor drive with manual override; motor removable from the side; optional complete LED lighting kit; independent multiple mounting brackets (minimum 4, patented) alignable with timber-frame rafters or exterior insulation; C250 horizontal box (removable upper part, ceiling mount possible), C275 vertical box; fully enclosed self-supporting aluminium box; independent arm supports shiftable toward centre; slope adjustment locks arm in both directions.",
+          "fabrics": "Fabric protection inside fully enclosed box; range not itemised.",
+          "image_urls": [
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/coffre250-stores-MOB-1200px.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/c250-Ouvert-600x400.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/C250-Fixation-Bois-600x400.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/Coffre-275-ferme-600x400.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/Coffre-275-fixebois-600x400.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/coffre275-01.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/coffre250-01_mitjavila.jpg"
+          ],
+          "brochure": "https://www.mitjavila.com/wp-content/uploads/Telechargements/04-Bannes_et_coffres_compacts/14-Coffre_250/Coffre%20250%20et%20275-%20ANG.pdf",
+          "description": "The 250 and 275 cassettes can be adapted to any type of installation thanks to the possibility of increasing the number of wall supports to reduce the stresses exerted on the facade, in moving them to align with the frame of the house and offset the arm supports in order to balance the tension on the canvas. This system allows installation on any type of surface such as on the exterior insulation for example. Exterior awnings 250 and 275 are specially designed for timber frame houses."
+        },
+        {
+          "name": "Cassette 260 (C260 large awning)",
+          "url": "https://www.mitjavila.com/our-products/cassette-compacts/large-cassette-awning-260/?lang=en",
+          "codes": ["C260"],
+          "specs": "Maximum projection up to 3.50 m; maximum width 6 m; tilt adjustment 3-30 degrees; box depth 265 mm; frame colours White, Anthracite or other colours on request; optional complete LED lighting kit (low voltage); offset arms for strength; variator claw aligning load bar with box and guide block; arms adjusted by eccentric screw; intermediate support possible; independent fixing brackets; conforms to EN13561:2015.",
+          "fabrics": "Fabric optimally protected in closed box; range not itemised.",
+          "image_urls": [
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/Rendu-C260_MITJAVILA.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/encombrement-coffre260-300x234.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/support-fixation-coffre260.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/Coffre260-03-600x400.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/c260-toldossaldise.jpg"
+          ],
+          "brochure": "https://www.mitjavila.com/wp-content/uploads/Telechargements/04-Bannes_et_coffres_compacts/11-Coffre_260/C260_2023_MITJAVILA_FR.pdf",
+          "description": "The large 260 cassette awning was launched on the market around twenty years ago. It's robust and tried and tested for large dimensions, and strong thanks to its offset arms. The fabric of the awning is optimally protected, and the variator claw allows the load bar to be aligned with the box and guide block, with the arms adjusted by an eccentric screw."
+        },
+        {
+          "name": "Cassette 262 (C262 aluminium awning)",
+          "url": "https://www.mitjavila.com/our-products/cassette-compacts/aluminum-blind-box-262/?lang=en",
+          "codes": ["C262", "TM-TME / TMS motors", "Gliss'Control system", "BMF arms"],
+          "specs": "Width up to 7.15 m (with intermediate fixing support, required from 6 m); projection (advance) up to 3.50 m; motorised only (winch operation not available), TM-TME or TMS motors with emergency operation, motor accessible/replaceable without dismantling; facade installation only; optional radio remote control motorisation, LED strip lighting (usable with box slightly open), wind/vibration sensor; winding tube compensation system (Gliss'Control) for fabric tensioning in long lengths; extruded lacquered aluminium load bar; aluminium winding tube; A2 stainless steel hardware; standard colour White RAL 9010; other colours: RAL 8019, 8014, 7022, 5014, 3005, 6021, 7011, 9005, 7016, 9006, 1015, 7035; removable BMF arms; 10 years parts availability.",
+          "fabrics": "Better fabric tensioning in long lengths via compensation system; fabric range not itemised.",
+          "image_urls": [
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/Rendu-C262-Mitja-300DPI-Nuit.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/coffre260-support-intermediaire.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/coffre262-joue-encombre-300x253.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/c262_001-600x400.jpg"
+          ],
+          "brochure": "https://www.mitjavila.com/wp-content/uploads/Telechargements/04-Bannes_et_coffres_compacts/18-Coffre_262/C262_MITJAVILA_FR_light.pdf",
+          "description": "This aluminum awning has a weatherproof structure designed for XXL size. With extruded aluminum profiles (including the roll-up tube), aluminum castings (trim) and extruded parts (arm support), and A2 stainless steel hardware, it is built to last. This 100% aluminum awning has all the advantages of the 260 box with a new rectangular graphic design."
+        },
+        {
+          "name": "Cassette 220 (C220 modern retractable awning)",
+          "url": "https://www.mitjavila.com/our-products/cassette-compacts/modern-retractable-awning-c220/?lang=en",
+          "codes": ["C220"],
+          "specs": "Maximum width 6 m; projection 3.50 m; perfectly square box 22x22 cm (220 mm footprint); extruded aluminium structure; motorised; integrated LED lighting option (works open or closed); roll-up lambrequin option (vertical blind in the load bar, 0-60 cm, winch operated); frame colour RAL 7016 anthracite as standard; removable and repairable Clever arms; assembled and installed in one piece.",
+          "fabrics": "Not itemised; adjustable roll-up valance (lambrequin) for low-sun shading.",
+          "image_urls": [
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/C220-1024px.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/dimensions-C220.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/bannes-coffres-compacts/ENCOMBRE-c220.jpg"
+          ],
+          "brochure": "https://www.mitjavila.com/wp-content/uploads/Telechargements/04-Bannes_et_coffres_compacts/23-Coffre_220/C220_FICHE_TECH_EN.pdf",
+          "description": "Elegance and functionality come together in the world of outdoor design with our design awning square in aluminium. It has all the benefits of our brand's compact awnings in a square design with a footprint of 220mm. Whether you want to create a peaceful haven for your relaxing afternoons or a convivial space for your outdoor evenings (LED lighting), this folding arm awning is designed to meet every need."
+        }
+      ]
+    },
+    {
+      "name": "Traditional awnings",
+      "url": "https://www.mitjavila.com/our-products/traditional-awnings/?lang=en",
+      "description": "A proven classic design, the traditional awning guarantees reliable sun protection for all types of facades. The traditional awning, whether installed on the wall or on the ceiling, is an economical solution to protect against the sun. Small or large sizes or even very large coverage, the fabric will effectively protect you from the sun. All our awnings are manufactured to conform to European resistance standards.",
+      "products": [
+        {
+          "name": "Loggia 112 (L112 traditional awning)",
+          "url": "https://www.mitjavila.com/our-products/traditional-awnings/store-traditionnel-l112/?lang=en",
+          "codes": ["L112"],
+          "specs": "Maximum projection 3 m; maximum width 4.80 m; tilt 0-90 degrees; aluminium winding tube; ceiling or facade installation (direct fixing); cast aluminium construction; crossed arms possible for small dimensions; conforms to EN13561; quick access to adjustment screws.",
+          "fabrics": "Acrylic fabric (listed in 'Loggia 112 in brief').",
+          "image_urls": [
+            "https://www.mitjavila.com/wp-content/uploads/Stores-bannes-traditionnels/L112-lopespub.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/Stores-bannes-traditionnels/L112-dimensions.jpg",
+            "https://www.mitjavila.com/wp-content/uploads/Stores-bannes-traditionnels/rea-l112-polyclose.jpg"
+          ],
+          "brochure": "https://www.mitjavila.com/wp-content/uploads/Telechargements/06-Bannes_traditionelles/02-Loggia_112/FICHE-TECH_L112_FR.pdf",
+          "description": "The L112 traditional awning from Mitjavila is a loggia awning made from cast aluminium. It has the advantage of being inconspicuous when closed under an eaves or roof edge. It's a traditional awning with direct fixing (front and ceiling fixing) and very simple orientation adjustment with quick access to the adjustment screws."
+        },
+        {
+          "name": "Independant 100 (Independent 100)",
+          "url": "https://www.mitjavila.com/our-products/traditional-awnings/?lang=en",
+          "codes": ["I100"],
+          "specs": "Traditional awning in cast aluminium; direct fixing (two versions: facade and ceiling); very simple orientation adjustment with quick access to adjustment screws; conforms to EN13561. (Bullets shown in French on the English page.)",
+          "fabrics": "Not stated.",
+          "image_urls": [],
+          "description": "Banne traditionnelle en piece fonderie aluminium. Store avec fixation directe (deux versions: facade et plafond). Reglage d'orientation tres simple avec acces rapide aux vis de reglage. Resistance suivant la norme europeenne EN13561."
+        },
+        {
+          "name": "Monobloc 100 (M100)",
+          "url": "https://www.mitjavila.com/our-products/traditional-awnings/?lang=en",
+          "codes": ["M100"],
+          "specs": "Self-supporting awning on steel tube; offset arm support (ideal for large widths); simplified fixing with multi-support (facade and ceiling); simple orientation adjustment; crossed arms possible; conforms to EN13561. (Bullets shown in French on the English page.)",
+          "fabrics": "Not stated.",
+          "image_urls": [],
+          "brochure": "https://www.mitjavila.com/wp-content/uploads/Telechargements/06-Bannes_traditionelles/04-Monobloc_100/M100_2015.pdf",
+          "description": "Store autoporte sur tube acier. Support de bras deporte (ideal grande largeur). Fixation simplifiee avec multi support (facade et plafond). Reglage d'orientation tres simple avec acces rapide aux vis de reglage. Possibilite de faire des bras croises. Resistance suivant la norme europeenne EN13561."
+        },
+        {
+          "name": "Loggia 300A",
+          "url": "https://www.mitjavila.com/our-products/traditional-awnings/?lang=en",
+          "codes": ["L300A"],
+          "specs": "Small-dimension awning; traditional awning in cast aluminium; direct fixing (facade and ceiling installation); simple orientation adjustment; conforms to EN13561. (Bullets shown in French on the English page.)",
+          "fabrics": "Not stated.",
+          "image_urls": [],
+          "description": "Store de petite dimension. Store traditionnel en piece fonderie aluminium. Store avec fixation directe (pose facade et pose plafond). Reglage d'orientation tres simple avec acces rapide aux vis de reglage. Resistance suivant la norme europeenne EN13561."
+        },
+        {
+          "name": "Monobloc 300A (M300A)",
+          "url": "https://www.mitjavila.com/our-products/traditional-awnings/?lang=en",
+          "codes": ["M300A"],
+          "specs": "Self-supporting awning on steel tube; offset arm support (ideal for large widths); simplified fixing with multi-support (facade and ceiling); simple orientation adjustment; conforms to EN13561. (Bullets shown in French on the English page.)",
+          "fabrics": "Not stated.",
+          "image_urls": [],
+          "description": "Store autoporte sur tube acier. Support de bras deporte (ideal grande largeur). Fixation simplifiee avec multi support (facade et plafond). Reglage d'orientation tres simple avec acces rapide aux vis de reglage. Resistance suivant la norme europeenne EN13561."
+        },
+        {
+          "name": "Store tradition (Tradition awning)",
+          "url": "https://www.mitjavila.com/our-products/traditional-awnings/?lang=en",
+          "codes": [],
+          "specs": "100% aluminium structure; less frame, more fabric; direct fixing; very simple orientation adjustment with quick access; conforms to EN13561. Learn-more links to a pro-access page (login required). Video: https://youtu.be/7v_FCZxQIzg. (Bullets shown in French on the English page.)",
+          "fabrics": "Not stated ('moins d'armature, plus de toile' - less frame, more fabric).",
+          "image_urls": [],
+          "description": "Structure 100% aluminium. Moins d'armature, plus de toile. Fixation directe. Reglage d'orientation tres simple avec acces rapide aux reglages. Resistance suivant la norme europeenne EN13561."
+        },
+        {
+          "name": "Monobloc 5000 (M5000)",
+          "url": "https://www.mitjavila.com/our-products/traditional-awnings/?lang=en",
+          "codes": ["M5000"],
+          "specs": "Very, very large coverage (for professionals only); protective canopy available; conforms to EN13561; extruded aluminium profile and aluminium parts; not equipped with Clever Arm (exception noted on Cassette compacts page).",
+          "fabrics": "Not stated.",
+          "image_urls": [],
+          "description": "Awning with very, very large coverage (for professionals only). Protective canopy available. Resistance in compliance with European standard EN13561. Time-proof structure, extruded aluminum profile and aluminum parts."
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "15 page fetches used (5 index pages + 10 product detail pages), within the ~25 fetch budget. All fetches succeeded; no failed pages.",
+    "Screens index page (screens/?lang=en) has no per-model detail pages linked and no model images in the fetched markdown; two heading groups (Screen 55/65/75 and Screen 75P) carry no descriptive bullets on the English page.",
+    "The 'Chest 105 and 115 with slides' entry on the Drop-Arm page links to the vertical-box-screen detail page (filed under Screens category here); the same 105/115 cassette product serves both listings.",
+    "Cassette 95 (C95) detail page exists only in French (store-banne-coffre-petite-dimension-c95); not fetched per English-pages scope. Recorded from the index entry plus the 95-135 range brochure (English PDF).",
+    "C250/C275 detail page is marked noindex/nofollow by the site but is publicly reachable and was captured.",
+    "C220 was not listed on the Cassette compacts index page but was discovered via cross-links from C135/C235 detail pages and included as an in-scope cassette model.",
+    "Traditional awnings English page shows most model bullets in untranslated French; transcribed verbatim (accents simplified to ASCII in this file).",
+    "Fabric information is generic across the site (acrylic solution-dyed or micro-perforated screen fabric; Tibelly Collection mentioned in one C135 customer project); Mitjavila publishes a separate canvas collection under espace-pro (login/professional area).",
+    "Several index-page product blocks render empty image tags in the site markup, so no image URLs could be captured for those models.",
+    "Basket awnings, self-supporting/square-bar cassette awnings, conservatory/velum awnings and retractable patio awnings are additional awning categories on the site that were outside the five requested index pages."
+  ]
+}

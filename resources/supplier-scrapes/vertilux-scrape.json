@@ -1,0 +1,330 @@
+{
+  "supplier": "Vertilux",
+  "scraped_date": "2026-07-16",
+  "source_site": "https://partner.vertilux.com (public pages, no login)",
+  "applications": [
+    {
+      "name": "Roller Shades",
+      "url": "https://partner.vertilux.com/en/applications/roller-shades",
+      "description": "Roller Shades provide living spaces with numerous options for adaptability and comfort: large windows, small lighting openings, lack of louvered shutters, multi-functional window openings... These shades give any setting a cutting-edge look. [Description truncated on page; full text behind JS 'read more'.] Fabrics section (verbatim): Vertilux has more than 200 fabric collections with over 1,500 references. Our fabrics have been designed for indoor and outdoor applications, for any level of privacy and visibility. Vertilux offers decorative fabrics with plain, sheer, screen, printed, jacquard and many other designs and...",
+      "image_urls": [
+        "https://s3.amazonaws.com/vertilux-website/applications/images/000/000/001/original/App_RollerShades.jpg",
+        "https://s3.amazonaws.com/vertilux-website/applications/thumbnails/000/000/001/original/Menu_RollerShades.jpg"
+      ],
+      "collections": [
+        {
+          "name": "High Living 2.1 Collection",
+          "url": "https://partner.vertilux.com/en/collections/high-living-collection",
+          "codes": [],
+          "opacity": "Mixed - plain, sheer, natural looking, screen, printed, jacquard and blackout fabrics",
+          "specs": "Emphasizes recycled materials and special treatments; organized by color",
+          "colours": [],
+          "image_urls": [],
+          "description": "High Living 2.1 is a modern and sophisticated collection innovatively organized by color. Its large variety of fabrics includes everything from bright whites to earthy sands, casual chocolates and elegant blacks. Each color is presented in a range of different styles, including plain, sheer, natural looking, screen, printed, jacquard and blackout fabrics. High Living 2.1 fabrics offer the perfect balance between transparency, privacy and visual comfort. Additionally, this collection emphasizes the use of recycled materials and special treatments. In the High Living 2.1 collection many different types of fabrics coexist in an effort to meet a diverse range of needs and lifestyles. It is the most complete, modern and innovative collection in the market."
+        },
+        {
+          "name": "Rollux Collection",
+          "url": "https://partner.vertilux.com/en/collections/rollux-collection",
+          "codes": [],
+          "opacity": "Variety of opacities (light control through blackout)",
+          "specs": "Light control, UV protection, durability",
+          "colours": [],
+          "image_urls": [],
+          "description": "The Rollux® Collection offers an extensive selection of high-quality fabrics for roller shades, featuring a variety of textures, colors, and opacities to suit any space. Designed for both style and functionality, these fabrics provide excellent light control, UV protection, and durability. Whether you seek a modern, minimalist look or a warm, textured finish, the Rollux® Collection delivers superior performance and aesthetic versatility."
+        },
+        {
+          "name": "Polyscreen Vision® Collection",
+          "url": "https://partner.vertilux.com/en/collections/polyscreenvision-collection",
+          "codes": [],
+          "opacity": "Solar screen (openness factors typically 1%-20% across the range; see VX Screen note)",
+          "specs": "100% free of phthalates, formaldehyde, lead and BPA; antibacterial, antifungal, flame retardant; energy-saving; sound-dampening; high durability",
+          "colours": [],
+          "image_urls": [],
+          "description": "Our recognized Polyscreen® Vision fabric collection is 100% free of phthalates, formaldehyde, lead, and BPA. These technical fabrics are characterized by being antibacterial, antifungal, and flame retardant. They help reduce energy consumption, dampen sound wave propagation, and have high durability."
+        },
+        {
+          "name": "VX Screen Collection",
+          "url": "https://partner.vertilux.com/en/collections/solar-screen",
+          "codes": [],
+          "opacity": "Openness/light-filtering options from 1% to 20%, plus complete blackout options",
+          "specs": "Solar screen fabrics for workspaces, home decor and multifamily residential projects; 30+ year heritage line",
+          "colours": [],
+          "image_urls": [],
+          "description": "For more than 30 years the VX Screen Collection has been part of our lives, witnessing precious moments in ambiances of comfort and functionalism. Whether creating workspaces, home decor, or multifamily residential projects, the VX Screen Collection will adapt to any space. You can choose from a wide range of light-filtering options from 1% to 20% or go complete blackout when needed."
+        },
+        {
+          "name": "Engineered Shades Collection",
+          "url": "https://partner.vertilux.com/en/collections/eco-contract-collection",
+          "codes": [],
+          "opacity": "Technical fabrics for indoor and outdoor applications (various; flame retardant options available)",
+          "specs": "Antibacterial, antifungal, free of harmful substances, energy saving; flame retardant options; contributes points toward LEED certifications; targeted at multifamily residential, commercial, hospitality and health facilities",
+          "colours": [],
+          "image_urls": [],
+          "description": "The Engineered Shades collection is composed of a variety of technical fabrics for indoor and outdoor applications. The fabrics in this collection are designed for the multifamily residential, commercial, hospitality and health facilities sectors. The Engineered Shades collection has environmentally friendly fabrics that are antibacterial, antifungal, free of harmful substances, help save energy, among other special features. There are also flame retardant options available. Fabrics with these characteristics award point towards LEED certifications."
+        },
+        {
+          "name": "Gleamorous Collection",
+          "url": "https://partner.vertilux.com/en/collections/gleamorous-collection",
+          "codes": [],
+          "opacity": "Decorative/technical fabrics (opacity not stated)",
+          "specs": "Durable colorful, gold and silver yarns; decorative fabric with technical-fabric benefits",
+          "colours": [],
+          "image_urls": [],
+          "description": "A completely eye-catching collection composed of classy and elegant fabrics made with the most durable colorful, gold, and silver yarns selection that interpose to create stunning fabric designs. Enjoy the pleasure of having a gorgeous fabric with the benefits of a technical fabric in your home."
+        },
+        {
+          "name": "Stucco (Decorative fabric, example fabric line)",
+          "url": "https://partner.vertilux.com/en/products/stucco-decorative",
+          "codes": ["0-002-32-XXXXX"],
+          "opacity": "Decorative (coated plain; opacity class not explicitly stated on page)",
+          "specs": "Composition: 100% PES + Acrylic Coating; Weight: 165 g/m2 (4.87 oz/yd2) [General Information section lists 160 g/m2 +/-5%]; Thickness: 0.35 mm +/-5%; Roll Width: 2.8 m (110.2 in); Roll Length: 30 m (33 yd); Light Fastness: Class 4-5; Flame Retardant: NFPA 701; Packing Unit: 83.72 SQYD/Roll; Certificates: Greenguard Gold, Oeko-Tex 100, Vertilux 5 Years Warranty; Cleaning: vacuum for regular maintenance, do not wring, do not bleach, do not dry clean or steam clean",
+          "colours": [
+            {"name": "White", "code": "0-002-32-01110"},
+            {"name": "Off White", "code": "0-002-32-02110"},
+            {"name": "Linen", "code": "0-002-32-03110"},
+            {"name": "Sand", "code": "0-002-32-04110"},
+            {"name": "Mocha", "code": "0-002-32-05110"},
+            {"name": "Stone", "code": "0-002-32-06110"}
+          ],
+          "image_urls": [
+            "http://vertilux-website.s3.amazonaws.com/public/original/00023201110.jpg",
+            "http://vertilux-website.s3.amazonaws.com/public/original/00023202110.jpg",
+            "http://vertilux-website.s3.amazonaws.com/public/original/00023203110.jpg",
+            "http://vertilux-website.s3.amazonaws.com/public/original/00023204110.jpg",
+            "http://vertilux-website.s3.amazonaws.com/public/original/00023205110.jpg",
+            "http://vertilux-website.s3.amazonaws.com/public/original/00023206110.jpg"
+          ],
+          "description": "Stucco decorative roller-shade fabric. Application listed on page: Roller Shades. Full technical properties, cleaning instructions and certificates published on product page; no marketing paragraph beyond specs."
+        }
+      ]
+    },
+    {
+      "name": "Neolux Dual Shades",
+      "url": "https://partner.vertilux.com/en/applications/roller-dual-shades",
+      "description": "Neolux® Dual Shades is a contemporary, trendy window covering solution that has grown fast during recent years, not only in European and Latin American countries but also in the United States. Neolux® Dual Shades collection by Vertilux includes 9... [Description truncated on page; full text behind JS 'read more'.]",
+      "image_urls": [
+        "https://s3.amazonaws.com/vertilux-website/applications/images/000/000/002/original/App_DualShades.jpg",
+        "https://s3.amazonaws.com/vertilux-website/applications/thumbnails/000/000/002/original/Menu_DualShades.jpg"
+      ],
+      "collections": [
+        {
+          "name": "Neolux Collection",
+          "url": "https://partner.vertilux.com/en/collections/neolux-collections",
+          "codes": [],
+          "opacity": "Dual (zebra) shade fabrics - alternating sheer/solid bands; 3 different opening options for privacy/light control",
+          "specs": "",
+          "colours": [],
+          "image_urls": [],
+          "description": "The Neolux collection allows you to choose from a variety of decorative fabrics that will make your spaces look out of the ordinary. The qualities of these fabrics go far beyond the visual, they give you total control over your privacy with 3 different opening options that are perfect for every moment. With Neolux® Dual Shades you decide how much light comes into your spaces."
+        },
+        {
+          "name": "Neolux Avant Collection",
+          "url": "https://partner.vertilux.com/en/collections/neolux-avant-collection",
+          "codes": [],
+          "opacity": "Dual shade fabrics, flame retardant; 3 opening options",
+          "specs": "Flame retardant fabrics; more than 100 colors available across the collection",
+          "colours": [],
+          "image_urls": [],
+          "description": "The Avant collection of Neolux® Dual Shades brings elegance and distinction through a wide variety of shades, featuring our flame retardant fabrics that will not only give you peace of mind but also will enhance your space. Your windows will be full of life with more than 100 colors available. With Neolux Dual Shade you can choose between 3 different opening options, giving you complete control over the privacy you need."
+        },
+        {
+          "name": "Neolux Essence Collection",
+          "url": "https://partner.vertilux.com/en/collections/neolux-essence-collection",
+          "codes": [],
+          "opacity": "Dual shade decorative fabrics; 3 opening options",
+          "specs": "",
+          "colours": [],
+          "image_urls": [],
+          "description": "The Essence collection of Neolux® Dual Shades allows you to choose from a variety of decorative fabrics that will make your spaces look out of the ordinary. The qualities of these fabrics go far beyond the visual, they give you total control over your privacy with 3 different opening options that are perfect for every moment. With Neolux® Dual Shades you decide how much light comes into your spaces."
+        }
+      ]
+    },
+    {
+      "name": "Sliding Panels",
+      "url": "https://partner.vertilux.com/en/applications/sliding-panels",
+      "description": "This blind is specially designed to both, cover large glass surfaces and to separate areas in multipurpose spaces. The diversity of textile finishes that are available (Polyscreen Vision, Decorative and Blackout), transform any interior into a... [Description truncated on page; full text behind JS 'read more'.]",
+      "image_urls": [
+        "https://s3.amazonaws.com/vertilux-website/applications/images/000/000/005/original/App_SlidingPanels.jpg",
+        "https://s3.amazonaws.com/vertilux-website/applications/thumbnails/000/000/005/original/Menu_SlidingPanels.jpg"
+      ],
+      "collections": [
+        {
+          "name": "Sliding Panel fabric range (Polyscreen Vision, Decorative and Blackout finishes)",
+          "url": "https://partner.vertilux.com/en/applications/sliding-panels",
+          "codes": [],
+          "opacity": "Three finish families stated on application page: Polyscreen Vision (screen), Decorative, and Blackout",
+          "specs": "Shares fabric ranges with the roller-shade collections (Polyscreen Vision, decorative and blackout lines); specific sliding-panel collection page not reachable without JS/login",
+          "colours": [],
+          "image_urls": [],
+          "description": "Per application page: 'The diversity of textile finishes that are available (Polyscreen Vision, Decorative and Blackout), transform any interior into a...' (truncated on site)."
+        },
+        {
+          "name": "Zen Sliding Panels System (hardware system)",
+          "url": "https://partner.vertilux.com/en/collections/zen-sliding-panels-system",
+          "codes": [],
+          "opacity": "",
+          "specs": "2, 3, 4 or 5 channels; cord, wand or motor operation; head rail splicing available; POM plastic components",
+          "colours": [],
+          "image_urls": [],
+          "description": "Zen system is designed to cover large windows and to separate spaces in both residential and commercial environments. It works with 2, 3, 4 or 5 channels and with cord, wand or motor operation modes. Zen system's stylish design hides the mechanism, creating a uniform aesthetic. It also eliminates the light gap almost completely. The fabrication and installation of the rails is simple. Additionally, head rail 'splicing' is available for very wide applications and shipping. Zen system has plastic components made of 'POM' to reduce the drag and friction of the panels, resulting in better sliding and less noise."
+        }
+      ]
+    },
+    {
+      "name": "Cellular Shades (Pleated & Cellular)",
+      "url": "https://partner.vertilux.com/en/applications/pleated-cellular-shades",
+      "description": "The concept of minimizing the stack height in a basically decorative shade is the main characteristic of the Cellular Shade by Vertilux. You will find the right solutions for your decorative or sun protection needs within our collection.",
+      "image_urls": [
+        "https://s3.amazonaws.com/vertilux-website/applications/images/000/000/006/original/Cellularshade.jpg",
+        "https://s3.amazonaws.com/vertilux-website/applications/thumbnails/000/000/006/original/cellularshade7"
+      ],
+      "collections": [
+        {
+          "name": "Cellular Shades Collection",
+          "url": "https://partner.vertilux.com/en/collections/high-living-pleated",
+          "codes": [],
+          "opacity": "Decorative and sun-protection options (specific opacities not listed on public index)",
+          "specs": "Fabricator tool available: https://vertilux.shinyapps.io/CellularCalculator/",
+          "colours": [],
+          "image_urls": [],
+          "description": "The concept of minimizing the stack height in a basically decorative shade is the main characteristic of the Cellular Shade by Vertilux. You will find the right solutions for your decorative or sun protection needs with the Cellular Shades Collection."
+        }
+      ]
+    },
+    {
+      "name": "Dunes Shades",
+      "url": "https://partner.vertilux.com/en/applications/dunes-shade",
+      "description": "The Evolution of Traditional Draperies. Dunes are made of high-quality materials resulting in a soft and lightweight fabric that provides a pleasant texture and adds body to the shade.",
+      "image_urls": [
+        "https://s3.amazonaws.com/vertilux-website/applications/images/000/000/010/original/dunes05.jpg",
+        "https://s3.amazonaws.com/vertilux-website/applications/thumbnails/000/000/010/original/Dunes-01_copia.jpg"
+      ],
+      "collections": [
+        {
+          "name": "Dunes Fabrics",
+          "url": "https://partner.vertilux.com/en/collections/dunes-aurora",
+          "codes": [],
+          "opacity": "Sheer-front drapery-style shade fabrics; includes Dim Out variant (Dunes Luna Dim Out)",
+          "specs": "System technical catalogue: https://s3.amazonaws.com/vertilux-website/cabinet_files/files/000/002/216/original/Dunes_System_Catalogue.pdf",
+          "colours": [],
+          "image_urls": [],
+          "description": "The Evolution of Traditional Draperies. Dunes are made of high-quality materials resulting in a soft and lightweight fabric that provides a pleasant texture and adds body to the shade. Known fabric lines from products index: Dunes Aurora (0-000-98, 5 colors), Dunes Nova (0-000-99, 5 colors), Dunes Star (0-000-A3, 5 colors), Dunes Luna Dim Out (0-000-A4, 5 colors)."
+        },
+        {
+          "name": "Dunes Aurora (fabric line)",
+          "url": "https://partner.vertilux.com/en/products/dunes-aurora",
+          "codes": ["0-000-98-0X000"],
+          "opacity": "Translucent/sheer combination (solid vanes + sheer facing; Dim Out available in sister line Dunes Luna)",
+          "specs": "Composition: 100% PES; Weight: 150 g/m2 +/-3% (4.42 oz/yd2); Thickness: Solid 0.38 mm +/-2%, Sheer 0.20 mm +/-2%; Roll Width: 40 cm (15.75 in); Roll Length: 100 m +/-5% (109 yd); Tensile Strength: 35.8 daN/5cm; Tearing Strength: 1.7 daN; Light Fastness: >6; Packing Unit: 109.36 Yd x 0.437445 Yd (40 cm x 100 mt); Cleaning: wipe gently with wet sponge, do not vacuum, do not wash, do not wring, do not bleach, do not dry clean/steam clean",
+          "colours": [
+            {"name": "White", "code": "0-000-98-01000"},
+            {"name": "Ivory", "code": "0-000-98-02000"},
+            {"name": "Beige", "code": "0-000-98-03000"},
+            {"name": "Biscuit", "code": "0-000-98-04000"},
+            {"name": "Smoke", "code": "0-000-98-07000"}
+          ],
+          "image_urls": [
+            "http://vertilux-website.s3.amazonaws.com/public/original/00009801000.jpg",
+            "http://vertilux-website.s3.amazonaws.com/public/original/00009802000.jpg",
+            "http://vertilux-website.s3.amazonaws.com/public/original/00009803000.jpg",
+            "http://vertilux-website.s3.amazonaws.com/public/original/00009804000.jpg",
+            "http://vertilux-website.s3.amazonaws.com/public/original/00009807000.jpg"
+          ],
+          "description": "Dunes Aurora fabric line for Dunes Shades. Application listed on page: Dunes Shades. Full technical properties and cleaning instructions published on product page."
+        },
+        {
+          "name": "Dunes operating systems (Cord/Chain, Wand, Motor)",
+          "url": "https://partner.vertilux.com/en/collections/dunes-cord-chain-operation",
+          "codes": [],
+          "opacity": "",
+          "specs": "Related system collections: dunes-cord-chain-operation, dunes-wand-operation, dunes-motor-operation; shared technical catalogue PDF: https://s3.amazonaws.com/vertilux-website/cabinet_files/files/000/002/216/original/Dunes_System_Catalogue.pdf",
+          "colours": [],
+          "image_urls": [],
+          "description": "Cord or Chain operation for Dunes Shades. / Wand Operation System for Dunes Shades. / Motorization System for Dunes Shades."
+        }
+      ]
+    },
+    {
+      "name": "Horizontal Blinds",
+      "url": "https://partner.vertilux.com/en/applications/horizontal-blinds",
+      "description": "Horizontal Wood Blind offers a distinguished character to any space. The 2\" size of the slats and the numerous natural or stained wood finishes are easily matched with the different types of furnishings and settings. The light filtering ability,... [Description truncated on page; full text behind JS 'read more'.] Wood Slats section (verbatim): Vertilux 2\" basswood slats are made from the highest quality of wood, guaranteeing durability and dimensional stability. We also offer faux wood options that imitate a natural wood finish. The wood slats, valances and bottom rails are available in a range of different tonalities, including... Aluminum Coil section (verbatim): Vertilux has three types of aluminum coils: solid color, perforated aluminum and Touch of Wood. All of them come in 1/2\", 1\" and 2\" sizes. The solid color aluminum coils are available in matte and glossy finishes in a range of hues that are perfect for any type of decoration. If you are looking for...",
+      "image_urls": [
+        "https://s3.amazonaws.com/vertilux-website/applications/images/000/000/008/original/App_HorizontalBlinds.jpg",
+        "https://s3.amazonaws.com/vertilux-website/applications/thumbnails/000/000/008/original/Menu_WoodBlinds.jpg"
+      ],
+      "collections": [
+        {
+          "name": "2\" Horizontal Blinds (Basswood)",
+          "url": "https://partner.vertilux.com/en/collections/basswood",
+          "codes": [],
+          "opacity": "Slat-based light filtering (not fabric opacity classes)",
+          "specs": "2\" basswood slats; faux wood options; slats, valances and bottom rails in coordinated tonalities including cherry, oak, maple",
+          "colours": [],
+          "image_urls": [],
+          "description": "Vertilux 2\" basswood slats are made from the highest quality of wood, guaranteeing durability and dimensional stability. We also offer faux wood options that imitate a natural wood finish. The wood slats, valances and bottom rails are available in a range of different tonalities, including cherry, oak, maple and many other hues that can be color coordinated to provide a uniform look. The innate quality and warmth of the wood will create cozy and elegant settings."
+        },
+        {
+          "name": "Louverlux (Aluminum Coil)",
+          "url": "https://partner.vertilux.com/en/collections/louverlux",
+          "codes": [],
+          "opacity": "Solid, perforated, and imitation-wood aluminum slats",
+          "specs": "Three coil types: solid color, perforated aluminum, Touch of Wood; sizes 1/2\", 1\" and 2\"; matte and glossy finishes",
+          "colours": [],
+          "image_urls": [],
+          "description": "Vertilux has three types of aluminum coils: solid color, perforated aluminum and Touch of Wood. All of them come in 1/2\", 1\" and 2\" sizes. The solid color aluminum coils are available in matte and glossy finishes in a range of hues that are perfect for any type of decoration. If you are looking for a more intricate pattern and texture, we have perforated aluminum options. Our Touch of Wood aluminum coils will give your living spaces a warmer and more natural look with their imitation wood finish."
+        },
+        {
+          "name": "1\" Horizontal Blinds Signum System (hardware system)",
+          "url": "https://partner.vertilux.com/en/collections/signum-system",
+          "codes": [],
+          "opacity": "",
+          "specs": "For 1\" aluminum horizontal blinds; lacquered metal head and terminal; wand or cord operation; wide range of component colors",
+          "colours": [],
+          "image_urls": [],
+          "description": "Signum system is designed for 1\" aluminum horizontal blinds. It is characterized by its modern design, which is inspired by the latest trends. The head and terminal of this system are made of lacquered metal, providing a sleek finish with simple lines. The components of the Signum system are available in a wide range of colors, so that they can be color coordinated with the slat or the head rail. Signum system can be operated with a wand or cord."
+        }
+      ]
+    }
+  ],
+  "additional_products_index_sample": [
+    {"code": "0-000-07-XXXXX", "name": "PolyscreenVision 550 Crystal Vertical", "colours_available": 1, "url": "https://partner.vertilux.com/en/products/polyscreenvision-crystal-vertical"},
+    {"code": "0-000-09-XXXXX", "name": "Roma", "colours_available": 8, "url": "https://partner.vertilux.com/en/products/roma"},
+    {"code": "0-000-10-XXXXX", "name": "PolyscreenVision 550 Vertical", "colours_available": 4, "url": "https://partner.vertilux.com/en/products/polyscreenvision-550-vertical"},
+    {"code": "0-000-14-XXXXX", "name": "Itaca", "colours_available": 59, "url": "https://partner.vertilux.com/en/products/itaca"},
+    {"code": "0-000-18-0XX00", "name": "Bimini Vertical", "colours_available": 16, "url": "https://partner.vertilux.com/en/products/bimini-34c0b50a-9c8a-40d2-a712-ea344491203e"},
+    {"code": "0-000-19-XXXXX", "name": "Quebec", "colours_available": 5, "url": "https://partner.vertilux.com/en/products/quebec"},
+    {"code": "0-000-33-XXXXX", "name": "Calgary", "colours_available": 8, "url": "https://partner.vertilux.com/en/products/calgary"},
+    {"code": "0-000-34-XXXXX", "name": "Toronto", "colours_available": 9, "url": "https://partner.vertilux.com/en/products/toronto"},
+    {"code": "0-000-39-0XX00", "name": "Cozumel", "colours_available": 7, "url": "https://partner.vertilux.com/en/products/cozumel"},
+    {"code": "0-000-42-XXXXX", "name": "Venice", "colours_available": 8, "url": "https://partner.vertilux.com/en/products/venice"},
+    {"code": "0-000-50-XXXXX", "name": "Olympic", "colours_available": 14, "url": "https://partner.vertilux.com/en/products/olympic"},
+    {"code": "0-000-53-XXXXX", "name": "Cascade", "colours_available": 8, "url": "https://partner.vertilux.com/en/products/cascade"},
+    {"code": "0-000-92-0XX00", "name": "South Beach Vertical", "colours_available": 10, "url": "https://partner.vertilux.com/en/products/south-beach-vertical"},
+    {"code": "0-000-93-XXXXX", "name": "South Beach Black Out Vertical", "colours_available": 11, "url": "https://partner.vertilux.com/en/products/south-beach-black-out-vertical"},
+    {"code": "0-000-98-0X000", "name": "Dunes Aurora", "colours_available": 5, "url": "https://partner.vertilux.com/en/products/dunes-aurora"},
+    {"code": "0-000-99-00X00", "name": "Dunes Nova", "colours_available": 5, "url": "https://partner.vertilux.com/en/products/dunes-nova"},
+    {"code": "0-000-A3-XXXXX", "name": "Dunes Star", "colours_available": 5, "url": "https://partner.vertilux.com/en/products/dunes-star"},
+    {"code": "0-000-A4-XXXXX", "name": "Dunes Luna Dim Out", "colours_available": 5, "url": "https://partner.vertilux.com/en/products/dunes-luna-dim-out"},
+    {"code": "0-001-82-1XXXX", "name": "Bolero Translucent", "colours_available": 7, "url": "https://partner.vertilux.com/en/products/bolero"},
+    {"code": "0-001-82-2XXXX", "name": "Privee Blackout", "colours_available": 5, "url": "https://partner.vertilux.com/en/products/privee"},
+    {"code": "0-001-83-1XXXX", "name": "Romance Translucent", "colours_available": 5, "url": "https://partner.vertilux.com/en/products/romance"},
+    {"code": "0-001-83-2XXXX", "name": "Noite Blackout", "colours_available": 5, "url": "https://partner.vertilux.com/en/products/noite"},
+    {"code": "0-001-84-10X00", "name": "Solis", "colours_available": 2, "url": "https://partner.vertilux.com/en/products/solis"}
+  ],
+  "site_structure_reference": {
+    "collections_index": "https://partner.vertilux.com/en/collections (lists ~80 collections/system lines with verbatim descriptions)",
+    "products_index": "https://partner.vertilux.com/en/products (61 paginated pages, ~23 products per page; each product page at /en/products/<slug> lists colourway codes + names, swatch image URLs at http://vertilux-website.s3.amazonaws.com/public/original/<code>.jpg, composition, roll width/length, weight, thickness, FR rating, certificates and application mapping)",
+    "fabric_criteria_taxonomy_from_site_filter": ["Ecological", "Jacquards", "Natural Look", "Plains", "Printed", "Sheers", "Metallic", "Dim Out", "Texturized", "Screen 1%", "Screen 3%", "Screen 5%", "Screen 6%", "Screen 8%", "Screen 10%", "Screen 20%", "Decorative Screen", "Blackout", "SRC", "Light Filtering", "Neolux", "Drapes", "Dunes"]
+  },
+  "notes": [
+    "Application-page marketing descriptions are truncated by the site itself (teaser text ending in '...'); the full paragraphs load via JavaScript 'read more' and were not retrievable with plain HTTP fetches.",
+    "Collection detail pages (/en/collections/<slug>, e.g. high-living-collection, rollux-collection, polyscreenvision-collection, solar-screen, gleamorous-collection, dunes-aurora, neolux-collections) consistently returned empty responses to the fetcher (likely server-side error or JS-only rendering for anonymous/non-JS clients). Collection names, URLs and verbatim descriptions were instead captured from the /en/collections index page, which renders fully.",
+    "The fabric carousels on application pages (the per-application fabric line links) are JavaScript-rendered and did not appear in fetched HTML, so the application-to-fabric-line mapping was reconstructed from collection names/descriptions and the two working product detail pages.",
+    "Individual fabric detail pages at /en/products/<slug> ARE publicly accessible and rich (colour codes + names, swatch URLs, composition, width, FR rating, certificates). Two were captured in full: Stucco (roller decorative) and Dunes Aurora. 'Pinpointe Blackout FR' could not be located (slugs /en/products/pinpointe-blackout-fr and /en/products/pinpointe both returned empty).",
+    "The full products index spans 61 pages (~1,400 items including motors/components); only page 1 was captured within the fetch budget. The ?application= and ?application_id= URL filters do not filter server-side (the filter form is JS-driven).",
+    "Site notes that logged-in accounts 'unlock more complete information about our products' - pricing and some data are login-gated; everything captured here is from public pages.",
+    "sitemap.xml does not exist; /en/search and /en/product_type/fabrics also returned empty responses.",
+    "Approximately 22 successful page fetches were used (plus ~15 empty/failed attempts), within the ~40-fetch budget.",
+    "Vertical Blinds, Roman Shades, Drapes and Exterior Solutions applications exist on the site but were out of scope per the brief; several products in the index sample (e.g. Itaca, Bimini Vertical, South Beach) belong to Vertical Blinds."
+  ]
+}

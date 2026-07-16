@@ -25,8 +25,19 @@ export interface GalleryCard {
   colours: { name: string; hex: string | null }[]
   /** Batch 11 Part 1: the blind's hierarchy Type NAME directly (every style has a real Type — no more slug indirection). Awning cards are always null — they filter under their own "Awning" bucket. */
   blind_type: string | null
+  /** 00021: the hierarchy Opacity name (null for awnings) — drives the dependent Opacity filter. */
+  opacity: string | null
+  /** 00021: de-branded marketing copy shown on the card. */
+  description: string | null
   /** Indicative TTD price for a standard 36×48 window (viewer's customer tier). */
   from_ttd: number | null
+}
+
+/** 00021: per-type feature banner content (shown when filtered to one type). */
+export interface TypeFeature {
+  name: string
+  description: string | null
+  image_url: string | null
 }
 
 const OTHER_UNMAPPED = 'Other / Unmapped'
@@ -46,6 +57,8 @@ function blindTypeCategory(card: GalleryCard): string {
 
 interface GalleryClientProps {
   cards: GalleryCard[]
+  /** 00021: per-type feature content (copy + hero) for the filtered-type banner. */
+  typeFeatures?: TypeFeature[]
   isStaff: boolean
   /** All retail + wholesale customers. Only populated when isStaff=true. */
   customers?: CustomerOption[]
@@ -53,9 +66,11 @@ interface GalleryClientProps {
   properties?: PropertyOption[]
 }
 
-/** Filterable product grid: Blind Type (Batch 7), images + swatches + indicative pricing. */
-export function GalleryClient({ cards, isStaff, customers = [], properties = [] }: GalleryClientProps) {
+/** Filterable product grid: Blind Type + Opacity + text search (00021), images + swatches + indicative pricing. */
+export function GalleryClient({ cards, typeFeatures = [], isStaff, customers = [], properties = [] }: GalleryClientProps) {
   const [typeFilter, setTypeFilter] = useState('all')
+  const [opacityFilter, setOpacityFilter] = useState('all')
+  const [search, setSearch] = useState('')
 
   // "Quote from style" (staff only): which card triggered the picker, and
   // the resolved query-param values to carry through to the configurator.
@@ -84,13 +99,69 @@ export function GalleryClient({ cards, isStaff, customers = [], properties = [] 
     return Array.from(categories).sort()
   }, [cards])
 
-  const filtered = cards.filter(c => typeFilter === 'all' || blindTypeCategory(c) === typeFilter)
+  /** Opacity options DEPEND on the selected type (00021) — mirrors the configurator's cascading pick. */
+  const opacityOptions = useMemo(() => {
+    const opacities = new Set<string>()
+    for (const c of cards) {
+      if (typeFilter !== 'all' && blindTypeCategory(c) !== typeFilter) continue
+      if (c.opacity) opacities.add(c.opacity)
+    }
+    return Array.from(opacities).sort()
+  }, [cards, typeFilter])
+
+  /** Free-text search across style, type, opacity and colour names — the colour filter, without a 200-entry dropdown. */
+  const q = search.trim().toLowerCase()
+  const filtered = cards.filter(c => {
+    if (typeFilter !== 'all' && blindTypeCategory(c) !== typeFilter) return false
+    if (opacityFilter !== 'all' && c.opacity !== opacityFilter) return false
+    if (!q) return true
+    const haystack = [c.make, c.model, c.opacity ?? '', ...c.colours.map(col => col.name)].join(' ').toLowerCase()
+    return haystack.includes(q)
+  })
+
+  /** Feature banner for the currently selected type (00021 marketing copy). */
+  const feature = typeFilter !== 'all' ? typeFeatures.find(f => f.name === typeFilter) ?? null : null
 
   return (
     <>
-      <div className="mb-6 max-w-xs">
-        <FilterSelect label="Blind type" value={typeFilter} onChange={setTypeFilter} options={typeOptions} />
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="w-full sm:max-w-[220px]">
+          <FilterSelect
+            label="Blind type"
+            value={typeFilter}
+            onChange={v => { setTypeFilter(v); setOpacityFilter('all') }}
+            options={typeOptions}
+          />
+        </div>
+        {opacityOptions.length > 0 && (
+          <div className="w-full sm:max-w-[220px]">
+            <FilterSelect label="Opacity" value={opacityFilter} onChange={setOpacityFilter} options={opacityOptions} />
+          </div>
+        )}
+        <input
+          type="search"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search styles or colours…"
+          className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 sm:max-w-[260px]"
+        />
       </div>
+
+      {/* Type feature banner: de-branded marketing copy + hero for the selected range */}
+      {feature && (feature.description || feature.image_url) && (
+        <div className="relative mb-6 overflow-hidden rounded-xl border">
+          {feature.image_url && (
+            <Image src={feature.image_url} alt={feature.name} fill className="object-cover" unoptimized />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/50 to-black/20" />
+          <div className="relative max-w-2xl p-6 sm:p-8">
+            <h2 className="text-xl font-bold text-white">{feature.name}</h2>
+            {feature.description && (
+              <p className="mt-2 text-sm leading-relaxed text-white/85">{feature.description}</p>
+            )}
+          </div>
+        </div>
+      )}
 
       {filtered.length === 0 ? (
         <p className="py-12 text-center text-sm text-muted-foreground">No styles match those filters.</p>
@@ -126,6 +197,9 @@ export function GalleryClient({ cards, isStaff, customers = [], properties = [] 
                       <Badge key={s} variant="outline" className="text-[11px] capitalize">{s}</Badge>
                     ))}
                   </div>
+                  {card.description && (
+                    <p className="mt-2 line-clamp-2 text-xs leading-snug text-muted-foreground">{card.description}</p>
+                  )}
                 </div>
 
                 {/* Colour swatches */}

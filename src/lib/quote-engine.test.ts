@@ -126,6 +126,8 @@ describe('awnings', () => {
     colours: [],
     image_url: null,
     is_active: true,
+    description: null,
+    category_id: null,
     created_at: '',
     updated_at: '',
   }
@@ -253,9 +255,9 @@ describe('lineItemTtd with a units multiplier', () => {
 describe('shared estimate layer matches the engine to the cent', () => {
   /** Minimal single-style hierarchy fixture mirroring COMPONENTS as that style's pricing rows. */
   const HIERARCHY: BlindHierarchy = {
-    types: [{ id: 't1', name: 'Roller Shade', is_active: true, sort_order: 0, created_at: '', updated_at: '' }],
+    types: [{ id: 't1', name: 'Roller Shade', description: null, image_url: null, is_active: true, sort_order: 0, created_at: '', updated_at: '' }],
     opacities: [{ id: 'o1', type_id: 't1', name: 'Sheer', is_active: true, sort_order: 0, created_at: '', updated_at: '' }],
-    styles: [{ id: 's1', opacity_id: 'o1', name: 'Standard', image_url: null, is_active: true, sort_order: 0, created_at: '', updated_at: '' }],
+    styles: [{ id: 's1', opacity_id: 'o1', name: 'Standard', image_url: null, description: null, is_active: true, sort_order: 0, created_at: '', updated_at: '' }],
     colours: [],
     valances: [],
     styleComponents: COMPONENTS.map(c => ({

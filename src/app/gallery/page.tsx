@@ -108,9 +108,19 @@ export default async function GalleryPage() {
       colours: coloursForStyle(hierarchy, style.id).map(c => ({ name: c.name, hex: c.hex_code })),
       /** Batch 11 Part 1: the resolved Type NAME (not a product slug) — every style has a real Type, so this drives the Blind Type filter directly. */
       blind_type: type?.name ?? null,
+      /** 00021: the Opacity name — drives the dependent Opacity filter. */
+      opacity: opacity?.name ?? null,
+      /** 00021: de-branded marketing copy from the supplier catalogue mapping. */
+      description: style.description ?? null,
       from_ttd: fromTtd,
     }
   })
+
+  // 00021: per-type feature content (de-branded marketing copy + hero) shown
+  // above the grid when the gallery is filtered to a single Blind Type.
+  const typeFeatures = hierarchy.types
+    .filter(t => t.description || t.image_url)
+    .map(t => ({ name: t.name, description: t.description, image_url: t.image_url }))
 
   const awningCards = ((awningProducts ?? []) as AwningProduct[]).map(p => {
     let fromTtd: number | null = null
@@ -128,6 +138,8 @@ export default async function GalleryPage() {
       styles: ['awning'],
       colours: p.colours.map(c => ({ name: c, hex: hexByColour[c.toLowerCase()] ?? null })),
       blind_type: null,
+      opacity: null,
+      description: p.description ?? null,
       from_ttd: fromTtd,
     }
   })
@@ -142,6 +154,7 @@ export default async function GalleryPage() {
       </div>
       <GalleryClient
         cards={[...blindCards, ...awningCards]}
+        typeFeatures={typeFeatures}
         isStaff={isStaff}
         customers={customers}
         properties={properties}
