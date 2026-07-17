@@ -15,6 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Plus, Pencil, Trash2, Check, X, Link2, Search } from 'lucide-react'
 import { toast } from 'sonner'
 import { SupplierLinkManager } from '@/components/admin/supplier-link-manager'
+import { describeTarget } from '@/lib/supplier-links'
 import type { BlindHierarchy } from '@/lib/blind-hierarchy'
 import type { AwningProduct, Supplier, SupplierLink, SupplierProduct } from '@/types/database'
 
@@ -222,9 +223,20 @@ export function SupplierProductManager({ supplier, products, allProducts, allLin
   }
 
   async function handleDelete(p: SupplierProduct) {
-    const linkCount = allLinks.filter(l => l.supplier_product_id === p.id).length
-    const warning = linkCount > 0
-      ? `Delete "${p.name}"? This also removes its ${linkCount} Finesse allocation(s). This cannot be undone.`
+    const productLinks = allLinks.filter(l => l.supplier_product_id === p.id)
+    // Name any target this item is the ONLY primary source for — deleting
+    // it cascades to these supplier_links rows (00021 FK), so the admin
+    // should know up front which styles/colours/awning products are about
+    // to lose their primary supplier, not discover it later.
+    const orphanedPrimaryTargets = productLinks
+      .filter(l => l.is_primary_source)
+      .map(l => describeTarget(hierarchy, awningProducts, l))
+    const warning = productLinks.length > 0
+      ? `Delete "${p.name}"? This also removes its ${productLinks.length} Finesse allocation(s).` +
+        (orphanedPrimaryTargets.length > 0
+          ? ` This is the ONLY primary source for: ${orphanedPrimaryTargets.join(', ')} — those will be left with no primary supplier.`
+          : '') +
+        ' This cannot be undone.'
       : `Delete "${p.name}"?`
     if (!confirm(warning)) return
     const supabase = createClient()

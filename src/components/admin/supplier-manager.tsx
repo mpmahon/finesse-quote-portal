@@ -15,6 +15,7 @@ import { Plus, Pencil, Trash2, Search, ChevronLeft, Globe, Phone, Package } from
 import { toast } from 'sonner'
 import { SupplierProductManager } from '@/components/admin/supplier-product-manager'
 import { SupplierAllocationLookup } from '@/components/admin/supplier-allocation-lookup'
+import { describeTarget } from '@/lib/supplier-links'
 import type { BlindHierarchy } from '@/lib/blind-hierarchy'
 import type { AwningProduct, Supplier, SupplierLink, SupplierProduct } from '@/types/database'
 
@@ -127,8 +128,21 @@ export function SupplierManager({ suppliers, supplierProducts, supplierLinks, aw
 
   async function handleDelete(s: Supplier) {
     const count = productCounts[s.id] ?? 0
+    // Deleting a supplier cascades to its supplier_products, which cascades
+    // to their supplier_links (00021 FKs) — including any is_primary_source
+    // rows. Name those targets explicitly so the admin knows exactly which
+    // styles/colours/awning products are about to lose their only primary
+    // source, rather than finding out later when the cost reference goes blank.
+    const supplierProductIds = new Set(supplierProducts.filter(p => p.supplier_id === s.id).map(p => p.id))
+    const orphanedPrimaryTargets = supplierLinks
+      .filter(l => l.is_primary_source && supplierProductIds.has(l.supplier_product_id))
+      .map(l => describeTarget(hierarchy, awningProducts, l))
     const warning = count > 0
-      ? `Delete "${s.name}"? This also deletes all ${count} of its catalogue item(s) and any Finesse item allocations linked to them. This cannot be undone.`
+      ? `Delete "${s.name}"? This also deletes all ${count} of its catalogue item(s) and any Finesse item allocations linked to them.` +
+        (orphanedPrimaryTargets.length > 0
+          ? ` This is the ONLY primary source for: ${orphanedPrimaryTargets.join(', ')} — those will be left with no primary supplier.`
+          : '') +
+        ' This cannot be undone.'
       : `Delete "${s.name}"?`
     if (!confirm(warning)) return
     const supabase = createClient()

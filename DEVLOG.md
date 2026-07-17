@@ -74,6 +74,7 @@ Server components fetch via `createClient()` (server Supabase client) → RLS sc
 ## 4. Current stage
 
 **Done**:
+- Supplier layer (2026-07-16/17) — supplier catalogue (migration `00021`, Vertilux/Loman/Mitjavila scraped into our own style/colour hierarchy) is **APPLIED and DEPLOYED** (commit `e199d6f`). Built on top of it: a full Supplier Administration module — cost capture + allocation (migration `00022`) plus `/admin/suppliers` UI — is **code-complete and reviewed (8.5/10)** but **migration 00022 is NOT applied to live Supabase and nothing in this module is committed or deployed**, blocked on rotating the expired Supabase access token. Details in the change log.
 - Batch 7 (2026-07-07) — blind option hierarchy rework (Type → Opacity → Style → Colour, plus per-Type Valance/Finisher), implemented per the client-approved spec. **Migrations 00015 + 00016 + 00017 all APPLIED to live Supabase and the app DEPLOYED to production** (https://finesse-quote-portal.vercel.app, Vercel CLI, 2026-07-07 evening). Live seed verified: 6 types / 15 opacities / 12 styles / 0 colours / 14 valances / 12 hardware rules / max width 228″. **Still uncommitted** — Mark has not asked for a commit yet; the deployed build came from the working tree. Details in the change log.
 - Batch 6 (2026-07-07) — client-feedback quick wins from the Mike demo review, implemented and deployed with Batch 7 above. Details in the change log. The full feedback triage lives at `..\outputs\2026-07-07_finesse-client-feedback-backlog.md`; the glossary draft for Mike at `..\outputs\2026-07-07_finesse-glossary-draft.md` / `.docx`.
 - Batch 5 (2026-07-07) — design doc v2 implemented in full: WS1 cleanup & hardening, WS2 role dashboards + mobile shell, WS3 style gallery & visual quoting, WS4 quote lifecycle + jobs & scheduling. Migrations 00009–00014 applied to live Supabase (plus the previously-missed 00005 nullable product_id fix). Demo dataset seeded for client review (`scripts/seed-demo.ts`). Details in the change log.
@@ -81,7 +82,7 @@ Server components fetch via `createClient()` (server Supabase client) → RLS sc
 - Batch 2 — Schema migrations applied to the live Supabase project (`vcnakuehawpkzzuzkixb`). TypeScript types, admin managers, register page, and quote-engine import updated to match. Salesman reseller-discount logic removed. Pricing editor gained retail / wholesale markup fields. Audit-log UI relabelled to "Actor" / "Activity".
 - Batch 3 — Admin/salesman customer-creation flow. New `src/app/properties/actions.ts` with two server actions (`createCustomerAction` via service_role, `createPropertyAction` via authenticated server client). `PropertyList` rewritten as a multi-step dialog with customer picker + inline new-customer form for staff. Add-Property button unhidden for everyone (staff routes through picker; customers route direct to property form). Properties page server component fetches the customer list when staff is viewing.
 
-**In progress**: (none — awaiting Mark's QA of Batch 6, then apply migration 00015, commit, deploy)
+**In progress**: Applying migration 00022, committing, and deploying the Supplier Administration module — blocked on rotating the expired Supabase access token. Separately: whether supplier cost should ever feed customer-facing quote pricing is an open decision, not yet made by Mark. Also still outstanding: Mark's QA verdict on Batches 6–8 in production, then apply migration 00015, commit, deploy.
 
 **Next up**: Batches 8–12 from the feedback backlog (`..\outputs\2026-07-07_finesse-client-feedback-backlog.md`) — 8: size thresholds / oversized filtering / hardware factors (blocked on Mike's posted note + motorization threshold — the hardware-tier pricing itself is still TBD, see open questions); 9: blind filter + multi-option quotes with price ranges; 10: wholesale room-quantity quoting; 11: 16-status order workflow; 12: supplier Catalogue (brochure PDFs). Also still open from Batch 7: linking `products` to the new hierarchy (deferred — see spec open question 2) once Mike's Style/Colour data is in; Batch 7's own "config (mount/recess depths, size limits)" half wasn't in this pass's brief — check with Mark whether that's folded into Batch 8 or still pending. All need Mark's go — they reshape the data model.
 
@@ -102,49 +103,119 @@ Server components fetch via `createClient()` (server Supabase client) → RLS sc
 
 ## 5. Handover point
 
-**2026-07-16 (latest).** Supplier-catalogue batch is verified, committed
-(`e199d6f`), and live in production; migration `00021` already applied. Supabase
-API keys rotated to the new `sb_publishable_`/`sb_secret_` system and legacy keys
-disabled (see change log + §7). Also committed this session: the **00022
-supplier-cost/allocation batch** (migration + `/admin/suppliers` UI) — ⚠ **migration
-00022 is NOT applied to live Supabase; apply before any deploy** (see change log).
-Three things still open: (a) **local `main` is ahead of `origin/main`** — nothing
-pushed to GitHub yet (blocked on rotating the 2 GitHub PATs first); (b) **apply
-migration 00022** before the next production deploy; (c) remaining rotations —
-Supabase **DB password** + Supabase **PATs** + 2 **GitHub PATs**. A UX structure/usability audit was produced
-this session (client-level `outputs/2026-07-16_finesse-portal-ux-structure-audit.docx`)
-with an implementation plan (action-queue admin dashboard, move What-If into
-Pricing, "Catalogue & Pricing" nav group) — Mark parked implementation until the
-product-info/style-gallery work settled, which this batch now delivers, so that
-redesign is the natural next pickup. Earlier context below.
+**2026-07-17 (latest).** The Supplier Administration module (`/admin/suppliers`
+route, supplier + product + allocation managers, sidebar entry, read-only
+reference-cost line on the blind style editor, and migration
+`00022_supplier_cost_and_allocation.sql`) was **already built and committed** in
+`7e1472e` (2026-07-16). It is **committed but NOT applied to the live DB and NOT
+deployed** (blocked on rotating the expired Supabase access token, see §7).
+`00022` adds `supplier_products` cost/currency/unit-of-measure/price-timestamp
+columns, `supplier_links.quantity_per` + `is_primary_source`, and three partial
+unique indexes enforcing one primary source per blind style/colour/awning target.
+**This session (2026-07-17) added an incremental improvement on top, still
+UNCOMMITTED in the working tree**: a security-definer RPC
+`reassign_primary_source()` making primary-source switching atomic (fixes a
+latent zero-primary bug in the committed code), the matching refactor in
+`supplier-link-manager.tsx`, and delete-confirmation warnings in the supplier /
+product managers. Lint + typecheck clean; reviewed 8.5/10. ⚠ NB: this session
+began from a STALE working-tree DEVLOG (a Dropbox version regression that omitted
+`7e1472e`), which is why the initial diagnosis mistakenly treated the module as
+non-existent — corrected here. Local `main` is ahead of `origin/main` (so
+`7e1472e` isn't on GitHub yet). Open decision Mark hasn't made yet:
+whether supplier cost should ever feed customer-facing quote pricing —
+`quote-engine.ts` was deliberately left untouched this pass, supplier cost is
+reference/reporting only.
 
-Batch 8 (2026-07-08: hierarchy-as-product + quantities + 16-stage workflow + select sweep + demo reseed — see change log) is applied (migrations 00019 + 00020), demo-reseeded, and deployed to https://finesse-quote-portal.vercel.app. Blind pricing now lives per-style in Blind Management with **placeholder donor pricing** — Mike must set real per-style component prices there. Awaiting Mark's QA of this round. Earlier context: Batch 7 shipped 2026-07-07 as `83e78f1`; migrations 00015–00018 applied the same day.
+Also still open: nothing pushed to GitHub (blocked on rotating 2 GitHub PATs);
+Supabase DB password + 1 Supabase PAT unrotated; couldn't verify live whether
+Mark's login account actually has the `administrator` role (Supabase MCP token
+was unauthorized this session). A UX structure/usability audit was produced
+2026-07-16 (`outputs/2026-07-16_finesse-portal-ux-structure-audit.docx`) —
+implementation (action-queue admin dashboard, move What-If into Pricing,
+"Catalogue & Pricing" nav group) is parked, natural next pickup once the
+supplier admin module ships.
 
-Batch 7 specifics to QA (now live): the six seeded Types only have real Opacity/Style data for Horizontal, Dune, and Cellular — Sliding Panel, Roller Shade, and Neolux Shade show "options pending" past Opacity (no Styles seeded) and every Style has zero Colours seeded (all TBD per the source doc). Mike enters all of that through **Admin → Blind Management**'s new drill-down editor (Type → its Opacities/Valances → Opacity's Styles → Style's Colours), which replaced the flat `catalog-manager.tsx`. The old `shade_types`/`styles`/`colours` tables are renamed to `legacy_shade_types`/`legacy_styles`/`legacy_colours` (never dropped) — `products.shade_types/styles/colours` still read from them for the admin Product Manager's make/model tagging (now labelled legacy/reference-only in that form), since products aren't linked to the new hierarchy yet.
+Batches 5–8 (role dashboards, style gallery, quote lifecycle/jobs, blind
+hierarchy, quantities, 16-stage workflow) are live in production as of
+2026-07-08 — full detail in the change log below. Outstanding from that work:
+Mike still needs to enter the TBD Style/Colour data and per-style component
+prices in Blind Management, and price the hardware-size tiers; markup %
+defaults (currently 40/20 placeholder) need confirming; Batches 9–12 (blind
+filter panel, wholesale room-quantity quoting, workflow polish, supplier
+brochure catalogue) await Mark's prioritisation.
 
-Next session should: (a) get Mark's QA verdict on Batch 6 + 7 together (esp. the rebuilt gallery quote-from-style flow, the landing-page marketing imagery, and the new Blind Management drill-down), (b) send Mike the glossary draft (`..\outputs\2026-07-07_finesse-glossary-draft.docx`) for verification, (c) get Mike started entering the TBD Styles/Colours in Blind Management, (d) pick up Batch 8 (size thresholds / hardware factors) once Mark green-lights.
-
-Waiting on the user for: Batch 6 + 7 QA on production (Mark will check the next deployment for the KPI-card + configurator fixes — already live); decision on building the Blind Type-only filter panel now vs waiting for product↔hierarchy linkage (Batch 9); Batch 8–12 prioritisation; Mike's hardware-threshold posted note + motorization threshold (received/implemented) + hardware-tier pricing (still TBD) + the TBD Style/Colour data for Sliding Panel/Roller Shade/Neolux Shade and every Colour (Mike enters via Blind Management once live); markup/formula confirmation; token rotation (two GitHub PATs + one Supabase PAT, still unrotated). Demo logins unchanged (`Finesse4Blinds!`; `demo.sales@` / `demo.retail@` / `demo.wholesale@finessett.com`); demo reseed via `npx tsx scripts/seed-demo.ts`.
+Demo logins unchanged (`Finesse4Blinds!`; `demo.sales@` / `demo.retail@` /
+`demo.wholesale@finessett.com`); demo reseed via `npx tsx scripts/seed-demo.ts`.
 
 ## 6. Change log
 
-### 2026-07-16 — Supplier cost capture + allocation (migration 00022, ⚠ NOT APPLIED)
+### 2026-07-17 — Supplier Administration module built (migration 00022 + `/admin/suppliers` UI, code-complete, NOT applied/committed)
+
+Diagnosed the gap first: the supplier layer added in migration 00021
+(`suppliers`/`supplier_products`/`supplier_links`, populated with Vertilux/Loman/
+Mitjavila) had **zero application UI** — no admin screen read or wrote those
+tables — and `supplier_products` had no cost/price column at all. Mark/Mike had
+no way to view supplier products, allocate them to the sales structure, or store
+supplier unit costs. Mark approved the "Full module" scope.
+
+**Migration `00022_supplier_cost_and_allocation.sql` — written, NOT applied**
+(blocked on the expired Supabase access token). Adds: `supplier_products.cost_price
+numeric(10,4)` + `currency` + `unit_of_measure` + `price_updated_at` (trigger-
+stamped); `supplier_links.quantity_per` + `is_primary_source` + `updated_at`;
+three partial unique indexes enforcing one `is_primary_source` per
+`blind_style_id`/`blind_colour_id`/`awning_product_id` (with a backfill demotion
+pass + a `DO`-block assertion); and a `security definer` RPC
+`public.reassign_primary_source(old_id, new_id)` that atomically demotes/promotes
+primary source, gated to administrators via `get_user_role()`. No
+`supplier_product_prices` history table — deferred as overkill for now.
+
+**App layer** (typecheck + lint clean; **not committed, not deployed**): new
+route `/admin/suppliers` + components `supplier-manager`, `supplier-product-manager`
+(inline-editable cost prices), `supplier-link-manager` (allocation, uses the RPC
+for atomic primary-source switching), `supplier-target-picker` (cascading Type →
+Opacity → Style → Colour / Awning), `supplier-allocation-lookup` (reverse
+style-centric view); new `src/lib/supplier-links.ts`. `src/components/layout/
+sidebar.tsx` gets a "Suppliers" nav item (Truck icon, between Blind Management
+and Pricing, administrator-only). `blind-style-editor.tsx` +
+`blind-hierarchy-manager.tsx` + `/admin/catalog/page.tsx` get a **read-only**
+"Reference Supplier Cost (Admin Only)" line on the style editor (primary-source
+supplier cost × `quantity_per`), explicitly labelled as never feeding customer
+quotes. `quote-engine.ts` deliberately untouched — supplier cost is
+reference/reporting only this pass.
+
+Reviewed at 8.5/10; security/data-boundary confirmed (supplier identity + cost
+stay staff-only, admin routes server-gated). One Important finding — non-atomic
+primary-source switching — fixed via the `reassign_primary_source` RPC above.
+
+**Design decision (2026-07-17)**: supplier cost is decoupled from customer quote
+pricing by choice this pass — it's reference/reporting data only. Wiring
+supplier cost into customer-facing pricing (margin checks, cost×markup
+suggestions) is a separate, explicit decision Mark has not yet made. Rules out
+silently blending procurement cost into quote math until he decides.
+
+**Correction to my own diagnosis this session**: the change-log entry immediately
+above reads as a from-scratch build, but the base module (migration 00022 +
+`/admin/suppliers` UI) was in fact **already built and committed on 2026-07-16
+(`7e1472e`)** — verified against git, not the DEVLOG. A stale working-tree DEVLOG
+(Dropbox regression) omitted `7e1472e`, causing the mis-diagnosis. Net of THIS
+session vs `7e1472e` (all uncommitted): only the `reassign_primary_source` RPC in
+00022, the atomic-swap refactor in `supplier-link-manager.tsx`, and delete-confirm
+warnings in the supplier / product managers. 00022 remains unapplied; nothing new
+deployed. The 2026-07-16 entry below is accurate and was NOT wrong about being
+committed.
+
+### 2026-07-16 — Supplier cost capture + allocation (migration 00022, committed `7e1472e`, ⚠ NOT APPLIED)
 
 Follow-on to 00021. Adds procurement-cost data + costing-grade allocation to the
-supplier layer, plus an admin Suppliers UI. **Migration `00022_supplier_cost_and_allocation.sql`
-is WRITTEN but NOT APPLIED to live Supabase** — the app code reads columns that
-don't exist in the live DB yet, so **this must be applied before any deploy** or
-prod breaks. Schema: `supplier_products` gains `cost_price`/`currency`/
-`unit_of_measure`/`price_updated_at`; `supplier_links` gains `quantity_per` +
-`is_primary_source`. New: `/admin/suppliers` page + supplier manager/link/product/
-target-picker/allocation-lookup components + `src/lib/supplier-links.ts`; sidebar
-gains a "Suppliers" nav item; `database.ts` extended. **Explicitly out of scope**:
-wiring supplier `cost_price` into the customer-facing quote engine — the
-`PricedComponent` contract (`quote-engine.ts`) still reads only
-`blind_style_components`/`components` (the deliberate sales-price / procurement-cost
-separation since 00019). This batch was authored by a prior session; verified here
-lint/test(41)/build green, then committed. Applied-status + completeness to confirm
-with Mark.
+supplier layer, plus an admin Suppliers UI. Schema: `supplier_products` gains
+`cost_price`/`currency`/`unit_of_measure`/`price_updated_at`; `supplier_links`
+gains `quantity_per` + `is_primary_source`. New: `/admin/suppliers` page +
+supplier manager/link/product/target-picker/allocation-lookup components +
+`src/lib/supplier-links.ts`; sidebar gains a "Suppliers" nav item; `database.ts`
+extended. **Explicitly out of scope**: wiring supplier `cost_price` into the
+customer-facing quote engine — the `PricedComponent` contract (`quote-engine.ts`)
+still reads only `blind_style_components`/`components` (the deliberate
+sales-price / procurement-cost separation since 00019).
 
 ### 2026-07-16 — Supplier catalogue batch shipped + Supabase API-key rotation
 
@@ -299,6 +370,7 @@ Intentionally left for later: per-room table per-component USD breakdown columns
 
 ## 7. Open questions / waiting on
 
+- **Supplier Administration module (2026-07-17)**: (1) **apply migration 00022 + deploy** — blocked on rotating the expired Supabase access token (already on pending rotations, see below); (2) **decision pending**: should supplier cost feed customer-facing quote pricing (margin checks, cost×markup suggestions)? Not yet decided — module currently keeps supplier cost as reference/reporting only; (3) **couldn't confirm live** whether Mark's login account actually carries the `administrator` role — Supabase MCP token was unauthorized this session, verify once rotated.
 - **From Mike (2026-07-07 review)**: (1) ~~hardware-threshold posted note~~ ✅ received & implemented (migration 00016); (2) ~~motorization threshold~~ ✅ resolved — motor above 120″ blind width; (3) **pricing for the hardware tiers** (USD per tube size per inch; fixed cost per VTX 15/20/30 and motor) — rules are cost-neutral until supplied; (4) which products are Roller Shade vs Neolux (interim `blind_type` tags on 5 seed products are our guesses — admin-editable in Admin > Products); (5) style + colour matrices for Sliding Panel, Roller Shade, Neolux (and colours per style everywhere) — **no longer blocks dev work**, Batch 7 shipped the schema/UI for this and Mike can hand-enter the TBD ranges directly in Admin > Blind Management once 00017 is applied; (6) glossary verification (draft v2 in `..\outputs\`); (7) deposit rules + invoicing approach for the Batch 11 workflow; (8) whether Horizontal's "Yes/No" Valance is a literal flag or shorthand for a finisher to be named later (seeded as two Valance option rows per the spec's stated assumption — flag if wrong).
 - **Secrets hygiene** (updated 2026-07-16): Supabase project API keys migrated to the new key system — legacy `anon` + `service_role` JWTs **DISABLED**; app now uses `sb_publishable_` (browser) + `sb_secret_` (server) via the SAME env var names (`NEXT_PUBLIC_SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY`). Secret key stored in `.env.local` + Vercel (marked **Sensitive**); `..\info.md` redacted (live secrets removed). **Still to rotate**: the Supabase Postgres **DB password** (was in `info.md`, still live — used only for direct migration connections, not app runtime).
 - **Pending token rotations** (see `~/.claude/projects/C--Projects-Claude-AddOns/memory/pending_token_rotations.md`): still open — Supabase DB password, one Supabase PAT (`sbp_…`, likely why the Supabase MCP read unauthorized on 2026-07-16), and two GitHub PATs exposed in chat in prior sessions. Any MCP reconfig (Supabase/GitHub MCP) is blocked until rotation. The project API-key rotation above is DONE.

@@ -59,9 +59,12 @@ function describeLinkOwner(link: SupplierLink, allProducts: SupplierProduct[], s
  * and lets the admin add/edit/delete allocations. The DB enforces exactly
  * one `is_primary_source = true` row per target (00022 partial unique
  * indexes) — this component pre-warns when a save would displace an
- * existing primary and, on confirmation, demotes the old row before
- * promoting the new one in two sequential updates (both audit-logged)
- * rather than letting the raw unique-violation reach the user.
+ * existing primary, and any write that actually needs to demote one row
+ * while promoting another goes through the `reassign_primary_source`
+ * SECURITY DEFINER RPC (00022), which performs both flips as a single
+ * atomic Postgres statement. That guarantees a target can never be
+ * observed (or left, after a partial failure) with zero primary sources —
+ * see `promotePrimary` below and the migration's own rationale comment.
  */
 export function SupplierLinkManager({ supplierProduct, productLinks, allLinks, allProducts, suppliers, awningProducts, hierarchy }: SupplierLinkManagerProps) {
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -123,12 +126,23 @@ export function SupplierLinkManager({ supplierProduct, productLinks, allLinks, a
     setDialogOpen(true)
   }
 
-  /** Demotes an existing primary link to non-primary (audit-logged) — the pre-save half of the "promote this one instead" flow. */
-  async function demote(link: SupplierLink) {
+  /**
+   * Atomically demotes `oldId` (if any) and promotes `newId` to
+   * `is_primary_source = true` via the `reassign_primary_source` SECURITY
+   * DEFINER RPC (00022 — see the migration for the full rationale). Both
+   * flips commit as one Postgres statement: there is no window in which a
+   * dropped connection, a sleeping tab, or the RPC erroring out for any
+   * other reason can leave the target with zero primary sources — either
+   * both writes land, or the target keeps whichever primary it already
+   * had. `oldId` is null when the target has no current primary yet (a
+   * first allocation), in which case the RPC just promotes `newId`.
+   */
+  async function promotePrimary(newId: string, oldId: string | null) {
     const supabase = createClient()
-    const { error } = await supabase.from('supplier_links').update({ is_primary_source: false }).eq('id', link.id)
+    const { error } = await supabase.rpc('reassign_primary_source', { old_id: oldId, new_id: newId })
     if (error) throw error
-    await logAudit('supplier_links_update', link.id, { is_primary_source: false, demoted_by: 'primary_reassignment' })
+    if (oldId) await logAudit('supplier_links_update', oldId, { is_primary_source: false, demoted_by: 'primary_reassignment' })
+    await logAudit('supplier_links_update', newId, { is_primary_source: true })
   }
 
   async function handleSave() {
@@ -138,38 +152,63 @@ export function SupplierLinkManager({ supplierProduct, productLinks, allLinks, a
 
     setLoading(true)
     const supabase = createClient()
-    const data = {
+    const rowData = {
       supplier_product_id: supplierProduct.id,
       ...resolveTargetIds(form),
       quantity_per: qty,
-      is_primary_source: form.is_primary_source,
       supplier_colour_code: form.supplier_colour_code.trim() || null,
       notes: form.notes.trim() || null,
     }
+    // A demote+promote swap is only needed when this row is meant to become
+    // primary AND a different row already holds primary for the (possibly
+    // just-changed) target. Any other combination — becoming primary with
+    // no existing holder, staying non-primary, or explicitly un-checking
+    // primary on the row being edited — is a safe single-row write with no
+    // atomicity risk, so it doesn't need the RPC round-trip.
+    const needsSwap = form.is_primary_source && !!conflict
 
     try {
-      // Pre-empt the DB's one-primary-per-target unique index (00022):
-      // demote the conflicting row first so this save can never trip it.
-      if (form.is_primary_source && conflict) {
-        await demote(conflict)
-      }
+      let linkId: string
 
       if (editingLink) {
-        const { error } = await supabase.from('supplier_links').update(data).eq('id', editingLink.id)
+        // When a swap is needed, this write must NOT claim primary itself —
+        // changing this row's target columns while is_primary_source stays
+        // (or becomes) true could itself trip the unique index if the new
+        // target already has a different primary. Force it false here and
+        // let the atomic RPC below do the actual promotion.
+        const { error } = await supabase.from('supplier_links')
+          .update({ ...rowData, is_primary_source: needsSwap ? false : form.is_primary_source })
+          .eq('id', editingLink.id)
         if (error) throw error
-        await logAudit('supplier_links_update', editingLink.id, data)
+        linkId = editingLink.id
+        await logAudit('supplier_links_update', linkId, { ...rowData, is_primary_source: form.is_primary_source })
         toast.success('Allocation updated')
       } else {
-        const { data: inserted, error } = await supabase.from('supplier_links').insert(data).select().single()
+        // Always insert as non-primary first — the insert itself can then
+        // never violate the one-primary-per-target unique index — and
+        // promote afterwards via the atomic RPC if requested.
+        const { data: inserted, error } = await supabase.from('supplier_links')
+          .insert({ ...rowData, is_primary_source: needsSwap ? false : form.is_primary_source })
+          .select()
+          .single()
         if (error) throw error
-        await logAudit('supplier_links_create', inserted?.id ?? null, data)
+        linkId = inserted.id
+        await logAudit('supplier_links_create', linkId, { ...rowData, is_primary_source: needsSwap ? false : form.is_primary_source })
         toast.success('Allocation added')
       }
+
+      if (needsSwap && conflict) {
+        await promotePrimary(linkId, conflict.id)
+      }
+
       setDialogOpen(false)
       router.refresh()
     } catch (err) {
-      // 23505 = unique_violation — a race with another admin setting primary
-      // on the same target between our pre-check and this save.
+      // 23505 = unique_violation — belt-and-suspenders for a race with
+      // another admin setting primary on the same target between our
+      // pre-check and this save (the atomic RPC above is what actually
+      // prevents the zero-primary gap; this just keeps the error readable
+      // if a genuine concurrent conflict still occurs).
       const message = (err as { code?: string; message?: string })?.code === '23505'
         ? 'Another allocation just became the primary source for this target. Refresh and try again.'
         : (err as Error).message
@@ -179,7 +218,7 @@ export function SupplierLinkManager({ supplierProduct, productLinks, allLinks, a
     }
   }
 
-  /** Quick "make primary" action from the list row — same demote-then-promote flow as the form, without opening the dialog. */
+  /** Quick "make primary" action from the list row — always a pure promotion (the button only shows for non-primary rows), so it goes straight to the atomic RPC with no pre-write needed. */
   async function makePrimary(link: SupplierLink) {
     const existing = findConflictingPrimary(allLinks, link, link.id)
     if (existing && !confirm(`Make this the primary source? This replaces ${describeLinkOwner(existing, allProducts, suppliers)} as primary for ${describeTarget(hierarchy, awningProducts, link)}.`)) {
@@ -187,15 +226,14 @@ export function SupplierLinkManager({ supplierProduct, productLinks, allLinks, a
     }
     setLoading(true)
     try {
-      if (existing) await demote(existing)
-      const supabase = createClient()
-      const { error } = await supabase.from('supplier_links').update({ is_primary_source: true }).eq('id', link.id)
-      if (error) throw error
-      await logAudit('supplier_links_update', link.id, { is_primary_source: true })
+      await promotePrimary(link.id, existing?.id ?? null)
       toast.success('Primary source updated')
       router.refresh()
     } catch (err) {
-      toast.error((err as Error).message)
+      const message = (err as { code?: string; message?: string })?.code === '23505'
+        ? 'Another allocation just became the primary source for this target. Refresh and try again.'
+        : (err as Error).message
+      toast.error(message)
     } finally {
       setLoading(false)
     }

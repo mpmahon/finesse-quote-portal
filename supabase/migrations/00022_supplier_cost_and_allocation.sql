@@ -19,6 +19,12 @@
 --      when a style/colour/awning has more than one), so a supplier
 --      product's cost_price is actually meaningful for a landed-cost
 --      calculation rather than just a reorder pointer.
+--   3. reassign_primary_source(old_id, new_id): a SECURITY DEFINER RPC that
+--      demotes one supplier_links row and promotes another to
+--      is_primary_source = true in a single atomic statement, so the
+--      allocation admin UI can never leave a target (style/colour/awning)
+--      with zero primary sources from a partial failure between two
+--      separate client writes. See section 3 below for the full rationale.
 --
 -- Explicitly OUT OF SCOPE (separate decision, not made here): wiring
 -- supplier cost_price into the customer-facing quote engine. The engine's
@@ -163,11 +169,70 @@ create trigger supplier_links_set_updated_at
   for each row execute function public.set_updated_at();
 
 -- ------------------------------------------------------------
--- 3. RLS verification (no-op, documented not re-declared — see header).
+-- 3. reassign_primary_source(old_id, new_id): atomic primary-source swap.
+--
+--    The allocation admin UI (SupplierLinkManager) sometimes needs to
+--    demote one supplier_links row AND promote another to
+--    is_primary_source = true for the SAME target in lockstep (e.g.
+--    "make this supplier item the primary source instead of that one").
+--    Two separate client round-trips (UPDATE old, then UPDATE new) would
+--    risk a target left with ZERO primary source if the second write
+--    fails after the first commits — dropped connection, tab sleep, the
+--    target row deleted mid-flight, etc. — and that gap is silent: a
+--    target with no primary source just vanishes from
+--    buildPrimaryStyleCostMap and any other primary-source reporting with
+--    no error surfaced anywhere.
+--
+--    Wrapping both writes in a single SECURITY DEFINER function makes them
+--    one Postgres statement from the client's perspective: Postgres runs a
+--    function body in the calling statement's transaction, so either both
+--    flips apply or neither does — there is no intermediate state a
+--    concurrent reader (or a crashed client) can observe. The partial
+--    unique indexes above are the last-resort backstop for any path that
+--    still tries to create two primaries directly (e.g. a raw two-step
+--    UPDATE from outside this function).
+--
+--    SECURITY DEFINER bypasses supplier_links' RLS (administrator-only
+--    write, 00021's supplier_links_write_admin policy), so the role check
+--    inside the function body re-implements that same gate explicitly
+--    rather than relying on the caller's own row-level privileges.
+-- ------------------------------------------------------------
+create or replace function public.reassign_primary_source(old_id uuid, new_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if public.get_user_role() <> 'administrator' then
+    raise exception 'Only administrators can reassign a primary supplier source';
+  end if;
+
+  -- old_id is null when the target has no current primary yet (first
+  -- allocation for that style/colour/awning) — nothing to demote.
+  if old_id is not null then
+    update public.supplier_links set is_primary_source = false where id = old_id;
+  end if;
+
+  update public.supplier_links set is_primary_source = true where id = new_id;
+
+  if not found then
+    raise exception 'reassign_primary_source: new_id % not found in supplier_links', new_id;
+  end if;
+end;
+$$;
+
+grant execute on function public.reassign_primary_source(uuid, uuid) to authenticated;
+
+-- ------------------------------------------------------------
+-- 4. RLS verification (no-op, documented not re-declared — see header).
 --    suppliers_select_staff / supplier_products_select_staff /
 --    supplier_links_select_staff (00021) already gate ALL columns of
 --    these three tables to role in ('administrator','salesman'); the
 --    corresponding *_write_admin policies already gate ALL columns for
 --    insert/update/delete to 'administrator'. New columns added above
 --    inherit those row-level policies automatically — nothing to add.
+--    reassign_primary_source() (section 3) is the one deliberate
+--    exception: it's SECURITY DEFINER (bypasses RLS by design) with its
+--    own explicit administrator check in the function body.
 -- ------------------------------------------------------------
