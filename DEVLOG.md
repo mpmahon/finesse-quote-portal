@@ -102,6 +102,22 @@ Server components fetch via `createClient()` (server Supabase client) → RLS sc
 
 ## 5. Handover point
 
+**2026-07-16 (latest).** Supplier-catalogue batch is verified, committed
+(`e199d6f`), and live in production; migration `00021` already applied. Supabase
+API keys rotated to the new `sb_publishable_`/`sb_secret_` system and legacy keys
+disabled (see change log + §7). Also committed this session: the **00022
+supplier-cost/allocation batch** (migration + `/admin/suppliers` UI) — ⚠ **migration
+00022 is NOT applied to live Supabase; apply before any deploy** (see change log).
+Three things still open: (a) **local `main` is ahead of `origin/main`** — nothing
+pushed to GitHub yet (blocked on rotating the 2 GitHub PATs first); (b) **apply
+migration 00022** before the next production deploy; (c) remaining rotations —
+Supabase **DB password** + Supabase **PATs** + 2 **GitHub PATs**. A UX structure/usability audit was produced
+this session (client-level `outputs/2026-07-16_finesse-portal-ux-structure-audit.docx`)
+with an implementation plan (action-queue admin dashboard, move What-If into
+Pricing, "Catalogue & Pricing" nav group) — Mark parked implementation until the
+product-info/style-gallery work settled, which this batch now delivers, so that
+redesign is the natural next pickup. Earlier context below.
+
 Batch 8 (2026-07-08: hierarchy-as-product + quantities + 16-stage workflow + select sweep + demo reseed — see change log) is applied (migrations 00019 + 00020), demo-reseeded, and deployed to https://finesse-quote-portal.vercel.app. Blind pricing now lives per-style in Blind Management with **placeholder donor pricing** — Mike must set real per-style component prices there. Awaiting Mark's QA of this round. Earlier context: Batch 7 shipped 2026-07-07 as `83e78f1`; migrations 00015–00018 applied the same day.
 
 Batch 7 specifics to QA (now live): the six seeded Types only have real Opacity/Style data for Horizontal, Dune, and Cellular — Sliding Panel, Roller Shade, and Neolux Shade show "options pending" past Opacity (no Styles seeded) and every Style has zero Colours seeded (all TBD per the source doc). Mike enters all of that through **Admin → Blind Management**'s new drill-down editor (Type → its Opacities/Valances → Opacity's Styles → Style's Colours), which replaced the flat `catalog-manager.tsx`. The old `shade_types`/`styles`/`colours` tables are renamed to `legacy_shade_types`/`legacy_styles`/`legacy_colours` (never dropped) — `products.shade_types/styles/colours` still read from them for the admin Product Manager's make/model tagging (now labelled legacy/reference-only in that form), since products aren't linked to the new hierarchy yet.
@@ -111,6 +127,52 @@ Next session should: (a) get Mark's QA verdict on Batch 6 + 7 together (esp. the
 Waiting on the user for: Batch 6 + 7 QA on production (Mark will check the next deployment for the KPI-card + configurator fixes — already live); decision on building the Blind Type-only filter panel now vs waiting for product↔hierarchy linkage (Batch 9); Batch 8–12 prioritisation; Mike's hardware-threshold posted note + motorization threshold (received/implemented) + hardware-tier pricing (still TBD) + the TBD Style/Colour data for Sliding Panel/Roller Shade/Neolux Shade and every Colour (Mike enters via Blind Management once live); markup/formula confirmation; token rotation (two GitHub PATs + one Supabase PAT, still unrotated). Demo logins unchanged (`Finesse4Blinds!`; `demo.sales@` / `demo.retail@` / `demo.wholesale@finessett.com`); demo reseed via `npx tsx scripts/seed-demo.ts`.
 
 ## 6. Change log
+
+### 2026-07-16 — Supplier cost capture + allocation (migration 00022, ⚠ NOT APPLIED)
+
+Follow-on to 00021. Adds procurement-cost data + costing-grade allocation to the
+supplier layer, plus an admin Suppliers UI. **Migration `00022_supplier_cost_and_allocation.sql`
+is WRITTEN but NOT APPLIED to live Supabase** — the app code reads columns that
+don't exist in the live DB yet, so **this must be applied before any deploy** or
+prod breaks. Schema: `supplier_products` gains `cost_price`/`currency`/
+`unit_of_measure`/`price_updated_at`; `supplier_links` gains `quantity_per` +
+`is_primary_source`. New: `/admin/suppliers` page + supplier manager/link/product/
+target-picker/allocation-lookup components + `src/lib/supplier-links.ts`; sidebar
+gains a "Suppliers" nav item; `database.ts` extended. **Explicitly out of scope**:
+wiring supplier `cost_price` into the customer-facing quote engine — the
+`PricedComponent` contract (`quote-engine.ts`) still reads only
+`blind_style_components`/`components` (the deliberate sales-price / procurement-cost
+separation since 00019). This batch was authored by a prior session; verified here
+lint/test(41)/build green, then committed. Applied-status + completeness to confirm
+with Mark.
+
+### 2026-07-16 — Supplier catalogue batch shipped + Supabase API-key rotation
+
+**Batch ship.** The 2026-07-16 supplier-catalogue batch (scrape Vertilux/Loman/
+Mitjavila into OUR hierarchy → 44 styles / 222 colours, staff-only supplier
+layer, rebuilt Style Gallery with Type→Opacity filters + search + per-type
+feature banners, public teaser landing page) was verified and shipped. Migration
+`00021` was already applied to live Supabase (not re-applied). Verified: eslint
+clean, 41/41 vitest, production build green, `/` + `/gallery` smoke-tested
+against live data, and a brand-leak scan confirming Vertilux/Loman/Mitjavila
+appear only in `migration 00021` + `resources/supplier-scrapes/` (never
+client-facing). Committed as **`e199d6f`** (one commit, per Mark — also folded in
+password-recovery hardening that shared the working tree: recovery-amr middleware
+gate, OAuth callback error surfacing, `scripts/gen-recovery-link.mjs`). The UX
+audit `.docx` was intentionally left untracked. Deployed to production via
+`vercel --prod` (deployment `73ly5nuiq` and, earlier, `atunn2xy1`). **Not pushed
+to `origin/main`** — local `main` is ahead of GitHub.
+
+**API-key rotation.** Vercel flagged `SUPABASE_SERVICE_ROLE_KEY` as
+readable-plaintext ("Needs Attention"). The live keys were legacy `eyJ…` JWTs
+(anon + service_role), which can't be individually revoked. Migrated to the new
+key system: `.env.local` + Vercel updated to `sb_publishable_` / `sb_secret_`
+(same var names, marked Sensitive in Vercel), verified locally (admin `listUsers`
++ publishable login/RLS) and in prod (new publishable key confirmed baked into
+the client bundle; `/` + `/auth/login` 200), then **disabled the legacy anon +
+service_role keys** — invalidating the previously-exposed service_role JWT.
+`info.md` redacted. `@supabase/supabase-js ^2.103.0` supports the new keys, so no
+code changes were needed. DB password + PAT rotations remain open (see §7).
 
 ### 2026-07-08 — Self-service password reset (deployed, `dfe6934`)
 
@@ -238,8 +300,8 @@ Intentionally left for later: per-room table per-component USD breakdown columns
 ## 7. Open questions / waiting on
 
 - **From Mike (2026-07-07 review)**: (1) ~~hardware-threshold posted note~~ ✅ received & implemented (migration 00016); (2) ~~motorization threshold~~ ✅ resolved — motor above 120″ blind width; (3) **pricing for the hardware tiers** (USD per tube size per inch; fixed cost per VTX 15/20/30 and motor) — rules are cost-neutral until supplied; (4) which products are Roller Shade vs Neolux (interim `blind_type` tags on 5 seed products are our guesses — admin-editable in Admin > Products); (5) style + colour matrices for Sliding Panel, Roller Shade, Neolux (and colours per style everywhere) — **no longer blocks dev work**, Batch 7 shipped the schema/UI for this and Mike can hand-enter the TBD ranges directly in Admin > Blind Management once 00017 is applied; (6) glossary verification (draft v2 in `..\outputs\`); (7) deposit rules + invoicing approach for the Batch 11 workflow; (8) whether Horizontal's "Yes/No" Valance is a literal flag or shorthand for a finisher to be named later (seeded as two Valance option rows per the spec's stated assumption — flag if wrong).
-- **Secrets hygiene**: `..\info.md` (client folder, Dropbox-synced) holds the live Supabase DB password, secret key, and service-role key in plaintext — move to a secrets manager / `.env.local` and rotate.
-- **Pending token rotations** (see `~/.claude/projects/C--Projects-Claude-AddOns/memory/pending_token_rotations.md`): two GitHub PATs and one Supabase PAT exposed in chat in prior sessions. User has NOT yet rotated them. Any MCP reconfig (Supabase MCP → Finesse project ref, GitHub MCP → new PAT) is blocked until rotation.
+- **Secrets hygiene** (updated 2026-07-16): Supabase project API keys migrated to the new key system — legacy `anon` + `service_role` JWTs **DISABLED**; app now uses `sb_publishable_` (browser) + `sb_secret_` (server) via the SAME env var names (`NEXT_PUBLIC_SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY`). Secret key stored in `.env.local` + Vercel (marked **Sensitive**); `..\info.md` redacted (live secrets removed). **Still to rotate**: the Supabase Postgres **DB password** (was in `info.md`, still live — used only for direct migration connections, not app runtime).
+- **Pending token rotations** (see `~/.claude/projects/C--Projects-Claude-AddOns/memory/pending_token_rotations.md`): still open — Supabase DB password, one Supabase PAT (`sbp_…`, likely why the Supabase MCP read unauthorized on 2026-07-16), and two GitHub PATs exposed in chat in prior sessions. Any MCP reconfig (Supabase/GitHub MCP) is blocked until rotation. The project API-key rotation above is DONE.
 - **Vercel MCP auth**: user confirmed Vercel deployment but hasn't confirmed whether the Vercel MCP is authed for this account. Ask with `/mcp` before any deploy-related work.
 - **Retail / wholesale markup defaults**: what are the actual numbers? Placeholder 40% / 20% until user confirms.
 - **Commit cadence**: user hasn't specified whether they want a commit per batch or per logical change within a batch. Default: one commit per completed batch, conventional-commits format, staged by Claude but committed by user (never auto-commit without explicit request).
