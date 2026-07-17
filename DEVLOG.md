@@ -74,7 +74,7 @@ Server components fetch via `createClient()` (server Supabase client) → RLS sc
 ## 4. Current stage
 
 **Done**:
-- Supplier layer (2026-07-16/17) — supplier catalogue (migration `00021`, Vertilux/Loman/Mitjavila scraped into our own style/colour hierarchy) is **APPLIED and DEPLOYED** (commit `e199d6f`). Built on top of it: a full Supplier Administration module — cost capture + allocation (migration `00022`) plus `/admin/suppliers` UI — is **code-complete and reviewed (8.5/10)** but **migration 00022 is NOT applied to live Supabase and nothing in this module is committed or deployed**, blocked on rotating the expired Supabase access token. Details in the change log.
+- Supplier layer (2026-07-16/17) — supplier catalogue (migration `00021`, Vertilux/Loman/Mitjavila scraped into our own style/colour hierarchy) is **APPLIED and DEPLOYED** (commit `e199d6f`). Built on top of it: a full Supplier Administration module — cost capture + allocation (migration `00022`, incl. the `reassign_primary_source` RPC, 3 partial unique indexes, `supplier_products` cost columns, `supplier_links.quantity_per`/`is_primary_source`) — is now **FULLY LIVE**. `00022` was applied to production Supabase (`vcnakuehawpkzzuzkixb`) by Mark via the SQL Editor and verified live via MCP; this session's atomic-switch improvement was committed as `5f5befd` and deployed to production (Vercel `dpl_9HQ9jTxd7AVtMrhnekABuT4b7eTD`, aliased to https://finesse-quote-portal.vercel.app). Confirmed both `kramnoham@gmail.com` and `mahon627@gmail.com` carry `administrator` role — the earlier access confusion was never a permissions problem, the module just hadn't shipped. Still open: not pushed to GitHub (blocked on rotating 2 GitHub PATs) and whether supplier cost should ever feed customer-facing quote pricing (undecided, `quote-engine.ts` untouched). Details in the change log.
 - Batch 7 (2026-07-07) — blind option hierarchy rework (Type → Opacity → Style → Colour, plus per-Type Valance/Finisher), implemented per the client-approved spec. **Migrations 00015 + 00016 + 00017 all APPLIED to live Supabase and the app DEPLOYED to production** (https://finesse-quote-portal.vercel.app, Vercel CLI, 2026-07-07 evening). Live seed verified: 6 types / 15 opacities / 12 styles / 0 colours / 14 valances / 12 hardware rules / max width 228″. **Still uncommitted** — Mark has not asked for a commit yet; the deployed build came from the working tree. Details in the change log.
 - Batch 6 (2026-07-07) — client-feedback quick wins from the Mike demo review, implemented and deployed with Batch 7 above. Details in the change log. The full feedback triage lives at `..\outputs\2026-07-07_finesse-client-feedback-backlog.md`; the glossary draft for Mike at `..\outputs\2026-07-07_finesse-glossary-draft.md` / `.docx`.
 - Batch 5 (2026-07-07) — design doc v2 implemented in full: WS1 cleanup & hardening, WS2 role dashboards + mobile shell, WS3 style gallery & visual quoting, WS4 quote lifecycle + jobs & scheduling. Migrations 00009–00014 applied to live Supabase (plus the previously-missed 00005 nullable product_id fix). Demo dataset seeded for client review (`scripts/seed-demo.ts`). Details in the change log.
@@ -82,7 +82,7 @@ Server components fetch via `createClient()` (server Supabase client) → RLS sc
 - Batch 2 — Schema migrations applied to the live Supabase project (`vcnakuehawpkzzuzkixb`). TypeScript types, admin managers, register page, and quote-engine import updated to match. Salesman reseller-discount logic removed. Pricing editor gained retail / wholesale markup fields. Audit-log UI relabelled to "Actor" / "Activity".
 - Batch 3 — Admin/salesman customer-creation flow. New `src/app/properties/actions.ts` with two server actions (`createCustomerAction` via service_role, `createPropertyAction` via authenticated server client). `PropertyList` rewritten as a multi-step dialog with customer picker + inline new-customer form for staff. Add-Property button unhidden for everyone (staff routes through picker; customers route direct to property form). Properties page server component fetches the customer list when staff is viewing.
 
-**In progress**: Applying migration 00022, committing, and deploying the Supplier Administration module — blocked on rotating the expired Supabase access token. Separately: whether supplier cost should ever feed customer-facing quote pricing is an open decision, not yet made by Mark. Also still outstanding: Mark's QA verdict on Batches 6–8 in production, then apply migration 00015, commit, deploy.
+**In progress**: The Supplier Administration module is live — nothing left blocking it. Remaining follow-ups: push local `main` (now at `5f5befd`) to GitHub once the 2 GitHub PATs are rotated; decide whether supplier cost should ever feed customer-facing quote pricing (still undecided). Also still outstanding: Mark's QA verdict on Batches 6–8 in production, then apply migration 00015, commit, deploy.
 
 **Next up**: Batches 8–12 from the feedback backlog (`..\outputs\2026-07-07_finesse-client-feedback-backlog.md`) — 8: size thresholds / oversized filtering / hardware factors (blocked on Mike's posted note + motorization threshold — the hardware-tier pricing itself is still TBD, see open questions); 9: blind filter + multi-option quotes with price ranges; 10: wholesale room-quantity quoting; 11: 16-status order workflow; 12: supplier Catalogue (brochure PDFs). Also still open from Batch 7: linking `products` to the new hierarchy (deferred — see spec open question 2) once Mike's Style/Colour data is in; Batch 7's own "config (mount/recess depths, size limits)" half wasn't in this pass's brief — check with Mark whether that's folded into Batch 8 or still pending. All need Mark's go — they reshape the data model.
 
@@ -106,34 +106,41 @@ Server components fetch via `createClient()` (server Supabase client) → RLS sc
 **2026-07-17 (latest).** The Supplier Administration module (`/admin/suppliers`
 route, supplier + product + allocation managers, sidebar entry, read-only
 reference-cost line on the blind style editor, and migration
-`00022_supplier_cost_and_allocation.sql`) was **already built and committed** in
-`7e1472e` (2026-07-16). It is **committed but NOT applied to the live DB and NOT
-deployed** (blocked on rotating the expired Supabase access token, see §7).
-`00022` adds `supplier_products` cost/currency/unit-of-measure/price-timestamp
-columns, `supplier_links.quantity_per` + `is_primary_source`, and three partial
-unique indexes enforcing one primary source per blind style/colour/awning target.
-**This session (2026-07-17) added an incremental improvement on top, still
-UNCOMMITTED in the working tree**: a security-definer RPC
-`reassign_primary_source()` making primary-source switching atomic (fixes a
-latent zero-primary bug in the committed code), the matching refactor in
-`supplier-link-manager.tsx`, and delete-confirmation warnings in the supplier /
-product managers. Lint + typecheck clean; reviewed 8.5/10. ⚠ NB: this session
-began from a STALE working-tree DEVLOG (a Dropbox version regression that omitted
-`7e1472e`), which is why the initial diagnosis mistakenly treated the module as
-non-existent — corrected here. Local `main` is ahead of `origin/main` (so
-`7e1472e` isn't on GitHub yet). Open decision Mark hasn't made yet:
-whether supplier cost should ever feed customer-facing quote pricing —
-`quote-engine.ts` was deliberately left untouched this pass, supplier cost is
-reference/reporting only.
+`00022_supplier_cost_and_allocation.sql`) is **FULLY LIVE in production**.
+`00022` (adds `supplier_products` cost/currency/unit-of-measure/price-timestamp
+columns, `supplier_links.quantity_per` + `is_primary_source`, three partial
+unique indexes enforcing one primary source per blind style/colour/awning
+target, and the `reassign_primary_source()` security-definer RPC for atomic
+primary-source switching) was applied to live Supabase (`vcnakuehawpkzzuzkixb`)
+by Mark via the SQL Editor and verified live via MCP: all 4 `supplier_products`
+cost columns present, all 3 `supplier_links` columns present, the RPC exists,
+all 3 primary-source unique indexes present, data intact (3 suppliers, 71
+supplier_products, 272 supplier_links). This session's atomic-switch
+improvement (the RPC, the `supplier-link-manager.tsx` refactor, and
+delete-confirmation warnings in the supplier/product managers) was committed as
+`5f5befd` ("fix(suppliers): make primary-source switching atomic", 5 files) and
+deployed to production — Vercel deployment `dpl_9HQ9jTxd7AVtMrhnekABuT4b7eTD`,
+READY, aliased to https://finesse-quote-portal.vercel.app. Production build
+compiled `/admin/suppliers`, TypeScript passed, and the route was verified
+reachable (`/admin/suppliers` → 200 → redirect to `/auth/login`, i.e. route
+exists and is admin-gated as designed). Confirmed via a live query that both
+`kramnoham@gmail.com` and `mahon627@gmail.com` carry `administrator` role —
+record this as the resolved root cause: admin access was never the blocker,
+the module simply hadn't been deployed to production before.
 
-Also still open: nothing pushed to GitHub (blocked on rotating 2 GitHub PATs);
-Supabase DB password + 1 Supabase PAT unrotated; couldn't verify live whether
-Mark's login account actually has the `administrator` role (Supabase MCP token
-was unauthorized this session). A UX structure/usability audit was produced
-2026-07-16 (`outputs/2026-07-16_finesse-portal-ux-structure-audit.docx`) —
-implementation (action-queue admin dashboard, move What-If into Pricing,
-"Catalogue & Pricing" nav group) is parked, natural next pickup once the
-supplier admin module ships.
+Only two follow-ups remain on this module: (1) push local `main` (now at
+`5f5befd`, ahead of `origin/main`) to GitHub — blocked on rotating the 2 GitHub
+PATs; (2) the still-unmade design decision on whether supplier cost should ever
+feed customer-facing quote pricing — `quote-engine.ts` remains deliberately
+untouched, supplier cost stays reference/reporting only until Mark decides.
+
+Also still open: Supabase DB password unrotated (see §7/pending rotations). A
+UX structure/usability audit was produced 2026-07-16
+(`outputs/2026-07-16_finesse-portal-ux-structure-audit.docx`) — implementation
+(action-queue admin dashboard, move What-If into Pricing, "Catalogue & Pricing"
+nav group) **shipped this session as UX Phase 1** — see the change log. Phase 2
+items (saved "expiring/awaiting/stalled" quote & job filters, explicit job hold
+state, real-margin card, live FX drift) remain deferred.
 
 Batches 5–8 (role dashboards, style gallery, quote lifecycle/jobs, blind
 hierarchy, quantities, 16-stage workflow) are live in production as of
@@ -148,6 +155,46 @@ Demo logins unchanged (`Finesse4Blinds!`; `demo.sales@` / `demo.retail@` /
 `demo.wholesale@finessett.com`); demo reseed via `npx tsx scripts/seed-demo.ts`.
 
 ## 6. Change log
+
+### 2026-07-17 — UX Phase 1: action-queue dashboard, nav regroup, What-If moved (+ supplier dialog fix)
+
+Implemented Phase 1 of the 2026-07-16 UX structure audit (audit §3/§5/§6/§7 items 1–5 + 8), and separately fixed a supplier-dialog layout defect Mark reported.
+
+**Supplier allocation dialog fix** (deployed `dpl_C2i59DPin…`, committed separately). The Allocations dialog and the reverse Sourcing-Lookup rendered fixed multi-column shadcn `<Table>`s whose `overflow-auto` wrapper forced horizontal scroll once long "Type → Opacity → Style → Colour" target paths appeared — clipping Qty/Unit, Colour Code, Source and the actions off-screen. Replaced both with a wrapping flex-row layout (target path wraps; meta cluster flows beneath on narrow widths) and widened the host dialog to `w-[95vw] max-w-4xl`. `supplier-link-manager.tsx`, `supplier-allocation-lookup.tsx`, `supplier-product-manager.tsx`.
+
+**UX Phase 1** (deployed `dpl_63F9vwTWWsy…`, aliased live). New `src/lib/attention.ts` — five pure, `now`-injected trigger helpers (`expiringQuotes` ≤7d, `awaitingResponse` >7d, `agingDrafts` >3d, `stalledJobs` >5d time-in-stage from `stage_history` excluding the terminal stage, `atRiskInstalls` overdue/at-risk) with `src/lib/attention.test.ts` (22 tests, TDD-first; suite now 63/63). `AdminDashboard` (`src/app/dashboard/page.tsx`) rebuilt around a five-card **action queue** (count + value-at-risk, ≤1-click to record, explicit "All clear" empties) via new `src/components/dashboard/attention-card.tsx`; KPI row demoted to a compact strip ("Avg quote value" dropped); 16-stage workflow strip de-emphasised + given a colour-band legend (a11y); pipeline-by-rep kept; Recent Activity collapsed into `<details>`. `salesAttention` refactored onto the shared helpers. `WhatIfPanel` removed from the dashboard and moved to `/admin/pricing` under a collapsible "Preview impact before saving" `<details>` (`calculateQuoteTotals` untouched). `/admin` (`src/app/admin/page.tsx`) now `redirect('/dashboard')` — duplicate overview deleted. Sidebar (`src/components/layout/sidebar.tsx`) regrouped: **Admin** = Users + Audit Logs; new **Catalogue & Pricing** = Blinds/Awnings/Suppliers/Pricing. `src/lib/constants.ts` gained `WORKFLOW_STAGE_BAND_LABELS`/`bandForStage()` for the colour-band a11y label. Constraints honoured: no `on_hold` invented (stalled = time-in-stage), no supplier cost in the engine, no 00022 columns on the dashboard. Verified: tsc + lint clean, 63/63 vitest, Vercel remote build green. **Value-at-risk on job cards** = linked quote `total_ttd` (pre-quote jobs 0). **Deferred (audit item 9):** stalled/install "view all" links point at the base `/jobs` / `/jobs/calendar` (no pre-filtered view exists yet).
+
+### 2026-07-17 — Supplier Administration module: applied, committed, deployed (FULLY LIVE)
+
+Closed out the module from the entry directly below. Mark applied migration
+`00022_supplier_cost_and_allocation.sql` to production Supabase
+(`vcnakuehawpkzzuzkixb`) via the SQL Editor; verified live via MCP — all 4
+`supplier_products` cost/currency/unit-of-measure/price-timestamp columns
+present, both `supplier_links.quantity_per`/`is_primary_source` columns
+present, `reassign_primary_source()` RPC exists, all 3 partial unique primary-
+source indexes present, data intact (3 suppliers, 71 supplier_products, 272
+supplier_links). This session's uncommitted work (the RPC, the atomic-swap
+refactor in `supplier-link-manager.tsx`, delete-confirmation warnings) was
+committed as **`5f5befd`** ("fix(suppliers): make primary-source switching
+atomic", 5 files) and deployed via `vercel --prod` — deployment
+`dpl_9HQ9jTxd7AVtMrhnekABuT4b7eTD`, READY, aliased to
+https://finesse-quote-portal.vercel.app. Production build compiled
+`/admin/suppliers` clean, TypeScript passed. Verified reachable post-deploy:
+`/admin/suppliers` 200→redirect to `/auth/login` (route exists, admin-gated),
+`/` 200, an unknown route 404.
+
+Also confirmed via a live query that both `kramnoham@gmail.com` and
+`mahon627@gmail.com` are `administrator` role (2 admins total) — resolves the
+open question from the entry below about whether Mark's account actually had
+admin access. It did; the module just hadn't been deployed yet. That's the
+root cause of the earlier "can't see Suppliers" confusion, not a permissions
+gap.
+
+Still open, unchanged: nothing pushed to `origin/main` (local `main` is at
+`5f5befd`, ahead of GitHub — blocked on rotating the 2 GitHub PATs); the
+design decision on whether supplier cost should ever feed customer-facing
+quote pricing is still Mark's to make — `quote-engine.ts` untouched, supplier
+cost remains reference/reporting only.
 
 ### 2026-07-17 — Supplier Administration module built (migration 00022 + `/admin/suppliers` UI, code-complete, NOT applied/committed)
 
@@ -331,49 +378,15 @@ Combined `npx tsc --noEmit` + eslint clean. Nothing committed/deployed; 00015 pe
 
 ## Change log (pre-Batch 5)
 
-### 2026-04-11 — Batch 3: admin/salesman customer-creation flow
-
-Created `src/app/properties/actions.ts` with two server actions:
-- `createCustomerAction(input)` — staff-only. Authenticates the caller via the cookie-scoped server client, verifies salesman/administrator role, uses the service-role admin client to call `auth.admin.createUser({ email_confirm: true, password: 'Finesse4Blinds!', user_metadata: { first_name, last_name, contact_number, role } })`. The `handle_new_user` trigger creates the profile row from the metadata; the action re-reads the profile via the admin client (bypasses RLS) to confirm. If the profile read fails, the orphaned auth user is deleted so we don't pollute `auth.users`. Writes an audit_logs entry attributing the creation to the staff member, then revalidates `/properties` and `/admin/users`.
-- `createPropertyAction(input)` — open to anyone authenticated. For staff, creates a property for any customer (`user_id` set to the picked customer's id). For customers, only for themselves (enforced server-side, not trusting client input). Always sets `created_by` to the authenticated caller. Staff-initiated creations are audit-logged; customer self-creation is not (high-volume, low-signal). Revalidates `/properties`.
-
-Rewrote `src/components/properties/property-list.tsx` as a multi-step dialog:
-- State machine via a `DialogMode` union: `closed | new-pick-customer | new-create-customer | new-property | edit-property`
-- Staff path: `?new=true` lands on `new-pick-customer` → either pick an existing customer from a `Select` or click "Create New Customer" → fills a compact 5-field form (first name, last name, email, contact, retail/wholesale) → submit calls `createCustomerAction` → toast confirms temp password → auto-advances to `new-property` with the new customer pre-selected → submit calls `createPropertyAction`.
-- Customer path: `?new=true` lands directly on `new-property` with `selectedCustomerId = userId`. Same final submit flow.
-- Edit path unchanged (direct browser-client update via RLS).
-- Delete path unchanged (direct browser-client delete via RLS).
-- The property-list card layout, filtering, and TTD display are unchanged from Batch 1.
-
-Updated `src/app/properties/page.tsx`:
-- Fetches the list of retail + wholesale customers when the viewer is staff, ordered by last_name. Passes them to `PropertyList` as a `customers` prop.
-- Passes a new `isStaff` prop derived from the role helper `isStaffRole()` (added in Batch 2's types file).
-- Removed the `!isAdmin` gate around the Add Property button. Everyone sees it; staff get the picker, customers go straight to the form. **This closes the original "missing Add Property button on Dashboard" bug that started this entire session.**
-
-Security notes: the server action verifies the caller's role from the profiles table rather than trusting any client-provided role. The service-role key is only used for the two operations that genuinely require it (creating an auth user and post-creation profile verification). All other reads/writes go through the cookie-scoped server client and are protected by the RLS policies added in Batch 2. Type-check and lint both clean on all Batch 3 files.
-
-### 2026-04-11 — Batch 2: schema migration for customer types + staff model
-
-Added two migration files:
-- `00007_add_customer_type_enum_values.sql` — `alter type user_role add value` for `retail_customer` and `wholesale_customer`. Separate file because Postgres can't USE a new enum value in the same transaction that added it.
-- `00008_customer_types_and_quote_enhancements.sql` — the bulk of the changes: backfill all existing `customer` profiles to `retail_customer`; update the `handle_new_user` trigger default; add `retail_markup_pct` (40 default) and `wholesale_markup_pct` (20 default) to `pricing_config`; add `created_by uuid not null references profiles(id)` to `properties` and `quotes` (backfilled from `user_id` first, then set NOT NULL); add `notes jsonb not null default '[]'` to `quotes`; add `excluded_components text[] not null default '{}'` to `windows`; rename `audit_logs.admin_user_id` to `actor_id`; rework RLS on `properties` / `rooms` / `windows` / `quotes` / `quote_line_items` / `audit_logs` so salesmen have the same access as administrators (separate `_staff` policies alongside the existing `_own` policies). Kept `default_markup_pct`, `reseller_discount_pct`, `duty_percent`, `shipping_fee_ttd`, `labor_cost_ttd`, and `exchange_rate` in the DB — Batch 4 will remove the unused ones and the Purchasing Module will use the rest.
-
-TypeScript side: rewrote `src/types/database.ts` (new `UserRole` union, added `isStaffRole` / `isCustomerRole` helpers, added `QuoteNote` shape, added `created_by` / `notes` / `excluded_components` / `retail_markup_pct` / `wholesale_markup_pct` / `actor_id` fields). Updated `constants.ts` (new `USER_ROLES` array, new `ROLE_LABELS`, new `DEFAULT_TEMP_CUSTOMER_PASSWORD = 'Finesse4Blinds!'`). Simplified the public `registerSchema` to drop the role field entirely — self-registration always creates a retail customer now. Extended `pricingConfigSchema` with the two new markup rates. Updated the sidebar's `roles:` arrays. Rewrote the register page with the role picker removed. Updated `user-manager.tsx` throughout (role colors now 4 entries, counts collapse retail+wholesale into a single "Customers" stat, filter dropdown and edit dialog both offer all 4 roles, audit_logs insert now writes `actor_id`). Updated every `supabase.from('audit_logs').insert({ admin_user_id: ... })` call site to use `actor_id` (catalog-manager, awning-product-manager, pricing-editor, user-manager). Relabeled the audit-log viewer UI from "Admin" → "Actor" / "Activity". Updated the admin audit-logs page title to "Activity Log". Removed the unused `userRole` parameter from `calculateQuoteTotals` and deleted the salesman-specific reseller-discount branch (salesmen are staff, not a discounted customer tier). Updated the one call site in `src/app/api/quotes/calculate/route.ts` to match. Pricing editor form gained retail / wholesale markup fields at the top and moved the legacy `default_markup_pct` / `reseller_discount_pct` to the bottom marked as legacy. Duty / shipping relabeled "Purchasing only" to signal they're not in customer-facing quotes. Type-check clean; only pre-existing lint issues remain (unrelated to Batch 2).
-
-### 2026-04-11 — Batch 1: rename + hide internal financial details
-
-Renamed the `/dashboard` route to `/properties` throughout the app — nav label, logo link, all `<Link>`s, middleware `protectedPaths` and redirects, auth login/callback fallbacks, admin layout redirect, back links, and the new-property dialog query-string flow. Sidebar active-state logic was also tightened (the old guard excluded `/dashboard` from `startsWith` matching, which broke once nested routes like `/properties/[id]/rooms/...` became important).
-
-Hid the rows the user called out as customer-inappropriate from the quote detail page and the PDF: exchange-rate row, duty row, shipping row, labour row, and the "Components Subtotal (USD)" / "+ Markup" / "Converted to TTD" rows of the grand-total breakdown. Kept the Installation row and the Reseller Discount row for now; both are covered by Batch 4's engine rewrite. The Property list cards now compute a rough TTD estimate (pre-markup, using `pricing_config.exchange_rate`) and label it "Est. Property Total". The staleness warning text was also scrubbed of "exchange rate / markup / duty" references.
-
-Intentionally left for later: per-room table per-component USD breakdown columns (Cassette / Tube / Rail / ...), admin `/admin/pricing` editor (still shows all fields so future Purchasing Module has data), admin Add Property button (requires Batch 3's customer picker before it's safe to enable).
+Archived to `DEVLOG-archive.md` (Batches 1–3, 2026-04-11) to keep this file
+under ~400 lines.
 
 ## 7. Open questions / waiting on
 
-- **Supplier Administration module (2026-07-17)**: (1) **apply migration 00022 + deploy** — blocked on rotating the expired Supabase access token (already on pending rotations, see below); (2) **decision pending**: should supplier cost feed customer-facing quote pricing (margin checks, cost×markup suggestions)? Not yet decided — module currently keeps supplier cost as reference/reporting only; (3) **couldn't confirm live** whether Mark's login account actually carries the `administrator` role — Supabase MCP token was unauthorized this session, verify once rotated.
+- **Supplier Administration module (2026-07-17)**: ~~apply migration 00022 + deploy~~ ✅ done — 00022 applied to production, module committed (`5f5befd`) and deployed, live at `/admin/suppliers`. Two items remain: (1) **push to GitHub** — local `main` is ahead of `origin/main`, blocked on rotating the 2 GitHub PATs; (2) **decision pending**: should supplier cost feed customer-facing quote pricing (margin checks, cost×markup suggestions)? Not yet decided — module currently keeps supplier cost as reference/reporting only.
 - **From Mike (2026-07-07 review)**: (1) ~~hardware-threshold posted note~~ ✅ received & implemented (migration 00016); (2) ~~motorization threshold~~ ✅ resolved — motor above 120″ blind width; (3) **pricing for the hardware tiers** (USD per tube size per inch; fixed cost per VTX 15/20/30 and motor) — rules are cost-neutral until supplied; (4) which products are Roller Shade vs Neolux (interim `blind_type` tags on 5 seed products are our guesses — admin-editable in Admin > Products); (5) style + colour matrices for Sliding Panel, Roller Shade, Neolux (and colours per style everywhere) — **no longer blocks dev work**, Batch 7 shipped the schema/UI for this and Mike can hand-enter the TBD ranges directly in Admin > Blind Management once 00017 is applied; (6) glossary verification (draft v2 in `..\outputs\`); (7) deposit rules + invoicing approach for the Batch 11 workflow; (8) whether Horizontal's "Yes/No" Valance is a literal flag or shorthand for a finisher to be named later (seeded as two Valance option rows per the spec's stated assumption — flag if wrong).
 - **Secrets hygiene** (updated 2026-07-16): Supabase project API keys migrated to the new key system — legacy `anon` + `service_role` JWTs **DISABLED**; app now uses `sb_publishable_` (browser) + `sb_secret_` (server) via the SAME env var names (`NEXT_PUBLIC_SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY`). Secret key stored in `.env.local` + Vercel (marked **Sensitive**); `..\info.md` redacted (live secrets removed). **Still to rotate**: the Supabase Postgres **DB password** (was in `info.md`, still live — used only for direct migration connections, not app runtime).
-- **Pending token rotations** (see `~/.claude/projects/C--Projects-Claude-AddOns/memory/pending_token_rotations.md`): still open — Supabase DB password, one Supabase PAT (`sbp_…`, likely why the Supabase MCP read unauthorized on 2026-07-16), and two GitHub PATs exposed in chat in prior sessions. Any MCP reconfig (Supabase/GitHub MCP) is blocked until rotation. The project API-key rotation above is DONE.
+- **Pending token rotations** (see `~/.claude/projects/C--Projects-Claude-AddOns/memory/pending_token_rotations.md`): the Supabase account PAT was rotated 2026-07-17 (new PAT, `supabase-finesse` MCP server added pinned to `vcnakuehawpkzzuzkixb`, verified working). Still open — Supabase DB password and two GitHub PATs exposed in chat in prior sessions. GitHub MCP/push is blocked until those rotate. The project API-key rotation above is DONE.
 - **Vercel MCP auth**: user confirmed Vercel deployment but hasn't confirmed whether the Vercel MCP is authed for this account. Ask with `/mcp` before any deploy-related work.
 - **Retail / wholesale markup defaults**: what are the actual numbers? Placeholder 40% / 20% until user confirms.
 - **Commit cadence**: user hasn't specified whether they want a commit per batch or per logical change within a batch. Default: one commit per completed batch, conventional-commits format, staged by Claude but committed by user (never auto-commit without explicit request).
