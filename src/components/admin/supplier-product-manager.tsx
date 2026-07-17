@@ -437,7 +437,7 @@ export function SupplierProductManager({ supplier, products, allProducts, allLin
 
       {/* Allocations dialog for the selected item. */}
       <Dialog open={!!allocationsFor} onOpenChange={o => !o && setAllocationsForId(null)}>
-        <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
+        <DialogContent className="max-h-[90vh] w-[95vw] max-w-4xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Allocations — {allocationsFor?.name}</DialogTitle>
           </DialogHeader>

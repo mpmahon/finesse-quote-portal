@@ -10,7 +10,6 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Plus, Pencil, Trash2, Star, TriangleAlert } from 'lucide-react'
 import { toast } from 'sonner'
 import { SupplierTargetPicker, BLANK_TARGET, resolveTargetIds, isTargetComplete, type TargetPickerValue } from '@/components/admin/supplier-target-picker'
@@ -260,55 +259,54 @@ export function SupplierLinkManager({ supplierProduct, productLinks, allLinks, a
         </Button>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Target</TableHead>
-            <TableHead>Qty / Unit</TableHead>
-            <TableHead>Colour Code</TableHead>
-            <TableHead>Source</TableHead>
-            <TableHead className="w-24" />
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+      {sorted.length === 0 ? (
+        <div className="rounded-md border py-6 text-center text-sm text-muted-foreground">
+          Not allocated to any Finesse style, colour, or awning product yet.
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {/* Wrapping row layout (not a fixed-column table): the long target
+              path wraps, and the meta cluster (qty · code · source · actions)
+              flows beneath it on narrow widths instead of forcing horizontal
+              scroll — the defect this replaced. */}
           {sorted.map(link => (
-            <TableRow key={link.id}>
-              <TableCell className="max-w-xs">
-                <p className="text-sm">{describeTarget(hierarchy, awningProducts, link)}</p>
-                {link.notes && <p className="mt-0.5 truncate text-xs text-muted-foreground">{link.notes}</p>}
-              </TableCell>
-              <TableCell className="text-sm">{Number(link.quantity_per)} × {supplierProduct.unit_of_measure ?? 'unit'}</TableCell>
-              <TableCell className="text-sm">{link.supplier_colour_code ?? <span className="text-muted-foreground">—</span>}</TableCell>
-              <TableCell>
+            <div
+              key={link.id}
+              className="flex flex-col gap-3 rounded-md border p-3 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div className="min-w-0 flex-1">
+                <p className="text-sm break-words">{describeTarget(hierarchy, awningProducts, link)}</p>
+                {link.notes && <p className="mt-0.5 text-xs text-muted-foreground break-words">{link.notes}</p>}
+              </div>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm sm:shrink-0 sm:justify-end">
+                <span className="whitespace-nowrap">
+                  <span className="text-muted-foreground">Qty </span>
+                  {Number(link.quantity_per)} × {supplierProduct.unit_of_measure ?? 'unit'}
+                </span>
+                <span className="whitespace-nowrap">
+                  <span className="text-muted-foreground">Code </span>
+                  {link.supplier_colour_code ?? '—'}
+                </span>
                 {link.is_primary_source ? (
                   <Badge variant="secondary" className="gap-1"><Star className="h-3 w-3" /> Primary</Badge>
                 ) : (
-                  <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => makePrimary(link)} disabled={loading}>
+                  <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => makePrimary(link)} disabled={loading}>
                     Make Primary
                   </Button>
                 )}
-              </TableCell>
-              <TableCell>
                 <div className="flex gap-1">
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(link)}>
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(link)} aria-label="Edit allocation">
                     <Pencil className="h-3 w-3" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDelete(link)}>
+                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDelete(link)} aria-label="Remove allocation">
                     <Trash2 className="h-3 w-3" />
                   </Button>
                 </div>
-              </TableCell>
-            </TableRow>
+              </div>
+            </div>
           ))}
-          {sorted.length === 0 && (
-            <TableRow>
-              <TableCell colSpan={5} className="py-6 text-center text-sm text-muted-foreground">
-                Not allocated to any Finesse style, colour, or awning product yet.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+        </div>
+      )}
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">

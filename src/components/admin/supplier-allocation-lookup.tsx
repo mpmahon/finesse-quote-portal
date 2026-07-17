@@ -3,7 +3,6 @@
 import { useMemo, useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Star } from 'lucide-react'
 import { SupplierTargetPicker, BLANK_TARGET, resolveTargetIds, isTargetComplete, type TargetPickerValue } from '@/components/admin/supplier-target-picker'
 import { targetKey } from '@/lib/supplier-links'
@@ -55,38 +54,42 @@ export function SupplierAllocationLookup({ hierarchy, awningProducts, supplierLi
             {matches.length === 0 ? (
               <p className="py-6 text-center text-sm text-muted-foreground">No supplier is currently allocated to this target.</p>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Supplier</TableHead>
-                    <TableHead>Item</TableHead>
-                    <TableHead className="text-right">Cost</TableHead>
-                    <TableHead>Colour Code</TableHead>
-                    <TableHead>Source</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {matches.map(({ link, product, supplier }) => (
-                    <TableRow key={link.id}>
-                      <TableCell>{supplier?.name ?? <span className="text-muted-foreground">Unknown supplier</span>}</TableCell>
-                      <TableCell>{product?.name ?? <span className="text-muted-foreground">Unknown item</span>}</TableCell>
-                      <TableCell className="text-right">
+              <div className="space-y-2">
+                {/* Wrapping rows rather than a fixed-column table, so supplier,
+                    item, cost, colour code and source never force horizontal
+                    scroll on narrow widths. */}
+                {matches.map(({ link, product, supplier }) => (
+                  <div
+                    key={link.id}
+                    className="flex flex-col gap-2 rounded-md border p-3 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium break-words">
+                        {product?.name ?? <span className="font-normal text-muted-foreground">Unknown item</span>}
+                      </p>
+                      <p className="text-xs text-muted-foreground break-words">
+                        {supplier?.name ?? 'Unknown supplier'}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm sm:shrink-0 sm:justify-end">
+                      <span className="whitespace-nowrap">
                         {product?.cost_price != null
                           ? `$${Number(product.cost_price).toFixed(4)} ${product.currency}${product.unit_of_measure ? ` / ${product.unit_of_measure}` : ''}`
                           : <span className="text-muted-foreground">No cost set</span>}
-                      </TableCell>
-                      <TableCell>{link.supplier_colour_code ?? <span className="text-muted-foreground">—</span>}</TableCell>
-                      <TableCell>
-                        {link.is_primary_source ? (
-                          <Badge variant="secondary" className="gap-1"><Star className="h-3 w-3" /> Primary</Badge>
-                        ) : (
-                          <Badge variant="outline">Alternate</Badge>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                      </span>
+                      <span className="whitespace-nowrap">
+                        <span className="text-muted-foreground">Code </span>
+                        {link.supplier_colour_code ?? '—'}
+                      </span>
+                      {link.is_primary_source ? (
+                        <Badge variant="secondary" className="gap-1"><Star className="h-3 w-3" /> Primary</Badge>
+                      ) : (
+                        <Badge variant="outline">Alternate</Badge>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </CardContent>
         </Card>
