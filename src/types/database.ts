@@ -158,8 +158,13 @@ export interface AwningCategory {
 /**
  * 00021 supplier layer (STAFF-ONLY via RLS — customers never see supplier
  * identity). `suppliers` → `supplier_products` (catalogue lines with item
- * codes) → `supplier_links` (which Finesse style/colour/awning a supplier
- * item fulfils, with the supplier colour code for reordering).
+ * codes, and — since 00022 — procurement `cost_price`) →
+ * `supplier_links` (which Finesse style/colour/awning a supplier item
+ * fulfils, with the supplier colour code for reordering and — since
+ * 00022 — `quantity_per`/`is_primary_source` for costing and
+ * multi-sourcing). Cost data here is reference/reporting only; it is NOT
+ * read by the quote engine (see quote-engine.ts `PricedComponent`,
+ * sourced from `blind_style_components`/`components`).
  */
 export interface Supplier {
   id: string
@@ -181,6 +186,20 @@ export interface SupplierProduct {
   source_url: string | null
   notes: string | null
   is_active: boolean
+  /**
+   * 00022: procurement cost in {@link SupplierProduct.currency}, denominated
+   * per {@link SupplierProduct.unit_of_measure}. Nullable — not every
+   * supplier item has a captured cost yet. Reference/reporting only; the
+   * quote engine's `PricedComponent` contract never reads this — see
+   * quote-engine.ts.
+   */
+  cost_price: number | null
+  /** 00022: currency `cost_price` is denominated in. Free text, defaults 'USD'. */
+  currency: string
+  /** 00022: free-text unit the supplier prices this item by (e.g. "per linear yard", "per box of 10", "each"). Not an enum — supplier units vary too widely to constrain usefully. */
+  unit_of_measure: string | null
+  /** 00022: auto-set by trigger whenever `cost_price` changes. Null until a cost is first entered. */
+  price_updated_at: string | null
   created_at: string
   updated_at: string
 }
@@ -193,7 +212,25 @@ export interface SupplierLink {
   awning_product_id: string | null
   supplier_colour_code: string | null
   notes: string | null
+  /**
+   * 00022: how many of the supplier_product's own `unit_of_measure` are
+   * consumed to fulfil ONE unit of the linked Finesse item. Default 1 = 1:1
+   * (the common case — one supplier item literally IS the one Finesse
+   * unit, e.g. one awning cassette). Set >1 or a fraction for fabric-style
+   * items priced per linear yard/metre where a style consumes a fraction
+   * of a roll per unit.
+   */
+  quantity_per: number
+  /**
+   * 00022: true for the current/preferred supplier when a style/colour/
+   * awning has more than one supplier_link (multi-sourcing). Exactly one
+   * primary per target is enforced at the DB level (partial unique
+   * indexes) — alternates are kept for price comparison / backup sourcing.
+   */
+  is_primary_source: boolean
   created_at: string
+  /** 00022: added alongside quantity_per/is_primary_source becoming admin-editable over time. */
+  updated_at: string
 }
 
 export interface Component {

@@ -13,11 +13,21 @@ import { toast } from 'sonner'
 import { ProductImageField } from '@/components/admin/product-image-field'
 import { componentSchema } from '@/lib/validators'
 import type { BlindStyle, BlindStyleComponent, UnitType } from '@/types/database'
+import type { PrimaryStyleCostRef } from '@/lib/supplier-links'
 
 interface BlindStyleEditorProps {
   style: BlindStyle
   /** This style's own pricing components, already scoped by the caller (see `componentsForStyle`). */
   components: BlindStyleComponent[]
+  /**
+   * 00022: this style's primary-source supplier item, if one is allocated —
+   * read-only reference cost (supplier cost × quantity_per), for margin
+   * checks only. NOT part of the pricing blueprint above and NEVER read by
+   * the quote engine (see quote-engine.ts `PricedComponent`, sourced only
+   * from `blind_style_components`). Null when no primary supplier is
+   * allocated yet (see Admin > Suppliers).
+   */
+  primaryCost?: PrimaryStyleCostRef | null
 }
 
 const UNIT_LABELS: Record<UnitType, string> = {
@@ -46,7 +56,7 @@ const BLANK_FORM: ComponentFormState = { name: '', unit: 'per_inch', usd_price: 
  * with a placeholder blueprint by migration 00019; this is where Mike
  * adjusts it per style.
  */
-export function BlindStyleEditor({ style, components }: BlindStyleEditorProps) {
+export function BlindStyleEditor({ style, components, primaryCost = null }: BlindStyleEditorProps) {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editForm, setEditForm] = useState<ComponentFormState>(BLANK_FORM)
   const [addingNew, setAddingNew] = useState(false)
@@ -263,6 +273,38 @@ export function BlindStyleEditor({ style, components }: BlindStyleEditorProps) {
           </Table>
         </CardContent>
       </Card>
+
+      {primaryCost && (
+        <Card className="border-dashed">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Reference Supplier Cost (Admin Only)</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-1 text-sm">
+            <p>
+              Primary source: <span className="font-medium">{primaryCost.supplierName}</span> — {primaryCost.productName}
+            </p>
+            <p className="text-muted-foreground">
+              {primaryCost.costPrice != null ? (
+                <>
+                  ${Number(primaryCost.costPrice).toFixed(4)} {primaryCost.currency}
+                  {primaryCost.unitOfMeasure ? ` / ${primaryCost.unitOfMeasure}` : ''}
+                  {' × '}{Number(primaryCost.quantityPer)} per unit
+                  {' = '}
+                  <span className="font-medium text-foreground">
+                    ${(Number(primaryCost.costPrice) * Number(primaryCost.quantityPer)).toFixed(4)} {primaryCost.currency} landed cost
+                  </span>
+                  {primaryCost.priceUpdatedAt && ` (cost updated ${new Date(primaryCost.priceUpdatedAt).toLocaleDateString()})`}
+                </>
+              ) : (
+                'No cost captured yet for this supplier item — see Admin > Suppliers.'
+              )}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Procurement reference only, for margin checks — not part of the pricing blueprint above and never used to price customer quotes.
+            </p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }

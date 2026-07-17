@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server'
 import { BlindHierarchyManager } from '@/components/admin/blind-hierarchy-manager'
 import { HardwareSizeRulesManager } from '@/components/admin/hardware-size-rules-manager'
 import { fetchBlindHierarchy } from '@/lib/blind-hierarchy'
+import { buildPrimaryStyleCostMap } from '@/lib/supplier-links'
+import type { SupplierLink, SupplierProduct, Supplier } from '@/types/database'
 
 /**
  * Blind Management (Batch 7): the dependent Type -> Opacity -> Style ->
@@ -12,12 +14,30 @@ import { fetchBlindHierarchy } from '@/lib/blind-hierarchy'
 export default async function AdminCatalogPage() {
   const supabase = await createClient()
 
-  const [hierarchy, { data: hardwareRules }] = await Promise.all([
+  const [
+    hierarchy,
+    { data: hardwareRules },
+    { data: primaryStyleLinks },
+    { data: supplierProducts },
+    { data: suppliers },
+  ] = await Promise.all([
     // Full hierarchy including inactive nodes — admins need to see and
     // reactivate deactivated options, unlike the customer-facing fetch.
     fetchBlindHierarchy(supabase, { activeOnly: false }),
     supabase.from('hardware_size_rules').select('*').order('blind_type').order('min_width_in'),
+    // 00022: primary-source supplier allocations for styles only, feeding
+    // the read-only reference-cost line in BlindStyleEditor. Admin-only,
+    // reference/reporting — never read by the quote engine.
+    supabase.from('supplier_links').select('*').eq('is_primary_source', true).not('blind_style_id', 'is', null),
+    supabase.from('supplier_products').select('*'),
+    supabase.from('suppliers').select('*'),
   ])
+
+  const primaryStyleCosts = buildPrimaryStyleCostMap(
+    (primaryStyleLinks ?? []) as SupplierLink[],
+    (supplierProducts ?? []) as SupplierProduct[],
+    (suppliers ?? []) as Supplier[]
+  )
 
   return (
     <div>
@@ -28,7 +48,7 @@ export default async function AdminCatalogPage() {
         values available when configuring a window, which prevents typos from creating duplicate categories.
         Many ranges are marked &quot;options pending&quot; until entered here.
       </p>
-      <BlindHierarchyManager hierarchy={hierarchy} />
+      <BlindHierarchyManager hierarchy={hierarchy} primaryStyleCosts={primaryStyleCosts} />
 
       <div className="mt-10">
         <h2 className="mb-2 text-xl font-semibold">Hardware Size Rules</h2>

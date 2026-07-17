@@ -6,10 +6,13 @@ import { BlindHierarchyLevel } from '@/components/admin/blind-hierarchy-level'
 import { BlindStyleEditor } from '@/components/admin/blind-style-editor'
 import type { BlindHierarchy } from '@/lib/blind-hierarchy'
 import { opacitiesForType, stylesForOpacity, coloursForStyle, valancesForType, componentsForStyle } from '@/lib/blind-hierarchy'
+import type { PrimaryStyleCostRef } from '@/lib/supplier-links'
 
 interface BlindHierarchyManagerProps {
   /** Full hierarchy including inactive nodes — admins need to see and reactivate deactivated options. */
   hierarchy: BlindHierarchy
+  /** 00022: `blind_style_id -> primary supplier cost reference` map, passed straight through to `BlindStyleEditor` for the selected style. Admin-only reference display — see `buildPrimaryStyleCostMap`. */
+  primaryStyleCosts?: Record<string, PrimaryStyleCostRef>
 }
 
 /**
@@ -24,7 +27,7 @@ interface BlindHierarchyManagerProps {
  * delegated to {@link BlindHierarchyLevel}; this component only owns the
  * drill-down selection state and slices the full hierarchy per level.
  */
-export function BlindHierarchyManager({ hierarchy }: BlindHierarchyManagerProps) {
+export function BlindHierarchyManager({ hierarchy, primaryStyleCosts }: BlindHierarchyManagerProps) {
   const [selectedTypeId, setSelectedTypeId] = useState<string | null>(null)
   const [selectedOpacityId, setSelectedOpacityId] = useState<string | null>(null)
   const [selectedStyleId, setSelectedStyleId] = useState<string | null>(null)
@@ -137,7 +140,11 @@ export function BlindHierarchyManager({ hierarchy }: BlindHierarchyManagerProps)
 
           {/* Batch 11 Part 1: pricing + photo now live on the Style itself
               (the removed Product Management feature's replacement). */}
-          <BlindStyleEditor style={selectedStyle} components={componentsForStyle(hierarchy, selectedStyle.id)} />
+          <BlindStyleEditor
+            style={selectedStyle}
+            components={componentsForStyle(hierarchy, selectedStyle.id)}
+            primaryCost={primaryStyleCosts?.[selectedStyle.id] ?? null}
+          />
         </>
       )}
     </div>

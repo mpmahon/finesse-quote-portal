@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { LayoutDashboard, Home, FileText, Shield, DollarSign, ScrollText, LogOut, Users, Palette, Umbrella, Images, Wrench } from 'lucide-react'
+import { LayoutDashboard, Home, FileText, Shield, DollarSign, ScrollText, LogOut, Users, Palette, Umbrella, Images, Wrench, Truck } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { ROLE_LABELS } from '@/lib/constants'
@@ -37,6 +37,7 @@ const adminItems = [
   { href: '/admin/users', label: 'Users', icon: Users },
   { href: '/admin/awning-products', label: 'Awning Products', icon: Umbrella },
   { href: '/admin/catalog', label: 'Blind Management', icon: Palette },
+  { href: '/admin/suppliers', label: 'Suppliers', icon: Truck },
   { href: '/admin/pricing', label: 'Pricing', icon: DollarSign },
   { href: '/admin/audit-logs', label: 'Audit Logs', icon: ScrollText },
 ]
