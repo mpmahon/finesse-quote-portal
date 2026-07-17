@@ -189,6 +189,28 @@ export const WORKFLOW_STAGE_COLORS: Record<string, string> = Object.fromEntries(
 )
 
 /**
+ * A11y (UX audit 2026-07-16 §7.8): a text label for each of the three
+ * `WORKFLOW_STAGE_COLORS` bands, so the slate/amber/emerald grouping isn't
+ * colour-only — every place that renders the colour bands as a set (the
+ * dashboard workflow strip's legend) pairs it with these labels. Individual
+ * stage tiles already show their own `WORKFLOW_STAGE_SHORT_LABELS` text, so
+ * this specifically covers the *band* meaning (which stages count as
+ * "pre-sale" vs "in production" vs "post-install"), not the per-stage one.
+ * Bounds mirror `WORKFLOW_STAGE_COLORS` exactly (i<5 / i<13 / rest).
+ */
+export const WORKFLOW_STAGE_BAND_LABELS: Record<string, string> = Object.fromEntries(
+  WORKFLOW_STAGES.map((stage, i) => [
+    stage,
+    i < 5 ? 'Pre-sale' : i < 13 ? 'In production' : 'Post-install',
+  ])
+)
+
+/** Looks up the {@link WORKFLOW_STAGE_BAND_LABELS} text for a stage, e.g. for a colour-band legend. */
+export function bandForStage(stage: string): string {
+  return WORKFLOW_STAGE_BAND_LABELS[stage] ?? ''
+}
+
+/**
  * Pre-quote stages (1-5) — a job can exist here before any quote is
  * attached. Used to best-effort match a pre-quote job when a quote is sent
  * for the same customer/property (see `sendQuoteAction`).

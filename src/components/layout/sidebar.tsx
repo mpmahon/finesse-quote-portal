@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { LayoutDashboard, Home, FileText, Shield, DollarSign, ScrollText, LogOut, Users, Palette, Umbrella, Images, Wrench, Truck } from 'lucide-react'
+import { LayoutDashboard, Home, FileText, DollarSign, ScrollText, LogOut, Users, Palette, Umbrella, Images, Wrench, Truck } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { ROLE_LABELS } from '@/lib/constants'
@@ -28,18 +28,26 @@ const navItems = [
   { href: '/jobs', label: 'Jobs', icon: Wrench, roles: STAFF_ROLES },
 ]
 
+// Phase 1 UX redesign (2026-07-16 audit): the standalone `/admin` Overview
+// page is gone (superseded by the main dashboard's AdminDashboard action
+// queue — see src/app/admin/page.tsx, now a redirect), so this group drops
+// to just Users + Audit Logs. Catalogue/pricing management gets its own
+// group below so the two concerns (people/oversight vs. what-we-sell) read
+// as separate sections instead of one long undifferentiated list.
+const adminItems = [
+  { href: '/admin/users', label: 'Users', icon: Users },
+  { href: '/admin/audit-logs', label: 'Audit Logs', icon: ScrollText },
+]
+
 // Batch 11 Part 1: the separate blind "Products" page is removed per client
 // directive — Blind Management (the Type -> Opacity -> Style -> Colour
 // hierarchy) IS what Finesse sells; there's no separate make/model layer
 // for blinds any more. Awning Products stays — awnings are unaffected.
-const adminItems = [
-  { href: '/admin', label: 'Overview', icon: Shield },
-  { href: '/admin/users', label: 'Users', icon: Users },
-  { href: '/admin/awning-products', label: 'Awning Products', icon: Umbrella },
-  { href: '/admin/catalog', label: 'Blind Management', icon: Palette },
+const catalogItems = [
+  { href: '/admin/catalog', label: 'Blinds', icon: Palette },
+  { href: '/admin/awning-products', label: 'Awnings', icon: Umbrella },
   { href: '/admin/suppliers', label: 'Suppliers', icon: Truck },
   { href: '/admin/pricing', label: 'Pricing', icon: DollarSign },
-  { href: '/admin/audit-logs', label: 'Audit Logs', icon: ScrollText },
 ]
 
 export function Sidebar({ role, userName, onNavigate }: SidebarProps) {
@@ -95,7 +103,29 @@ export function Sidebar({ role, userName, onNavigate }: SidebarProps) {
                 onClick={onNavigate}
                 className={cn(
                   'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all',
-                  pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href))
+                  pathname === item.href || pathname.startsWith(item.href + '/')
+                    ? 'bg-[oklch(0.55_0.18_250)] text-white shadow-md'
+                    : 'text-white/60 hover:bg-white/8 hover:text-white'
+                )}
+              >
+                <item.icon className="h-4 w-4" />
+                {item.label}
+              </Link>
+            ))}
+
+            <div className="my-4 border-t border-white/10 pt-4">
+              <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-wider text-white/40">
+                Catalogue &amp; Pricing
+              </p>
+            </div>
+            {catalogItems.map(item => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={onNavigate}
+                className={cn(
+                  'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all',
+                  pathname === item.href || pathname.startsWith(item.href + '/')
                     ? 'bg-[oklch(0.55_0.18_250)] text-white shadow-md'
                     : 'text-white/60 hover:bg-white/8 hover:text-white'
                 )}

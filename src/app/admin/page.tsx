@@ -1,87 +1,12 @@
-import { createClient } from '@/lib/supabase/server'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Users, FileText, Package, Activity } from 'lucide-react'
+import { redirect } from 'next/navigation'
 
-export default async function AdminDashboard() {
-  const supabase = await createClient()
-
-  const [
-    { count: userCount },
-    { count: quoteCount },
-    { count: styleCount },
-    { data: recentLogs },
-  ] = await Promise.all([
-    supabase.from('profiles').select('*', { count: 'exact', head: true }),
-    supabase.from('quotes').select('*', { count: 'exact', head: true }),
-    // Batch 11 Part 1: the removed blind Products page's KPI is replaced by
-    // a count of active blind_styles — that hierarchy is what's sold now.
-    supabase.from('blind_styles').select('*', { count: 'exact', head: true }).eq('is_active', true),
-    supabase.from('audit_logs').select('*, profiles!actor_id(first_name, last_name)').order('created_at', { ascending: false }).limit(10),
-  ])
-
-  return (
-    <div>
-      <h1 className="mb-6 text-2xl font-bold">Admin Dashboard</h1>
-
-      <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{userCount || 0}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Quotes</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{quoteCount || 0}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Active Blind Styles</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{styleCount || 0}</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Activity className="h-4 w-4" />
-            Recent Activity
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {!recentLogs || recentLogs.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No recent activity.</p>
-          ) : (
-            <div className="space-y-3">
-              {recentLogs.map(log => (
-                <div key={log.id} className="flex items-center justify-between border-b pb-2 text-sm last:border-0">
-                  <div>
-                    <span className="font-medium">
-                      {log.profiles?.first_name} {log.profiles?.last_name}
-                    </span>
-                    <span className="ml-2 text-muted-foreground">{log.action_type}</span>
-                  </div>
-                  <span className="text-xs text-muted-foreground">
-                    {new Date(log.created_at).toLocaleString()}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
-  )
+/**
+ * The standalone admin "Overview" page is retired (Phase 1 UX redesign,
+ * 2026-07-16 audit §"quick wins") — its KPIs are superseded by the main
+ * dashboard's role-aware `AdminDashboard` (action queue + KPI strip), so
+ * `/admin` now just forwards there instead of maintaining a second,
+ * divergent summary view.
+ */
+export default function AdminIndexPage() {
+  redirect('/dashboard')
 }

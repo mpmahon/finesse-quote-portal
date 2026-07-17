@@ -6,20 +6,42 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { QuoteStatusBadge } from '@/components/quotes/quote-status-badge'
 import { StatCard } from '@/components/dashboard/stat-card'
-import { WhatIfPanel } from '@/components/dashboard/what-if-panel'
+import { AttentionCard } from '@/components/dashboard/attention-card'
+import {
+  expiringQuotes,
+  awaitingResponse,
+  agingDrafts,
+  stalledJobs,
+  atRiskInstalls,
+} from '@/lib/attention'
 import {
   QUOTE_STATUS_LABELS,
   JOB_STATUS_LABELS,
   WORKFLOW_STAGES,
   WORKFLOW_STAGE_SHORT_LABELS,
   WORKFLOW_STAGE_COLORS,
+  bandForStage,
 } from '@/lib/constants'
 import { formatTtd } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { effectiveQuoteStatus, isCustomerRole } from '@/types/database'
-import type { JobStatus, QuoteStatus, UserRole, WorkflowStage } from '@/types/database'
+import type { JobStatus, QuoteStatus, StageHistoryEntry, UserRole, WorkflowStage } from '@/types/database'
 import { format } from 'date-fns'
-import { Home, FileText, Images, Plus, UserPlus, CalendarDays, AlertTriangle } from 'lucide-react'
+import {
+  Home,
+  FileText,
+  Images,
+  Plus,
+  UserPlus,
+  CalendarDays,
+  AlertTriangle,
+  CalendarClock,
+  Clock,
+  Mail,
+  PauseCircle,
+  FileEdit,
+  ChevronDown,
+} from 'lucide-react'
 
 /**
  * Role-aware dashboard (WS2 §7): one route, three perspectives.
@@ -213,7 +235,7 @@ async function SalesDashboard({ userId, firstName }: { userId: string; firstName
     ])
   )
 
-  const { expiringSoon, unanswered, drafts } = salesAttention(rows)
+  const { expiringSoon, unanswered, drafts } = salesAttention(rows, nowMs())
 
   return (
     <div className="space-y-6">
@@ -311,6 +333,17 @@ async function SalesDashboard({ userId, firstName }: { userId: string; firstName
   )
 }
 
+/**
+ * Wraps `Date.now()` behind an opaque helper. `react-hooks/purity` flags
+ * impure builtins called directly in a component/hook body, but (like
+ * `adminTimeWindows` below) doesn't see through a plain function call —
+ * safe here regardless, since these are server components that render
+ * fresh per request rather than being memoized.
+ */
+function nowMs(): number {
+  return Date.now()
+}
+
 /** Clock-derived boundaries for the admin KPI row (plain helper; server components render per request). */
 function adminTimeWindows() {
   const monthStart = new Date()
@@ -325,21 +358,19 @@ function adminTimeWindows() {
   }
 }
 
-/** Time-window buckets for the sales "needs attention" panel (plain helper — not render-pure by design; server components render per request). */
-function salesAttention<T extends QuoteLite & { effective: string }>(rows: T[]) {
-  const now = Date.now()
-  const threeDays = 3 * 24 * 60 * 60 * 1000
-  const sevenDays = 7 * 24 * 60 * 60 * 1000
+/**
+ * Time-window buckets for the sales "needs attention" panel, backed by the
+ * shared `@/lib/attention` queues (same logic the admin action queue uses).
+ * `drafts` passes `olderThanDays: 0` to `agingDrafts` to preserve this
+ * panel's original behaviour of surfacing every unsent draft regardless of
+ * age, rather than only ones aging past a threshold — the admin dashboard's
+ * "Unsent aging drafts" queue is the one that actually filters by age.
+ */
+function salesAttention<T extends QuoteLite & { effective: string }>(rows: T[], now: number) {
   return {
-    expiringSoon: rows.filter(q =>
-      q.effective === 'sent' && q.expires_at &&
-      new Date(q.expires_at).getTime() - now < threeDays
-    ),
-    unanswered: rows.filter(q =>
-      q.effective === 'sent' && q.sent_at &&
-      now - new Date(q.sent_at).getTime() > sevenDays
-    ),
-    drafts: rows.filter(q => q.effective === 'draft'),
+    expiringSoon: expiringQuotes(rows, now),
+    unanswered: awaitingResponse(rows, now),
+    drafts: agingDrafts(rows, now, 0),
   }
 }
 
@@ -363,36 +394,29 @@ async function AdminDashboard() {
   const supabase = await createClient()
 
   const { monthStart, ninetyDaysAgo, weekAhead, dayAgo } = adminTimeWindows()
+  const now = nowMs()
 
   const [
     { data: quotes },
     { data: jobs },
     { data: activity },
-    { data: pricing },
-    { data: sampleQuote },
   ] = await Promise.all([
     supabase
       .from('quotes')
       .select('id, status, expires_at, total_ttd, created_at, sent_at, created_by, properties(name), creator:profiles!created_by(first_name, last_name)')
       .order('created_at', { ascending: false }),
-    supabase.from('jobs').select('id, status, workflow_stage, scheduled_install_date, properties(name)'),
+    // `quotes(total_ttd)` (unaliased) is the same embed shape already proven
+    // working in src/app/jobs/page.tsx for this same jobs.quote_id -> quotes
+    // FK — it feeds each attention queue's value-at-risk figure. Pre-quote
+    // jobs (quote_id null) simply embed null, normalized to 0 below.
+    supabase
+      .from('jobs')
+      .select('id, workflow_stage, stage_history, scheduled_install_date, created_at, quote_id, properties(name), quotes(total_ttd)'),
     supabase
       .from('audit_logs')
       .select('id, action_type, created_at, actor:profiles!actor_id(first_name, last_name)')
       .order('created_at', { ascending: false })
       .limit(8),
-    supabase
-      .from('pricing_config')
-      .select('exchange_rate, retail_markup_pct, wholesale_markup_pct, labor_cost_ttd, installation_cost_ttd')
-      .eq('id', 1)
-      .single(),
-    supabase
-      .from('quotes')
-      .select('id, subtotal_usd, total_ttd, user_id, quote_line_items(id, line_type)')
-      .gt('subtotal_usd', 0)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle(),
   ])
 
   type AdminQuote = QuoteLite & {
@@ -410,9 +434,27 @@ async function AdminDashboard() {
   const accepted90 = resolved.filter(q => q.effective === 'accepted').length
   const acceptanceRate = resolved.length > 0 ? Math.round((accepted90 / resolved.length) * 100) : null
   const quotesThisMonth = rows.filter(q => new Date(q.created_at) >= monthStart).length
-  const avgQuote = rows.length > 0 ? rows.reduce((s, q) => s + Number(q.total_ttd), 0) / rows.length : 0
 
-  const jobRows = jobs ?? []
+  type AdminJobRow = {
+    id: string
+    workflow_stage: WorkflowStage
+    stage_history: StageHistoryEntry[]
+    scheduled_install_date: string | null
+    created_at: string
+    quote_id: string | null
+    properties: { name: string } | { name: string }[] | null
+    quotes: { total_ttd: number } | { total_ttd: number }[] | null
+  }
+  const jobRows = ((jobs ?? []) as AdminJobRow[]).map(j => {
+    const quoteEmbed = Array.isArray(j.quotes) ? j.quotes[0] ?? null : j.quotes
+    return {
+      ...j,
+      property_name: embeddedName(j.properties),
+      /** Value-at-risk for install/stall queues: the linked quote's total, 0 for pre-quote jobs. */
+      quote_value: quoteEmbed ? Number(quoteEmbed.total_ttd) : 0,
+    }
+  })
+
   const jobsThisWeek = jobRows.filter(j =>
     j.scheduled_install_date &&
     new Date(j.scheduled_install_date).getTime() >= dayAgo &&
@@ -420,7 +462,7 @@ async function AdminDashboard() {
   ).length
   // Batch 11: the workflow strip combines pre-quote and post-approval jobs
   // by workflow_stage — they're all just "jobs" now, no separate concept.
-  const jobsByStage = (jobRows as Array<{ workflow_stage: WorkflowStage }>).reduce<Record<string, number>>((acc, j) => {
+  const jobsByStage = jobRows.reduce<Record<string, number>>((acc, j) => {
     acc[j.workflow_stage] = (acc[j.workflow_stage] ?? 0) + 1
     return acc
   }, {})
@@ -436,58 +478,173 @@ async function AdminDashboard() {
     if (q.effective === 'sent') byRep[q.created_by].value += Number(q.total_ttd)
   }
 
-  const sample = sampleQuote
-    ? {
-        id: sampleQuote.id as string,
-        subtotal_usd: Number(sampleQuote.subtotal_usd),
-        priceable_count: ((sampleQuote.quote_line_items ?? []) as { line_type: string }[]).filter(li => li.line_type !== 'zero').length || 1,
-        customer_role: 'retail_customer' as UserRole,
-        total_ttd: Number(sampleQuote.total_ttd),
-      }
-    : null
+  // ---- Action queue: the five `@/lib/attention` helpers, pure functions
+  // fed `now` once so every queue agrees on "the present moment". ----
+  const overdueAtRisk = atRiskInstalls(jobRows, now)
+  const expiring = expiringQuotes(rows, now)
+  const awaiting = awaitingResponse(rows, now)
+  const stalled = stalledJobs(jobRows, now)
+  const agingDraftQuotes = agingDrafts(rows, now)
+
+  const sum = <T,>(items: T[], value: (item: T) => number) => items.reduce((s, i) => s + value(i), 0)
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Business Dashboard</h1>
-        <p className="text-muted-foreground">The whole pipeline at a glance.</p>
+        <p className="text-muted-foreground">What needs you today, then the whole pipeline at a glance.</p>
       </div>
 
-      {/* KPI row — grid-cols-N gives equal-fraction columns; items-stretch
-          (the CSS grid default, made explicit here) plus StatCard's own
-          h-full/reserved-sub-line fix make every card read as the same
-          size regardless of which ones have a sub-label (client feedback,
-          2026-07-07 QA). */}
-      <div className="grid grid-cols-2 items-stretch gap-3 lg:grid-cols-5">
+      {/* Action queue (WS7 §7): the five things that need a human, ordered
+          by urgency. Replaces the old KPI-first layout — KPIs are still
+          below, just demoted to a compact strip since "5 rows across" was
+          competing for attention with the numbers that actually drive
+          action. Each card is its own AttentionCard; count===0 renders a
+          quiet "All clear" rather than disappearing, so the queue's shape
+          doesn't jump around as items clear. */}
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        <AttentionCard
+          title="Overdue & at-risk installs"
+          icon={CalendarClock}
+          count={overdueAtRisk.length}
+          valueAtRisk={sum(overdueAtRisk, j => j.quote_value)}
+          viewAllHref="/jobs/calendar"
+          emptyLabel="No overdue or at-risk installs"
+        >
+          {overdueAtRisk.slice(0, 5).map(j => (
+            <Link key={j.id} href={`/jobs/${j.id}`} className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 hover:bg-accent/50">
+              <span className="truncate">{j.property_name || 'Job'}</span>
+              <span className="flex shrink-0 items-center gap-1.5">
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    'text-[10px]',
+                    j.kind === 'overdue'
+                      ? 'border-destructive/40 bg-destructive/10 text-destructive'
+                      : 'border-amber-300 bg-amber-50 text-amber-700'
+                  )}
+                >
+                  {j.kind === 'overdue' ? 'Overdue' : 'At risk'}
+                </Badge>
+                <span className="text-xs text-muted-foreground">{format(new Date(j.scheduled_install_date), 'MMM d')}</span>
+              </span>
+            </Link>
+          ))}
+        </AttentionCard>
+
+        <AttentionCard
+          title="Quotes expiring soon"
+          icon={Clock}
+          count={expiring.length}
+          valueAtRisk={sum(expiring, q => Number(q.total_ttd))}
+          viewAllHref="/quotes?status=sent"
+          emptyLabel="Nothing expiring soon"
+        >
+          {expiring.slice(0, 5).map(q => (
+            <Link key={q.id} href={`/quotes/${q.id}`} className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 hover:bg-accent/50">
+              <span className="truncate">{propName(q) || 'Quote'}</span>
+              <span className="shrink-0 text-xs text-muted-foreground">{q.daysLeft}d left · {formatTtd(Number(q.total_ttd))}</span>
+            </Link>
+          ))}
+        </AttentionCard>
+
+        <AttentionCard
+          title="Awaiting response"
+          icon={Mail}
+          count={awaiting.length}
+          valueAtRisk={sum(awaiting, q => Number(q.total_ttd))}
+          viewAllHref="/quotes?status=sent"
+          emptyLabel="No overdue responses"
+        >
+          {awaiting.slice(0, 5).map(q => (
+            <Link key={q.id} href={`/quotes/${q.id}`} className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 hover:bg-accent/50">
+              <span className="truncate">{propName(q) || 'Quote'}</span>
+              <span className="shrink-0 text-xs text-muted-foreground">{q.daysSinceSent}d ago · {formatTtd(Number(q.total_ttd))}</span>
+            </Link>
+          ))}
+        </AttentionCard>
+
+        <AttentionCard
+          title="Jobs stalled in stage"
+          icon={PauseCircle}
+          count={stalled.length}
+          valueAtRisk={sum(stalled, j => j.quote_value)}
+          viewAllHref="/jobs"
+          emptyLabel="Nothing stalled"
+        >
+          {stalled.slice(0, 5).map(j => (
+            <Link key={j.id} href={`/jobs/${j.id}`} className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 hover:bg-accent/50">
+              <span className="truncate">{j.property_name || 'Job'}</span>
+              <span className="shrink-0 text-xs text-muted-foreground">
+                {WORKFLOW_STAGE_SHORT_LABELS[j.workflow_stage]} · {j.daysInStage}d
+              </span>
+            </Link>
+          ))}
+        </AttentionCard>
+
+        <AttentionCard
+          title="Unsent aging drafts"
+          icon={FileEdit}
+          count={agingDraftQuotes.length}
+          valueAtRisk={sum(agingDraftQuotes, q => Number(q.total_ttd))}
+          viewAllHref="/quotes?status=draft"
+          emptyLabel="No aging drafts"
+        >
+          {agingDraftQuotes.slice(0, 5).map(q => (
+            <Link key={q.id} href={`/quotes/${q.id}`} className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 hover:bg-accent/50">
+              <span className="truncate">{propName(q) || 'Quote'}</span>
+              <span className="shrink-0 text-xs text-muted-foreground">{q.daysAsDraft}d old</span>
+            </Link>
+          ))}
+        </AttentionCard>
+      </div>
+
+      {/* KPI strip — demoted from the old 5-up primary row (dropped "Avg
+          quote value": rarely actioned, and the action queue above is now
+          the primary landing focus) to a smaller, secondary strip. */}
+      <div className="grid grid-cols-2 items-stretch gap-3 lg:grid-cols-4">
         <StatCard label="Pipeline (sent)" value={formatTtd(pipelineValue)} href="/quotes?status=sent" />
         <StatCard label="Acceptance rate" value={acceptanceRate === null ? '—' : `${acceptanceRate}%`} sub="last 90 days" />
         <StatCard label="Quotes this month" value={String(quotesThisMonth)} href="/quotes" />
         <StatCard label="Jobs this week" value={String(jobsThisWeek)} href="/jobs/calendar" />
-        <StatCard label="Avg quote value" value={formatTtd(avgQuote)} />
       </div>
 
       {/* Batch 11: 16-stage order workflow strip, replacing the old
           job-status-only summary. Horizontally scrollable so all 16 stages
           are always reachable without a separate filter control; each tile
-          deep-links into the stage-filtered board (`/jobs?stage=...`). */}
+          deep-links into the stage-filtered board (`/jobs?stage=...`).
+          Visually de-emphasised (smaller title/tiles) now that the action
+          queue above carries the "what needs attention" job, per the a11y/
+          structure audit (2026-07-16 §7) — each tile already pairs its
+          colour band with the stage's own text label; the band legend below
+          additionally names what the three colour bands mean (pre-sale /
+          in production / post-install), so the grouping isn't colour-only. */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Order Workflow</CardTitle>
+          <CardTitle className="text-sm font-medium text-muted-foreground">Order Workflow</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-2 overflow-x-auto pb-1">
+          <div className="flex gap-1.5 overflow-x-auto pb-1">
             {WORKFLOW_STAGES.map(stage => (
               <Link
                 key={stage}
                 href={`/jobs?stage=${stage}`}
                 className={cn(
-                  'flex shrink-0 flex-col items-center gap-0.5 rounded-md border px-3 py-2 text-center transition-colors hover:opacity-80',
+                  'flex shrink-0 flex-col items-center gap-0.5 rounded-md border px-2.5 py-1.5 text-center transition-colors hover:opacity-80',
                   WORKFLOW_STAGE_COLORS[stage]
                 )}
               >
-                <p className="text-lg font-bold">{jobsByStage[stage] ?? 0}</p>
-                <p className="text-[11px] whitespace-nowrap">{WORKFLOW_STAGE_SHORT_LABELS[stage]}</p>
+                <p className="text-sm font-semibold">{jobsByStage[stage] ?? 0}</p>
+                <p className="text-[10px] whitespace-nowrap">{WORKFLOW_STAGE_SHORT_LABELS[stage]}</p>
               </Link>
+            ))}
+          </div>
+          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
+            {(['request_received', 'job_approved', 'installation_complete'] as WorkflowStage[]).map(sampleStage => (
+              <span key={sampleStage} className="flex items-center gap-1">
+                <span className={cn('h-2.5 w-2.5 rounded-full border', WORKFLOW_STAGE_COLORS[sampleStage])} />
+                {bandForStage(sampleStage)}
+              </span>
             ))}
           </div>
           <Link href="/jobs" className="mt-3 block text-xs text-primary hover:underline">
@@ -533,15 +690,15 @@ async function AdminDashboard() {
           </CardContent>
         </Card>
 
-        {/* What-if pricing */}
-        {pricing && <WhatIfPanel config={pricing} sample={sample} />}
-
-        {/* Recent activity */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Recent activity</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm">
+        {/* Recent activity — collapsed by default (native <details>): it's
+            reference material, not action-driving, so it no longer competes
+            with the action queue for the fold. */}
+        <details className="group rounded-xl border bg-card ring-1 ring-foreground/10">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-4 py-3 text-base font-medium">
+            Recent activity
+            <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
+          </summary>
+          <div className="space-y-2 border-t px-4 py-3 text-sm">
             {(activity ?? []).length === 0 ? (
               <p className="text-muted-foreground">No activity yet.</p>
             ) : (
@@ -563,14 +720,13 @@ async function AdminDashboard() {
             <Link href="/admin/audit-logs" className="block pt-1 text-xs text-primary hover:underline">
               Full activity log →
             </Link>
-          </CardContent>
-        </Card>
+          </div>
+        </details>
       </div>
 
       <div className="flex flex-wrap gap-2">
         <Link href="/properties"><Button variant="outline" size="sm"><Home className="mr-1 h-4 w-4" />Properties</Button></Link>
         <Link href="/quotes"><Button variant="outline" size="sm"><FileText className="mr-1 h-4 w-4" />Quotes</Button></Link>
-        <Link href="/admin"><Button variant="outline" size="sm">Admin</Button></Link>
       </div>
     </div>
   )
